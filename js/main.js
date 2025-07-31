@@ -3513,5 +3513,18 @@ window.addEventListener('unhandledrejection', (e) => {
     console.error('Unhandled promise rejection:', e.reason);
 });
 
+// Hide loading screen when everything is ready
+window.addEventListener('load', () => {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        setTimeout(() => {
+            loadingScreen.classList.add('hide');
+            setTimeout(() => {
+                loadingScreen.remove();
+            }, 500);
+        }, 1000);
+    }
+});
+
 
 
