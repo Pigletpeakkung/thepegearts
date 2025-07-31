@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Page not found - Thanatsitt Santisamranwilai">
+    <meta name="theme-color" content="#A78BFA">
+    <meta name="robots" content="noindex, follow">
+    <title>404 - Page Not Found | Thanatsitt Santisamranwilai</title>
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bs-primary: #A78BFA;
+            --bs-secondary: #F9A8D4;
+            --bs-info: #6EE7B7;
+            --bs-light: #F8FAFC;
+            --pastel-pink: #FCE7F3;
+            --pastel-lavender: #EDE9FE;
+            --pastel-mint: #D1FAE5;
+            --text-primary: #1a202c;
+            --text-light: #4a5568;
+            --primary-gradient: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));
+            --transition-normal: 0.4s ease-in-out;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bs-light);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--bs-primary);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--bs-secondary);
+            border-radius: 50%;
+            bottom: 20%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .shape-3 {
+            width: 250px;
+            height: 250px;
+            background: var(--bs-info);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            top: 50%;
+            left: 70%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, -100px) rotate(90deg);
+            }
+            50% {
+                transform: translate(-50px, 100px) rotate(180deg);
+            }
+            75% {
+                transform: translate(50px, -50px) rotate(270deg);
+            }
+        }
+
+        /* Gradient Blobs */
+        .gradient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: blobFloat 20s infinite ease-in-out;
+        }
+        
+        .gradient-blob-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--pastel-pink);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+        
+        .gradient-blob-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--pastel-lavender);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 7s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+            50% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+            75% {
+                transform: translate(30px, 50px) scale(1.05);
+            }
+        }
+
+        /* 404 Container */
+        .error-container {
+            text-align: center;
+            z-index: 10;
+            max-width: 800px;
+            padding: 0 30px;
+            width: 100%;
+        }
+
+        /* Glitch Effect for 404 */
+        .error-code {
+            font-size: clamp(8rem, 15vw, 12rem);
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            line-height: 1;
+            position: relative;
+            animation: glitch 2s ease-in-out infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255, 0, 0, 0.75),
+                    -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                    0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            14% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255, 0, 0, 0.75),
+                    -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                    0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            15% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                    0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                    -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            49% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                    0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                    -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            50% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                    0.05em 0 0 rgba(0, 255, 0, 0.75),
+                    0 -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            99% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                    0.05em 0 0 rgba(0, 255, 0, 0.75),
+                    0 -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+        }
+
+        .error-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin: 1rem 0;
+            color: var(--text-primary);
+        }
+
+        .error-description {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        /* Animated Astronaut */
+        .astronaut-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 3rem;
+            position: relative;
+            animation: float-astronaut 6s ease-in-out infinite;
+        }
+
+        @keyframes float-astronaut {
+            0%, 100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        .astronaut {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* CSS Astronaut */
+        .astronaut-body {
+            width: 80px;
+            height: 100px;
+            background: white;
+            border-radius: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .astronaut-head {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .astronaut-visor {
+            width: 50px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 25px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.8;
+        }
+
+        .astronaut-arms {
+            position: absolute;
+            width: 100%;
+            height: 30px;
+            top: 20px;
+        }
+
+        .arm {
+            width: 25px;
+            height: 60px;
+            background: white;
+            border-radius: 15px;
+            position: absolute;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .arm-left {
+            left: -15px;
+            transform: rotate(25deg);
+            animation: wave-arm 2s ease-in-out infinite;
+        }
+
+        .arm-right {
+            right: -15px;
+            transform: rotate(-25deg);
+        }
+
+        @keyframes wave-arm {
+            0%, 100% {
+                transform: rotate(25deg);
+            }
+            50% {
+                transform: rotate(45deg);
+            }
+        }
+
+        .astronaut-legs {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            bottom: -30px;
+        }
+
+        .leg {
+            width: 25px;
+            height: 50px;
+            background: white;
+            border-radius: 15px;
+            position: absolute;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .leg-left {
+            left: 15px;
+            animation: kick 3s ease-in-out infinite;
+        }
+
+        .leg-right {
+            right: 15px;
+            animation: kick 3s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes kick {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(-10deg);
+            }
+        }
+
+        /* Stars */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--bs-primary);
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Buttons */
+        .error-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 16px 36px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(167, 139, 250, 0.3);
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(167, 139, 250, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            padding: 16px 36px;
+            background: transparent;
+            color: var(--bs-primary);
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid var(--bs-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bs-primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(167, 139, 250, 0.3);
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid var(--pastel-lavender);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .error-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="background-animation">
+        <div class="gradient-blob gradient-blob-1"></div>
+        <div class="gradient-blob gradient-blob-2"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        
+        <!-- Random Stars -->
+        <div class="stars" id="stars"></div>
+    </div>
+
+    <!-- 404 Content -->
+    <div class="error-container">
+        <!-- Animated Astronaut -->
+        <div class="astronaut-container">
+            <div class="astronaut">
+                <div class="astronaut-body">
+                    <div class="astronaut-arms">
+                        <div class="arm arm-left"></div>
+                        <div class="arm arm-right"></div>
+                    </div>
+                    <div class="astronaut-legs">
+                        <div class="leg leg-left"></div>
+                        <div class="leg leg-right"></div>
+                    </div>
+                </div>
+                <div class="astronaut-head">
+                    <div class="astronaut-visor"></div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Houston, we have a problem!</h2>
+        <p class="error-description">
+            The page you're looking for seems to have drifted off into cyberspace. 
+            Don't worry though, we'll help you navigate back to safety.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search for what you're looking for..." id="searchBox" aria-label="Search site">
+            <button class="search-button" onclick="handleSearch()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="error-buttons">
+            <a href="/" class="btn-primary">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+            <button onclick="goBack()" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </button>
+        </div>
+
+        <!-- Helpful Links -->
+        <div style="margin-top: 3rem;">
+            <p style="color: var(--text-light); margin-bottom: 1rem;">Or try these popular pages:</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="/#about" style="color: var(--bs-primary); text-decoration: none; padding: 5px 10px; border-bottom: 2px solid transparent; transition: all 0.3s ease;" 
+                   onmouseover="this.style.borderBottomColor='var(--bs-primary)'" 
+                   onmouseout="this.style.borderBottomColor='transparent'">About</a>
+                <a href="/#services" style="color: var(--bs-primary); text-decoration: none; padding: 5px 10px; border-bottom: 2px solid transparent; transition: all 0.3s ease;"
+                   onmouseover="this.style.borderBottomColor='var(--bs-primary)'" 
+                   onmouseout="this.style.borderBottomColor='transparent'">Services</a>
+                <a href="/#portfolio" style="color: var(--bs-primary); text-decoration: none; padding: 5px 10px; border-bottom: 2px solid transparent; transition: all 0.3s ease;"
+                   onmouseover="this.style.borderBottomColor='var(--bs-primary)'" 
+                   onmouseout="this.style.borderBottomColor='transparent'">Portfolio</a>
+                <a href="/#contact" style="color: var(--bs-primary); text-decoration: none; padding: 5px 10px; border-bottom: 2px solid transparent; transition: all 0.3s ease;"
+                   onmouseover="this.style.borderBottomColor='var(--bs-primary)'" 
+                   onmouseout="this.style.borderBottomColor='transparent'">Contact</a>
+            </div>
+            <p style="margin-top:2rem;color:#A78BFA;">
+                <a href="/sitemap.xml" style="color:#A78BFA;">Sitemap</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Generate random stars
+        function generateStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 50;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Call on page load
+        generateStars();
+
+        // Go back function
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/';
+            }
+        }
+
+        // Search function
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchBox').value.trim();
+            if (searchTerm) {
+                // In a real application, this would search your site
+                // For now, we'll redirect to home with a search query
+                window.location.href = '/?search=' + encodeURIComponent(searchTerm);
+            }
+        }
+
+        // Handle Enter key in search box
+        document.getElementById('searchBox').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Redirect common mistyped URLs
+        const commonRedirects = {
+            '/home': '/',
+            '/index': '/',
+            '/index.html': '/',
+            '/about-me': '/#about',
+            '/my-work': '/#portfolio',
+            '/projects': '/#portfolio',
+            '/contact-me': '/#contact',
+            '/contactus': '/#contact',
+            '/service': '/#services',
+            '/work': '/#portfolio'
+        };
+
+        // Check if current path matches any redirect
+        const currentPath = window.location.pathname.toLowerCase();
+        if (commonRedirects[currentPath]) {
+            window.location.href = commonRedirects[currentPath];
+        }
+
+        // Add some fun interactions
+        const astronaut = document.querySelector('.astronaut-container');
+        let clickCount = 0;
+
+        astronaut.addEventListener('click', function() {
+            clickCount++;
+            
+            if (clickCount === 1) {
+                this.style.animation = 'float-astronaut 1s ease-in-out infinite';
+            } else if (clickCount === 2) {
+                this.style.animation = 'float-astronaut 0.5s ease-in-out infinite';
+            } else if (clickCount === 3) {
+                // Spin the astronaut
+                this.style.animation = 'spin 1s linear infinite';
+            } else if (clickCount >= 5) {
+                // Easter egg: show a message
+                showEasterEgg();
+                clickCount = 0;
+            }
+        });
+
+        // Easter egg function
+        function showEasterEgg() {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--primary-gradient);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 50px;
+                font-size: 1.2rem;
+                font-weight: 600;
+                z-index: 1000;
+                animation: popIn 0.5s ease-out;
+            `;
+            message.innerHTML = '🚀 You found the secret! The astronaut is dizzy now! 🌟';
+            
+            document.body.appendChild(message);
+            
+            // Reset astronaut animation
+            astronaut.style.animation = 'float-astronaut 6s ease-in-out infinite';
+            
+            setTimeout(() => {
+                message.style.animation = 'popOut 0.5s ease-in';
+                setTimeout(() => message.remove(), 500);
+            }, 2000);
+        }
+
+        // Add pop animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            
+            @keyframes popIn {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.5);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+            
+            @keyframes popOut {
+                from {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                to {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.5);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Log 404 errors (in production, send to analytics)
+        console.log('404 Error - Page not found:', window.location.pathname);
+        
+        // Optional: Send to analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', '404_error', {
+                'page_location': window.location.href,
+                'page_path': window.location.pathname
+            });
+        }
+    </script>
+</body>
+</html>

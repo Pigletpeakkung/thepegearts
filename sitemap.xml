@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+        
+    <!-- Homepage -->
+    <url>
+        <loc>https://pegearts.com/</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://pegearts.com/images/hero-bg.jpg</image:loc>
+            <image:title>Pegearts Portfolio - Creative Digital Solutions</image:title>
+            <image:caption>Professional portfolio showcasing innovative digital solutions</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- About Section -->
+    <url>
+        <loc>https://pegearts.com/#about</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://pegearts.com/images/profile-avatar.jpg</image:loc>
+            <image:title>Thanatsitt Santisamranwilai - Professional Profile</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Portfolio Section -->
+    <url>
+        <loc>https://pegearts.com/#portfolio</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <!-- Skills Section -->
+    <url>
+        <loc>https://pegearts.com/#skills</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Voice Section -->
+    <url>
+        <loc>https://pegearts.com/#voice</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Contact Section -->
+    <url>
+        <loc>https://pegearts.com/#contact</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Individual Portfolio Projects -->
+    <url>
+        <loc>https://pegearts.com/portfolio/ai-voice-synthesis</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <image:image>
+            <image:loc>https://pegearts.com/images/portfolio/ai-voice-project.jpg</image:loc>
+            <image:title>AI Voice Synthesis Project</image:title>
+        </image:image>
+    </url>
+    
+    <url>
+        <loc>https://pegearts.com/portfolio/web-applications</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <image:image>
+            <image:loc>https://pegearts.com/images/portfolio/web-apps.jpg</image:loc>
+            <image:title>Web Applications Portfolio</image:title>
+        </image:image>
+    </url>
+    
+    <url>
+        <loc>https://pegearts.com/portfolio/mobile-development</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <image:image>
+            <image:loc>https://pegearts.com/images/portfolio/mobile-apps.jpg</image:loc>
+            <image:title>Mobile Development Projects</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Blog/Articles (if applicable) -->
+    <url>
+        <loc>https://pegearts.com/blog</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Privacy Policy -->
+    <url>
+        <loc>https://pegearts.com/privacy</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Terms of Service -->
+    <url>
+        <loc>https://pegearts.com/terms</loc>
+        <lastmod>2025-01-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+</urlset>

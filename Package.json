@@ -1,0 +1,47 @@
+{
+  "name": "pegearts-portfolio",
+  "version": "1.0.0",
+  "description": "Modern portfolio website for Thanatsitt Santisamranwilai (Pegearts)",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000 --host=localhost",
+    "build": "npm run optimize",
+    "optimize": "npm run optimize-images && npm run minify-css && npm run minify-js",
+    "optimize-images": "imagemin images/* --out-dir=images/optimized",
+    "minify-css": "csso css/styles.css --output css/styles.min.css",
+    "minify-js": "uglifyjs js/main.js --compress --mangle --output js/main.min.js",
+    "lighthouse": "lighthouse http://localhost:3000 --output html --output-path ./reports/lighthouse-report.html",
+    "serve": "http-server -p 3000 -c-1",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "portfolio",
+    "ai-developer",
+    "creative-technologist",
+    "voice-acting",
+    "web-development",
+    "pwa",
+    "responsive-design"
+  ],
+  "author": "Thanatsitt Santisamranwilai <thanattsitt.info@yahoo.co.uk>",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "http-server": "^14.1.1",
+    "imagemin": "^8.0.1",
+    "imagemin-cli": "^7.0.0",
+    "csso-cli": "^4.0.1",
+    "uglify-js": "^3.17.4",
+    "lighthouse": "^11.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thanattsitt/pegearts-portfolio.git"
+  },
+  "homepage": "https://pegearts.com",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>Terms of Service | PegeArts - Thanatsitt Santisamranwilai</title>
+    <meta name="description" content="Terms of Service for PegeArts portfolio website. Learn about usage rights, intellectual property, and service agreements for Cultural AI Innovation services.">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pegearts.com/terms-of-service">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" integrity="sha512-Ic9xkERjyZ1xgJ5svx3y0u3xrvfT/uPkV99LBwe68xjy/mGtO+4eURHZBW2xW4SZbFrF1Tf090XqB+EVgXnVjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0891B2;
+            --secondary-color: #06B6D4;
+            --accent-color: #F59E0B;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --background: #F8F9FA;
+            --white: #FFFFFF;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+            
+            /* Dark theme */
+            --dark-bg: #0F172A;
+            --dark-surface: #1E293B;
+            --dark-card: #334155;
+            --dark-text: #F1F5F9;
+            --dark-text-secondary: #CBD5E1;
+            --dark-border: #475569;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-theme {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .header {
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom-color: var(--dark-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .dark-theme .nav-links a {
+            color: var(--dark-text);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .theme-toggle {
+            color: var(--dark-text);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 6rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 3rem;
+        }
+
+        .dark-theme .hero-section {
+            border-bottom-color: var(--dark-border);
+        }
+
+        .hero-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .dark-theme .hero-subtitle {
+            color: var(--dark-text-secondary);
+        }
+
+        .last-updated {
+            background: var(--gray-100);
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            display: inline-block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .dark-theme .last-updated {
+            background: var(--dark-card);
+            color: var(--dark-text-secondary);
+        }
+
+        /* Table of Contents */
+        .toc-section {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-200);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .dark-theme .toc-section {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+        }
+
+        .toc-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dark-theme .toc-title {
+            color: var(--dark-text);
+        }
+
+        .toc-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .toc-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            display: block;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toc-item a:hover {
+            background: var(--gray-100);
+            padding-left: 1rem;
+        }
+
+        .dark-theme .toc-item a:hover {
+            background: var(--dark-card);
+        }
+
+        /* Content Sections */
+        .content-section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .dark-theme .section-title {
+            color: var(--dark-text);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        .subsection-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-primary);
+        }
+
+        .dark-theme .subsection-title {
+            color: var(--dark-text);
+        }
+
+        .content-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .dark-theme .content-text {
+            color: var(--dark-text-secondary);
+        }
+
+        .content-list {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .content-list li {
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .dark-theme .content-list li {
+            color: var(--dark-text-secondary);
+        }
+
+        /* Highlight Boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(6, 182, 212, 0.1));
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .highlight-box.warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border-left-color: var(--warning-color);
+        }
+
+        .highlight-box.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+            border-left-color: var(--error-color);
+        }
+
+        .highlight-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dark-theme .highlight-title {
+            color: var(--dark-text);
+        }
+
+        /* Contact Information */
+        .contact-info {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .dark-theme .contact-info {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+        }
+
+        .contact-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .dark-theme .contact-title {
+            color: var(--dark-text);
+        }
+
+        .contact-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .toc-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-details {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animation Classes */
+        .animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="/" class="logo">PegeArts</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/projects">Projects</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h1 class="hero-title">Terms of Service</h1>
+                <p class="hero-subtitle">
+                    Please read these terms carefully before using PegeArts services
+                </p>
+                <div class="last-updated">
+                    <i class="fas fa-calendar-alt"></i>
+                    Last Updated: January 15, 2024
+                </div>
+            </section>
+
+            <!-- Table of Contents -->
+            <section class="toc-section">
+                <h2 class="toc-title">
+                    <i class="fas fa-list"></i>
+                    Table of Contents
+                </h2>
+                <ol class="toc-list">
+                    <li class="toc-item"><a href="#acceptance">1. Acceptance of Terms</a></li>
+                    <li class="toc-item"><a href="#services">2. Description of Services</a></li>
+                    <li class="toc-item"><a href="#intellectual-property">3. Intellectual Property Rights</a></li>
+                    <li class="toc-item"><a href="#user-conduct">4. User Conduct</a></li>
+                    <li class="toc-item"><a href="#privacy">5. Privacy and Data Protection</a></li>
+                    <li class="toc-item"><a href="#ai-ethics">6. AI Ethics and Responsible Use</a></li>
+                    <li class="toc-item"><a href="#cultural-sensitivity">7. Cultural Sensitivity</a></li>
+                    <li class="toc-item"><a href="#collaboration">8. Collaboration Terms</a></li>
+                    <li class="toc-item"><a href="#limitation">9. Limitation of Liability</a></li>
+                    <li class="toc-item"><a href="#termination">10. Termination</a></li>
+                    <li class="toc-item"><a href="#governing-law">11. Governing Law</a></li>
+                    <li class="toc-item"><a href="#contact">12. Contact Information</a></li>
+                </ol>
+            </section>
+
+            <!-- Content Sections -->
+            <section id="acceptance" class="content-section">
+                <h2 class="section-title">1. Acceptance of Terms</h2>
+                <p class="content-text">
+                    By accessing and using the PegeArts website (pegearts.com), engaging with our content, 
+                    or requesting our services, you acknowledge that you have read, understood, and agree 
+                    to be bound by these Terms of Service ("Terms").
+                </p>
+                <p class="content-text">
+                    These Terms constitute a legally binding agreement between you and Thanatsitt Santisamranwilai 
+                    ("PegeArts," "we," "us," or "our"). If you do not agree to these Terms, please do not use our services.
+                </p>
+                
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <i class="fas fa-info-circle"></i>
+                        Important Notice
+                    </div>
+                    <p>We reserve the right to modify these Terms at any time. Changes will be effective immediately upon posting. Your continued use of our services constitutes acceptance of any modifications.</p>
+                </div>
+            </section>
+
+            <section id="services" class="content-section">
+                <h2 class="section-title">2. Description of Services</h2>
+                <p class="content-text">
+                    PegeArts provides Cultural AI Innovation services, including but not limited to:
+                </p>
+                <ul class="content-list">
+                    <li>Artificial Intelligence development and consulting</li>
+                    <li>Cross-cultural technology solutions</li>
+                    <li>VTuber AI technology development</li>
+                    <li>Blockchain and Web3 development</li>
+                    <li>E-commerce AI integration</li>
+                    <li>Voice acting and content creation services</li>
+                    <li>Cultural sensitivity consulting for technology products</li>
+                    <li>Educational content and portfolio showcase</li>
+                </ul>
+
+                <h3 class="subsection-title">Service Availability</h3>
+                <p class="content-text">
+                    Services are provided on an "as available" basis. We do not guarantee uninterrupted access 
+                    to our website or services. We reserve the right to modify, suspend, or discontinue services 
+                    at any time without prior notice.
+                </p>
+            </section>
+
+            <section id="intellectual-property" class="content-section">
+                <h2 class="section-title">3. Intellectual Property Rights</h2>
+                
+                <h3 class="subsection-title">Our Intellectual Property</h3>
+                <p class="content-text">
+                    All content on this website, including but not limited to text, graphics, logos, images, 
+                    audio clips, digital downloads, data compilations, software, and AI models, is the property 
+                    of PegeArts or its content suppliers and is protected by international copyright laws.
+                </p>
+
+                <h3 class="subsection-title">Licensed Use</h3>
+                <p class="content-text">
+                    We grant you a limited, non-exclusive, non-transferable license to:
+                </p>
+                <ul class="content-list">
+                    <li>Access and view website content for personal, non-commercial use</li>
+                    <li>Download materials explicitly marked as available for download</li>
+                    <li>Share links to our content with proper attribution</li>
+                </ul>
+
+                <h3 class="subsection-title">Restrictions</h3>
+                <p class="content-text">You may not:</p>
+                <ul class="content-list">
+                    <li>Reproduce, distribute, or create derivative works without written permission</li>
+                    <li>Use our AI models or algorithms for commercial purposes without licensing</li>
+                    <li>Reverse engineer any proprietary technology or software</li>
+                    <li>Remove or alter copyright notices or attribution</li>
+                </ul>
+
+                <div class="highlight-box warning">
+                    <div class="highlight-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        AI Model Usage
+                    </div>
+                    <p>Any AI models, algorithms, or training data shared through our platform are subject to specific licensing terms. Commercial use requires explicit written permission and may involve licensing fees.</p>
+                </div>
+            </section>
+
+            <section id="user-conduct" class="content-section">
+                <h2 class="section-title">4. User Conduct</h2>
+                <p class="content-text">
+                    When interacting with our services, you agree to:
+                </p>
+                <ul class="content-list">
+                    <li>Provide accurate and truthful information</li>
+                    <li>Respect intellectual property rights</li>
+                    <li>Maintain confidentiality of any proprietary information shared</li>
+                    <li>Use services in compliance with applicable laws and regulations</li>
+                    <li>Respect cultural differences and maintain professional conduct</li>
+                </ul>
+
+                <h3 class="subsection-title">Prohibited Activities</h3>
+                <p class="content-text">You may not:</p>
+                <ul class="content-list">
+                    <li>Use services for illegal or unauthorized purposes</li>
+                    <li>Attempt to gain unauthorized access to our systems</li>
+                    <li>Interfere with the proper functioning of our services</li>
+                    <li>Use our AI technologies to create harmful or discriminatory content</li>
+                    <li>Engage in cultural appropriation or insensitive behavior</li>
+                    <li>Violate any applicable data protection or privacy laws</li>
+                </ul>
+            </section>
+
+            <section id="privacy" class="content-section">
+                <h2 class="section-title">5. Privacy and Data Protection</h2>
+                <p class="content-text">
+                    Your privacy is important to us. Our data collection and processing practices are governed 
+                    by our Privacy Policy, which is incorporated into these Terms by reference.
+                </p>
+
+                <h3 class="subsection-title">Data Collection</h3>
+                <p class="content-text">
+                    We may collect information including:
+                </p>
+                <ul class="content-list">
+                    <li>Contact information for service inquiries</li>
+                    <li>Technical data for website optimization</li>
+                    <li>Project specifications for collaboration purposes</li>
+                    <li>Cultural preferences for customized solutions</li>
+                </ul>
+
+                <h3 class="subsection-title">International Data Transfers</h3>
+                <p class="content-text">
+                    As we operate internationally across Thailand, Japan, Singapore, and other countries, 
+                    your data may be transferred and processed in different jurisdictions. We ensure 
+                    appropriate safeguards are in place for all international data transfers.
+                </p>
+            </section>
+
+            <section id="ai-ethics" class="content-section">
+                <h2 class="section-title">6. AI Ethics and Responsible Use</h2>
+                <p class="content-text">
+                    PegeArts is committed to ethical AI development and deployment. Our AI ethics principles include:
+                </p>
+
+                <h3 class="subsection-title">Core Principles</h3>
+                <ul class="content-list">
+                    <li><strong>Fairness:</strong> AI systems should treat all users equitably regardless of background</li>
+                    <li><strong>Transparency:</strong> AI decision-making processes should be explainable</li>
+                    <li><strong>Privacy:</strong> User data should be protected and used responsibly</li>
+                    <li><strong>Cultural Sensitivity:</strong> AI should respect and adapt to cultural differences</li>
+                    <li><strong>Human Oversight:</strong> AI should augment, not replace, human judgment</li>
+                </ul>
+
+                <h3 class="subsection-title">Responsible Use Requirements</h3>
+                <p class="content-text">
+                    When using our AI technologies, you agree to:
+                </p>
+                <ul class="content-list">
+                    <li>Use AI systems for beneficial and lawful purposes only</li>
+                    <li>Implement appropriate human oversight and review processes</li>
+                    <li>Respect cultural contexts and avoid bias in AI applications</li>
+                    <li>Provide clear disclosure when AI is used in user-facing applications</li>
+                    <li>Report any unintended consequences or ethical concerns</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <i class="fas fa-shield-alt"></i>
+                        AI Safety Commitment
+                    </div>
+                    <p>We continuously monitor and improve our AI systems to ensure they meet the highest ethical standards and contribute positively to cross-cultural understanding and collaboration.</p>
+                </div>
+            </section>
+
+            <section id="cultural-sensitivity" class="content-section">
+                <h2 class="section-title">7. Cultural Sensitivity</h2>
+                <p class="content-text">
+                    As a Cultural AI Innovator, we place paramount importance on cultural sensitivity and 
+                    cross-cultural understanding in all our services and interactions.
+                </p>
+
+                <h3 class="subsection-title">Cultural Respect Policy</h3>
+                <ul class="content-list">
+                    <li>All services are designed with cultural awareness and sensitivity</li>
+                    <li>We respect and celebrate cultural diversity in technology development</li>
+                    <li>AI solutions are tested for cultural bias and adjusted accordingly</li>
+                    <li>Language and cultural nuances are carefully considered in all projects</li>
+                </ul>
+
+                <h3 class="subsection-title">Multicultural Collaboration</h3>
+                <p class="content-text">
+                    When working across cultures (Thai, Japanese, English-speaking markets), we ensure:
+                </p>
+                <ul class="content-list">
+                    <li>Appropriate cultural adaptation of technology solutions</li>
+                    <li>Respectful communication practices across all cultures</li>
+                    <li>Consideration of local customs and business practices</li>
+                    <li>Inclusive design that serves diverse user populations</li>
+                </ul>
+            </section>
+
+            <section id="collaboration" class="content-section">
+                <h2 class="section-title">8. Collaboration Terms</h2>
+                
+                <h3 class="subsection-title">Project Agreements</h3>
+                <p class="content-text">
+                    Specific project collaborations will be governed by separate project agreements that 
+                    supplement these Terms. Project agreements will include:
+                </p>
+                <ul class="content-list">
+                    <li>Detailed scope of work and deliverables</li>
+                    <li>Timeline and milestone specifications</li>
+                    <li>Intellectual property arrangements</li>
+                    <li>Payment terms and conditions</li>
+                    <li>Cultural considerations and requirements</li>
+                </ul>
+
+                <h3 class="subsection-title">Confidentiality</h3>
+                <p class="content-text">
+                    Both parties agree to maintain confidentiality regarding:
+                </p>
+                <ul class="content-list">
+                    <li>Proprietary technologies and methodologies</li>
+                    <li>Business strategies and market intelligence</li>
+                    <li>User data and analytics</li>
+                    <li>Unpublished research and development</li>
+                </ul>
+
+                <h3 class="subsection-title">Quality Standards</h3>
+                <p class="content-text">
+                    All deliverables will meet our high standards for:
+                </p>
+                <ul class="content-list">
+                    <li>Technical excellence and innovation</li>
+                    <li>Cultural appropriateness and sensitivity</li>
+                    <li>Ethical AI implementation</li>
+                    <li>User experience and accessibility</li>
+                </ul>
+            </section>
+
+            <section id="limitation" class="content-section">
+                <h2 class="section-title">9. Limitation of Liability</h2>
+                <p class="content-text">
+                    To the fullest extent permitted by law, PegeArts shall not be liable for any indirect, 
+                    incidental, special, consequential, or punitive damages, including but not limited to:
+                </p>
+                <ul class="content-list">
+                    <li>Loss of profits, data, or business opportunities</li>
+                    <li>Service interruptions or technical failures</li>
+                    <li>Third-party actions or content</li>
+                    <li>AI model performance variations</li>
+                    <li>Cultural misunderstandings despite our best efforts</li>
+                </ul>
+
+                <h3 class="subsection-title">Maximum Liability</h3>
+                <p class="content-text">
+                    Our total liability for any claims related to these Terms or our services shall not exceed 
+                    the amount paid by you for the specific service giving rise to the claim.
+                </p>
+
+                <div class="highlight-box warning">
+                    <div class="highlight-title">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                        AI Technology Disclaimer
+                    </div>
+                    <p>AI technologies are rapidly evolving. While we strive for accuracy and reliability, AI systems may produce unexpected results. Users should implement appropriate validation and oversight mechanisms.</p>
+                </div>
+            </section>
+
+            <section id="termination" class="content-section">
+                <h2 class="section-title">10. Termination</h2>
+                
+                <h3 class="subsection-title">Termination by You</h3>
+                <p class="content-text">
+                    You may terminate your use of our services at any time by:
+                </p>
+                <ul class="content-list">
+                    <li>Discontinuing use of our website and services</li>
+                    <li>Requesting deletion of your personal data (subject to legal requirements)</li>
+                    <li>Providing written notice for ongoing projects or collaborations</li>
+                </ul>
+
+                <h3 class="subsection-title">Termination by Us</h3>
+                <p class="content-text">
+                    We may terminate or suspend access to our services immediately, without prior notice, for:
+                </p>
+                <ul class="content-list">
+                    <li>Violation of these Terms of Service</li>
+                    <li>Fraudulent, abusive, or illegal activity</li>
+                    <li>Breach of confidentiality or intellectual property rights</li>
+                    <li>Cultural insensitivity or discriminatory behavior</li>
+                    <li>Misuse of AI technologies or ethical violations</li>
+                </ul>
+
+                <h3 class="subsection-title">Effect of Termination</h3>
+                <p class="content-text">
+                    Upon termination:
+                </p>
+                <ul class="content-list">
+                    <li>Your right to use our services will cease immediately</li>
+                    <li>Outstanding obligations and liabilities will survive</li>
+                    <li>Confidentiality obligations will remain in effect</li>
+                    <li>Intellectual property rights will be preserved</li>
+                    <li>Data deletion will occur according to our Privacy Policy</li>
+                </ul>
+            </section>
+
+            <section id="governing-law" class="content-section">
+                <h2 class="section-title">11. Governing Law and Dispute Resolution</h2>
+                
+                <h3 class="subsection-title">Applicable Law</h3>
+                <p class="content-text">
+                    These Terms shall be governed by and construed in accordance with the laws of Thailand, 
+                    without regard to its conflict of law provisions. However, given our international operations, 
+                    specific project agreements may specify alternative governing law based on the nature and 
+                    location of the services provided.
+                </p>
+
+                <h3 class="subsection-title">Dispute Resolution Process</h3>
+                <p class="content-text">
+                    In the event of any dispute arising from these Terms or our services, the parties agree to:
+                </p>
+                <ol class="content-list">
+                    <li><strong>Direct Negotiation:</strong> Attempt to resolve disputes through good faith discussion</li>
+                    <li><strong>Cultural Mediation:</strong> Engage culturally-appropriate mediation if direct negotiation fails</li>
+                    <li><strong>Alternative Dispute Resolution:</strong> Pursue arbitration or other ADR methods before litigation</li>
+                    <li><strong>Jurisdiction:</strong> Submit to the courts of Bangkok, Thailand, as a last resort</li>
+                </ol>
+
+                <h3 class="subsection-title">International Considerations</h3>
+                <p class="content-text">
+                    For international projects involving multiple jurisdictions:
+                </p>
+                <ul class="content-list">
+                    <li>Specific governing law will be agreed upon in project contracts</li>
+                    <li>Cultural and legal differences will be respected and accommodated</li>
+                    <li>International arbitration may be preferred for cross-border disputes</li>
+                    <li>Local laws regarding AI, data protection, and cultural sensitivity will be observed</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <i class="fas fa-globe"></i>
+                        Cross-Cultural Legal Framework
+                    </div>
+                    <p>We recognize that different cultures have different approaches to legal frameworks and dispute resolution. We are committed to finding culturally appropriate solutions that respect all parties' legal traditions and requirements.</p>
+                </div>
+            </section>
+
+            <section id="additional-terms" class="content-section">
+                <h2 class="section-title">12. Additional Terms and Conditions</h2>
+                
+                <h3 class="subsection-title">Force Majeure</h3>
+                <p class="content-text">
+                    Neither party shall be liable for any failure to perform due to circumstances beyond their 
+                    reasonable control, including but not limited to natural disasters, government actions, 
+                    pandemics, internet outages, or AI system failures due to external factors.
+                </p>
+
+                <h3 class="subsection-title">Severability</h3>
+                <p class="content-text">
+                    If any provision of these Terms is found to be unenforceable or invalid, the remaining 
+                    provisions will continue in full force and effect. The invalid provision will be replaced 
+                    with a valid provision that most closely approximates the intent of the original.
+                </p>
+
+                <h3 class="subsection-title">Entire Agreement</h3>
+                <p class="content-text">
+                    These Terms, together with our Privacy Policy and any specific project agreements, 
+                    constitute the entire agreement between you and PegeArts regarding the use of our services.
+                </p>
+
+                <h3 class="subsection-title">Updates and Modifications</h3>
+                <p class="content-text">
+                    We reserve the right to update these Terms at any time to reflect:
+                </p>
+                <ul class="content-list">
+                    <li>Changes in applicable law or regulations</li>
+                    <li>Evolution of AI technology and ethical standards</li>
+                    <li>Expansion of services or geographic coverage</li>
+                    <li>Enhanced cultural sensitivity requirements</li>
+                    <li>User feedback and industry best practices</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <i class="fas fa-bell"></i>
+                        Notification of Changes
+                    </div>
+                    <p>We will notify users of significant changes to these Terms through website announcements, email notifications, or other appropriate means. Continued use of our services after changes take effect constitutes acceptance of the updated Terms.</p>
+                </div>
+            </section>
+
+            <section id="ai-specific-terms" class="content-section">
+                <h2 class="section-title">13. AI-Specific Terms</h2>
+                
+                <h3 class="subsection-title">AI Model Licensing</h3>
+                <p class="content-text">
+                    Custom AI models developed for clients are subject to specific licensing terms:
+                </p>
+                <ul class="content-list">
+                    <li><strong>Exclusive License:</strong> Client receives exclusive rights within agreed scope</li>
+                    <li><strong>Non-Exclusive License:</strong> Client receives usage rights; we retain ownership</li>
+                    <li><strong>Open Source Release:</strong> Models may be released under open source licenses</li>
+                    <li><strong>Research Rights:</strong> We retain rights to use anonymized data for research</li>
+                </ul>
+
+                <h3 class="subsection-title">AI Training Data</h3>
+                <p class="content-text">
+                    When training AI models using client data:
+                </p>
+                <ul class="content-list">
+                    <li>Client data will be used only for agreed purposes</li>
+                    <li>Cultural sensitivity will be maintained in data handling</li>
+                    <li>Data will be anonymized and protected according to privacy laws</li>
+                    <li>Clients retain ownership of their original data</li>
+                    <li>Cross-cultural training datasets will respect cultural boundaries</li>
+                </ul>
+
+                <h3 class="subsection-title">VTuber Technology Terms</h3>
+                <p class="content-text">
+                    For VTuber AI technology services:
+                </p>
+                <ul class="content-list">
+                    <li>Character designs and personalities remain client intellectual property</li>
+                    <li>AI behavior models are customized to cultural preferences</li>
+                    <li>Voice synthesis rights are clearly defined in project agreements</li>
+                    <li>Live streaming technology usage rights are specified</li>
+                    <li>Cultural adaptation algorithms respect character authenticity</li>
+                </ul>
+            </section>
+
+            <!-- Contact Information -->
+            <section id="contact" class="content-section">
+                <div class="contact-info">
+                    <h2 class="contact-title">Contact Information</h2>
+                    <p class="content-text">
+                        If you have any questions about these Terms of Service, please contact us:
+                    </p>
+                    <div class="contact-details">
+                        <a href="mailto:thanattsitt.info@yahoo.co.uk" class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            thanattsitt.info@yahoo.co.uk
+                        </a>
+                        <a href="/contact" class="contact-item">
+                            <i class="fas fa-globe"></i>
+                            Contact Form
+                        </a>
+                        <a href="https://twitter.com/SThanattsitt" class="contact-item" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                            @SThanattsitt
+                        </a>
+                    </div>
+                    <p class="content-text" style="margin-top: 1.5rem; font-size: 0.875rem;">
+                        <strong>Business Address:</strong> Bangkok, Thailand<br>
+                        <strong>Response Time:</strong> We typically respond within 48 hours<br>
+                        <strong>Languages:</strong> English, Thai, Japanese
+                    </p>
+                </div>
+            </section>
+
+            <!-- Final Notice -->
+            <section class="content-section">
+                <div class="highlight-box warning">
+                    <div class="highlight-title">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Legal Notice
+                    </div>
+                    <p>
+                        These Terms of Service are effective as of January 15, 2024. By using PegeArts services, 
+                        you acknowledge that you have read, understood, and agree to be bound by these terms. 
+                        For the most current version of these Terms, please visit our website regularly.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.toggle('dark-theme', savedTheme === 'dark');
+            updateThemeIcon();
+        } else {
+            // Check system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            body.classList.toggle('dark-theme', prefersDark);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            if (body.classList.contains('dark-theme')) {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            const isDark = body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon();
+        });
+
+        // GSAP Animations
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero animations
+            const heroTl = gsap.timeline();
+            heroTl.to('.hero-icon', {
+                opacity: 1,
+                scale: 1,
+                duration: 0.8,
+                ease: 'back.out(1.7)'
+            })
+            .to('.hero-title', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '-=0.4')
+            .to('.hero-subtitle', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '-=0.4')
+            .to('.last-updated', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '-=0.4');
+
+            // Scroll-triggered animations
+            gsap.utils.toArray('.toc-section, .content-section').forEach(element => {
+                gsap.to(element, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play none none reverse'
+                    }
+                });
+            });
+
+            // TOC item stagger animation
+            gsap.to('.toc-item', {
+                opacity: 1,
+                y: 0,
+                duration: 0.5,
+                ease: 'power3.out',
+                stagger: 0.1,
+                scrollTrigger: {
+                    trigger: '.toc-section',
+                    start: 'top 80%'
+                }
+            });
+        }
+
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initAnimations();
+        });
+
+        // Smooth scrolling for TOC links
+        document.querySelectorAll('.toc-item a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const headerHeight = document.querySelector('.header').offsetHeight;
+                    const targetPosition = targetElement.offsetTop - headerHeight - 20;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Highlight the target section briefly
+                    targetElement.style.backgroundColor = 'rgba(8, 145, 178, 0.1)';
+                    setTimeout(() => {
+                        targetElement.style.backgroundColor = '';
+                    }, 2000);
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = body.classList.contains('dark-theme') 
+                    ? 'rgba(15, 23, 42, 0.98)' 
+                    : 'rgba(255, 255, 255, 0.98)';
+            } else {
+                header.style.background = body.classList.contains('dark-theme') 
+                    ? 'rgba(15, 23, 42, 0.95)' 
+                    : 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+
+        // Analytics tracking (if available)
+        if (typeof gtag !== 'undefined') {
+            gtag('config', 'GA_MEASUREMENT_ID', {
+                page_title: 'Terms of Service',
+                page_location: window.location.href
+            });
+
+            // Track section views
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        if (sectionId) {
+                            gtag('event', 'section_view', {
+                                'section_name': sectionId,
+                                'page_title': 'Terms of Service'
+                            });
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            document.querySelectorAll('[id]').forEach(section => {
+                observer.observe(section);
+            });
+        }
+    </script>
+</body>
+</html>
+

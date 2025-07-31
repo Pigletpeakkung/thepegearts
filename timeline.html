@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="About Thanatsitt Santisamranwilai - AI Solutions Developer & Cultural Innovation Specialist">
+    <meta name="theme-color" content="#A78BFA">
+    <title>About - Thanatsitt Santisamranwilai</title>
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bs-primary: #A78BFA;
+            --bs-secondary: #F9A8D4;
+            --bs-info: #6EE7B7;
+            --bs-light: #F8FAFC;
+            --pastel-pink: #FCE7F3;
+            --pastel-lavender: #EDE9FE;
+            --pastel-mint: #D1FAE5;
+            --text-primary: #1a202c;
+            --text-light: #4a5568;
+            --primary-gradient: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));
+            --transition-normal: 0.4s ease-in-out;
+            --font-size-xl: clamp(2rem, 5vw, 2.8rem);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bs-light);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            transition: all var(--transition-normal);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand.logo {
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: transform 0.3s ease;
+            letter-spacing: -0.5px;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, var(--pastel-lavender) 0%, rgba(237, 233, 254, 0.3) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Floating shapes */
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, -100px) rotate(90deg); }
+            50% { transform: translate(-50px, 100px) rotate(180deg); }
+            75% { transform: translate(50px, -50px) rotate(270deg); }
+        }
+        
+        /* Glass morphism effect */
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(167, 139, 250, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Timeline */
+        .timeline-item {
+            position: relative;
+            padding: 30px 0;
+        }
+        
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary-gradient);
+            transform: translateX(-50%);
+        }
+        
+        /* Stats */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(167, 139, 250, 0.1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(167, 139, 250, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Service cards */
+        .service-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(167, 139, 250, 0.1);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(167, 139, 250, 0.3);
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        /* Testimonial cards */
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(167, 139, 250, 0.1);
+        }
+        
+        .testimonial-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 40px rgba(167, 139, 250, 0.2);
+        }
+        
+        /* Section styles */
+        .section {
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* CTA Button */
+        .cta-button {
+            display: inline-block;
+            padding: 16px 36px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(167, 139, 250, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(167, 139, 250, 0.4);
+            color: white;
+        }
+        
+        /* Badge styles */
+        .badge-custom {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+            margin: 4px;
+        }
+        
+        .badge-primary {
+            background: rgba(167, 139, 250, 0.1);
+            color: var(--bs-primary);
+        }
+        
+        .badge-secondary {
+            background: rgba(249, 168, 212, 0.1);
+            color: var(--bs-secondary);
+        }
+        
+        .badge-info {
+            background: rgba(110, 231, 183, 0.1);
+            color: var(--bs-info);
+        }
+        
+        /* Fade in animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .timeline-line {
+                left: 30px;
+            }
+            
+            .timeline-dot {
+                left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" role="navigation">
+        <div class="container">
+            <a class="navbar-brand logo" href="index.html">Thanattsitt</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#portfolio">Portfolio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">
+                        <span class="bg-gradient-to-r from-gold via-yellow-400 to-gold bg-clip-text text-transparent">
+                            Thanatsitt
+                        </span>
+                    </h1>
+                    <h2 class="h3 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        AI Solutions Developer • Cultural Innovation Specialist
+                    </h2>
+                    <p class="lead mb-4" data-aos="fade-up" data-aos-delay="200">
+                        Bridging cultures through technology with 4+ years of AI expertise, 
+                        international education across three countries, and deep understanding 
+                        of both Eastern and Western business practices.
+                    </p>
+                    <div class="mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <span class="badge-custom badge-primary">AI Development</span>
+                        <span class="badge-custom badge-secondary">Cultural Consulting</span>
+                        <span class="badge-custom badge-info">Voice Acting</span>
+                        <span class="badge-custom badge-primary">Fashion Design</span>
+                    </div>
+                    <div data-aos="fade-up" data-aos-delay="400">
+                        <a href="#contact" class="cta-button me-3">Get In Touch</a>
+                        <a href="#portfolio" class="btn btn-outline-primary btn-lg">View Portfolio</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-4" data-aos="fade-left">
+                        <div class="col-6">
+                            <div class="stat-card">
+                                <div class="stat-number">4+</div>
+                                <p class="mb-0">Years AI Experience</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card">
+                                <div class="stat-number">3</div>
+                                <p class="mb-0">Countries Educated</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card">
+                                <div class="stat-number">10+</div>
+                                <p class="mb-0">Years Education</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card">
+                                <div class="stat-number">5</div>
+                                <p class="mb-0">Languages</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Decorative shapes -->
+        <div class="shape" style="width: 300px; height: 300px; background: var(--bs-primary); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); top: 10%; right: 5%;"></div>
+        <div class="shape" style="width: 200px; height: 200px; background: var(--bs-secondary); border-radius: 50%; bottom: 20%; left: 10%;"></div>
+    </section>
+
+    <!-- Professional Journey Timeline -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Professional Journey</h2>
+            <p class="section-subtitle fade-in">A unique blend of international education, cultural expertise, and cutting-edge AI innovation</p>
+            
+            <div class="position-relative">
+                <div class="timeline-line"></div>
+                
+                <!-- Education Foundation -->
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="row">
+                        <div class="col-lg-5 text-lg-end mb-4 mb-lg-0">
+                            <div class="glass-morphism p-4">
+                                <h3 class="h4 mb-3">International Education</h3>
+                                <p class="mb-3">
+                                    <strong>Bangkok University:</strong> Bachelor's in Performing Arts (2008-2011)<br>
+                                    <strong>Bunka Fashion Academy, Thailand:</strong> Fashion Design (2011-2014)<br>
+                                    <strong>London College of Fashion:</strong> Advanced Fashion Design (2015-2018)
+                                </p>
+                                <div class="mb-3">
+                                    <span class="badge-custom badge-secondary">Performing Arts</span>
+                                    <span class="badge-custom badge-primary">Fashion Design</span>
+                                    <span class="badge-custom badge-info">Cultural Studies</span>
+                                </div>
+                                <p class="text-primary fw-bold">2008-2018</p>
+                                            </div>
+                        </div>
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5"></div>
+                    </div>
+                </div>
+                
+                <!-- Industry Experience -->
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="row">
+                        <div class="col-lg-5"></div>
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5">
+                            <div class="glass-morphism p-4">
+                                <h3 class="h4 mb-3">Fashion Industry & Entrepreneurship</h3>
+                                <p class="mb-3">
+                                    Worked with London fashion houses before launching <strong>Pegearts</strong> - 
+                                    a custom fashion brand serving international clients. Developed expertise in 
+                                    client relations, project management, and cross-cultural business practices.
+                                </p>
+                                <div class="mb-3">
+                                    <span class="badge-custom badge-primary">Fashion Design</span>
+                                    <span class="badge-custom badge-info">Entrepreneurship</span>
+                                    <span class="badge-custom badge-secondary">Client Management</span>
+                                </div>
+                                <p class="text-primary fw-bold">2013-2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Expertise Development -->
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="row">
+                        <div class="col-lg-5 text-lg-end">
+                            <div class="glass-morphism p-4">
+                                <h3 class="h4 mb-3 d-flex align-items-center justify-content-end">
+                                    <span>AI Expertise Development</span>
+                                    <i class="fas fa-robot ms-3 text-primary"></i>
+                                </h3>
+                                <div class="mb-3">
+                                    <p><strong class="text-primary">2020:</strong> Early adoption of GPT technology and language models</p>
+                                    <p><strong style="color: var(--bs-secondary);">2021:</strong> Advanced into AI image generation (DALL-E, Stable Diffusion)</p>
+                                    <p><strong class="text-info">2022-2023:</strong> Developed practical AI applications for business solutions</p>
+                                    <p><strong class="text-primary">2024:</strong> Specializing in culturally-aware AI systems</p>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <div class="p-3 rounded text-center" style="background: rgba(167, 139, 250, 0.1);">
+                                            <i class="fas fa-brain text-primary mb-2"></i>
+                                            <p class="small mb-0">Language AI</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 rounded text-center" style="background: rgba(249, 168, 212, 0.1);">
+                                            <i class="fas fa-image text-secondary mb-2"></i>
+                                            <p class="small mb-0">Image Generation</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 rounded text-center" style="background: rgba(110, 231, 183, 0.1);">
+                                            <i class="fas fa-cogs text-info mb-2"></i>
+                                            <p class="small mb-0">AI Solutions</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 rounded text-center" style="background: rgba(167, 139, 250, 0.1);">
+                                            <i class="fas fa-globe text-primary mb-2"></i>
+                                            <p class="small mb-0">Cultural AI</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-primary fw-bold">2020-Present (4+ years)</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5"></div>
+                    </div>
+                </div>
+                
+                <!-- Current Focus -->
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="row">
+                        <div class="col-lg-5"></div>
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5">
+                            <div class="glass-morphism p-4">
+                                <h3 class="h4 mb-3">Current Focus: AI & Cultural Innovation</h3>
+                                <p class="mb-3">
+                                    Developing AI solutions that understand cultural nuances, providing voice acting 
+                                    services in multiple languages, and consulting on East-West business practices. 
+                                    Combining technical expertise with deep cultural understanding.
+                                </p>
+                                <div class="mb-3">
+                                    <span class="badge-custom badge-primary">AI Development</span>
+                                    <span class="badge-custom badge-secondary">Voice Acting</span>
+                                    <span class="badge-custom badge-info">Cultural Consulting</span>
+                                </div>
+                                <p class="text-primary fw-bold">2024 - Present</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section" style="background: linear-gradient(135deg, rgba(209, 250, 229, 0.3) 0%, var(--pastel-mint) 100%);">
+        <div class="container">
+            <h2 class="section-title fade-in">Client Reviews</h2>
+            <p class="section-subtitle fade-in">What clients say about working with me across different industries and cultures</p>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="testimonial-card h-100">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "Thanatsitt brought a unique cultural perspective to our AI project that we never would have considered. His ability to bridge Eastern and Western design philosophies resulted in a more inclusive and intuitive user experience."
+                        </p>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                S
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Sarah Chen</h6>
+                                <small class="text-muted">Product Director, TechFlow Solutions</small>
+                            </div>
+                        </div>
+                        <span class="badge-custom badge-primary mt-3">AI Development</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="testimonial-card h-100">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "Working with Thanatsitt on our sustainable fashion line was transformative. He seamlessly integrated traditional Thai textile techniques with modern sustainable practices, creating pieces that honor heritage while embracing innovation."
+                        </p>
+                                                <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                M
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Marcus Rodriguez</h6>
+                                <small class="text-muted">Creative Director, EcoLux Fashion</small>
+                            </div>
+                        </div>
+                        <span class="badge-custom badge-secondary mt-3">Fashion Design</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="testimonial-card h-100">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "His voice acting work for our multilingual campaign was exceptional. Thanatsitt captured the cultural nuances in each language, making our message resonate authentically across different markets."
+                        </p>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                Y
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Yuki Tanaka</h6>
+                                <small class="text-muted">Marketing Manager, Global Brands Inc.</small>
+                            </div>
+                        </div>
+                        <span class="badge-custom badge-info mt-3">Voice Acting</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="testimonial-card h-100">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "Thanatsitt's cultural consulting helped us avoid potential missteps when expanding into Asian markets. His insights were invaluable in creating respectful and effective cross-cultural communication strategies."
+                        </p>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                E
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Emma Thompson</h6>
+                                <small class="text-muted">International Relations, WorldConnect Ltd.</small>
+                            </div>
+                        </div>
+                        <span class="badge-custom badge-primary mt-3">Cultural Consulting</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="testimonial-card h-100">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "The website he developed for us perfectly captured our brand essence. His technical skills combined with his artistic vision resulted in a platform that truly stands out in our industry."
+                        </p>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                D
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">David Kim</h6>
+                                <small class="text-muted">CEO, Innovative Startups</small>
+                            </div>
+                        </div>
+                        <span class="badge-custom badge-secondary mt-3">Web Development</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="testimonial-card h-100">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="mb-4">
+                            "His writing captures complex cultural concepts with clarity and beauty. Thanatsitt helped us communicate our mission in a way that resonates with diverse audiences while maintaining authenticity."
+                        </p>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                P
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Priya Sharma</h6>
+                                <small class="text-muted">Content Strategy Lead, Cultural Bridge Media</small>
+                            </div>
+                        </div>
+                        <span class="badge-custom badge-info mt-3">Writing Services</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Competencies -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Core Competencies</h2>
+            <p class="section-subtitle fade-in">Combining technical expertise with cultural understanding</p>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h4>AI & Technology</h4>
+                        <ul class="list-unstyled">
+                            <li>• GPT & Language Models</li>
+                            <li>• AI Image Generation</li>
+                            <li>• Web Development</li>
+                            <li>• SEO & Digital Marketing</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-secondary), var(--bs-primary));">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h4>Cultural Expertise</h4>
+                        <ul class="list-unstyled">
+                            <li>• East-West Business Practices</li>
+                            <li>• Cross-Cultural Communication</li>
+                            <li>• International Market Understanding</li>
+                            <li>• Cultural Sensitivity Training</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-info), var(--bs-primary));">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h4>Creative Services</h4>
+                        <ul class="list-unstyled">
+                            <li>• Voice Acting (Multi-language)</li>
+                            <li>• Fashion Design</li>
+                            <li>• Content Creation</li>
+                            <li>• Visual Storytelling</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Business Skills</h4>
+                        <ul class="list-unstyled">
+                            <li>• Project Management</li>
+                            <li>• Client Relations</li>
+                            <li>• E-commerce Strategy</li>
+                            <li>• International Business</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Language & Cultural Proficiency -->
+    <section class="section" style="background: linear-gradient(135deg, var(--pastel-pink) 0%, rgba(252, 231, 243, 0.3) 100%);">
+        <div class="container">
+            <h2 class="section-title fade-in">Language & Cultural Proficiency</h2>
+                        <p class="section-subtitle fade-in">Global perspective with deep cultural understanding</p>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 fade-in">
+                    <div class="glass-morphism p-4 h-100">
+                        <h4 class="mb-4 d-flex align-items-center">
+                            <i class="fas fa-language me-3 text-primary"></i>
+                            Languages
+                        </h4>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Thai</span>
+                                <span class="fw-bold text-primary">Native</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>English</span>
+                                <span class="fw-bold text-primary">Fluent</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Japanese</span>
+                                <span class="fw-bold text-primary">Conversational</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Mandarin</span>
+                                <span class="fw-bold text-primary">Basic</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 fade-in">
+                    <div class="glass-morphism p-4 h-100">
+                        <h4 class="mb-4 d-flex align-items-center">
+                            <i class="fas fa-map-marked-alt me-3 text-secondary"></i>
+                            Cultural Experience
+                        </h4>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="fs-2 me-3">🇹🇭</span>
+                                <div>
+                                    <p class="mb-0 fw-semibold">Thailand</p>
+                                    <small class="text-muted">Born & Raised</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="fs-2 me-3">🇯🇵</span>
+                                <div>
+                                    <p class="mb-0 fw-semibold">Japan</p>
+                                    <small class="text-muted">3 Years Study</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="fs-2 me-3">🇬🇧</span>
+                                <div>
+                                    <p class="mb-0 fw-semibold">United Kingdom</p>
+                                    <small class="text-muted">4 Years Study & Work</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 fade-in">
+                    <div class="glass-morphism p-4 h-100">
+                        <h4 class="mb-4 d-flex align-items-center">
+                            <i class="fas fa-certificate me-3 text-info"></i>
+                            Qualifications
+                        </h4>
+                        <div>
+                            <div class="border-start border-4 border-secondary ps-3 mb-3">
+                                <p class="mb-0 fw-semibold">Bachelor's Degree</p>
+                                <small class="text-muted">Performing Arts</small>
+                            </div>
+                            <div class="border-start border-4 border-primary ps-3 mb-3">
+                                <p class="mb-0 fw-semibold">Fashion Design</p>
+                                <small class="text-muted">Bunka Academy</small>
+                            </div>
+                            <div class="border-start border-4 border-info ps-3 mb-3">
+                                <p class="mb-0 fw-semibold">Advanced Fashion</p>
+                                <small class="text-muted">London College</small>
+                            </div>
+                            <div class="border-start border-4 border-primary ps-3">
+                                <p class="mb-0 fw-semibold">AI Expertise</p>
+                                <small class="text-muted">4+ Years Experience</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Offered -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Services Offered</h2>
+            <p class="section-subtitle fade-in">Combining technical expertise with cultural understanding to deliver unique solutions</p>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h4>AI Solutions Development</h4>
+                        <ul class="list-unstyled mb-4">
+                            <li>• Custom AI applications</li>
+                            <li>• Cultural-aware AI systems</li>
+                            <li>• Language processing solutions</li>
+                            <li>• AI integration consulting</li>
+                        </ul>
+                        <span class="badge-custom badge-primary">Technical Innovation</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-secondary), var(--bs-primary));">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h4>Cultural Consulting</h4>
+                        <ul class="list-unstyled mb-4">
+                            <li>• East-West business bridging</li>
+                            <li>• Cross-cultural communication</li>
+                            <li>• Market entry strategies</li>
+                            <li>• Cultural sensitivity training</li>
+                        </ul>
+                        <span class="badge-custom badge-secondary">Global Expertise</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-info), var(--bs-primary));">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <h4>Voice Acting Services</h4>
+                        <ul class="list-unstyled mb-4">
+                            <li>• Multilingual voice work</li>
+                            <li>• Commercial narration</li>
+                            <li>• Character voices</li>
+                            <li>• Cultural accent coaching</li>
+                        </ul>
+                        <span class="badge-custom badge-info">Creative Expression</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <h4>Custom Fashion Design</h4>
+                        <ul class="list-unstyled mb-4">
+                            <li>• Bespoke clothing creation</li>
+                            <li>• Cultural fusion designs</li>
+                            <li>• Sustainable fashion</li>
+                            <li>• Brand identity through fashion</li>
+                        </ul>
+                        <span class="badge-custom badge-primary">Artistic Craftsmanship</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-info), var(--bs-secondary));">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h4>Digital Solutions</h4>
+                        <ul class="list-unstyled mb-4">
+                            <li>• Web development</li>
+                            <li>• SEO optimization</li>
+                            <li>• E-commerce setup</li>
+                            <li>• Digital marketing strategy</li>
+                        </ul>
+                        <span class="badge-custom badge-info">Digital Innovation</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 fade-in">
+                    <div class="service-card h-100">
+                        <div class="service-icon" style="background: linear-gradient(135deg, var(--bs-secondary), var(--bs-info));">
+                            <i class="fas fa-pen-fancy"></i>
+                        </div>
+                        <h4>Content Creation</h4>
+                        <ul class="list-unstyled mb-4">
+                            <li>• Multilingual content</li>
+                            <li>• Cultural storytelling</li>
+                            <li>• Brand messaging</li>
+                            <li>• Visual content strategy</li>
+                        </ul>
+                        <span class="badge-custom badge-secondary">Strategic Communication</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Philosophy -->
+    <section class="section" style="background: linear-gradient(135deg, var(--pastel-lavender) 0%, rgba(237, 233, 254, 0.3) 100%);">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="glass-morphism p-5 text-center fade-in">
+                        <h2 class="section-title mb-4">Professional Philosophy</h2>
+                        <blockquote class="h5 fw-light fst-italic mb-4">
+                            "Technology should bridge cultures, not divide them. Every solution I create 
+                            combines cutting-edge innovation with deep cultural understanding, ensuring 
+                            that progress serves human connection and preserves the wisdom of diverse traditions."
+                        </blockquote>
+                        <div class="d-flex align-items-center justify-content-center mb-4">
+                                                        <div class="bg-primary" style="width: 60px; height: 2px; border-radius: 2px;"></div>
+                            <span class="mx-3 fw-semibold">Thanatsitt</span>
+                            <div class="bg-primary" style="width: 60px; height: 2px; border-radius: 2px;"></div>
+                        </div>
+                        <div class="row g-4 mt-3">
+                            <div class="col-md-4">
+                                <i class="fas fa-heart text-danger fs-2 mb-2"></i>
+                                <h5 class="text-primary">Human-Centered</h5>
+                                <p class="text-muted mb-0">Technology that serves people</p>
+                            </div>
+                            <div class="col-md-4">
+                                <i class="fas fa-globe text-primary fs-2 mb-2"></i>
+                                <h5 class="text-primary">Culturally Aware</h5>
+                                <p class="text-muted mb-0">Bridging diverse perspectives</p>
+                            </div>
+                            <div class="col-md-4">
+                                <i class="fas fa-lightbulb text-warning fs-2 mb-2"></i>
+                                <h5 class="text-primary">Innovation Driven</h5>
+                                <p class="text-muted mb-0">Cutting-edge solutions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center fade-in">
+                    <div class="glass-morphism p-5">
+                        <h2 class="section-title mb-4">Ready to Collaborate?</h2>
+                        <p class="lead mb-4">
+                            Whether you need AI solutions that understand cultural nuances, voice acting that bridges languages, 
+                            or consulting on international business practices, let's create something meaningful together.
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                            <a href="index.html#contact" class="cta-button">
+                                <i class="fas fa-envelope me-2"></i>
+                                Start a Project
+                            </a>
+                            <a href="index.html#portfolio" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-folder-open me-2"></i>
+                                View Portfolio
+                            </a>
+                            <a href="https://linkedin.com/in/thanatsitt" class="btn btn-outline-primary btn-lg">
+                                <i class="fab fa-linkedin me-2"></i>
+                                Connect on LinkedIn
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%); color: #F8FAFC;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-3">Thanatsitt</h4>
+                    <p class="text-light opacity-75">
+                        AI Solutions Developer & Cultural Innovation Specialist
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light opacity-75 text-decoration-none">Home</a></li>
+                        <li><a href="about.html" class="text-light opacity-75 text-decoration-none">About</a></li>
+                        <li><a href="index.html#services" class="text-light opacity-75 text-decoration-none">Services</a></li>
+                        <li><a href="index.html#portfolio" class="text-light opacity-75 text-decoration-none">Portfolio</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3">Connect</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-light opacity-75"><i class="fab fa-linkedin fa-lg"></i></a>
+                        <a href="#" class="text-light opacity-75"><i class="fab fa-github fa-lg"></i></a>
+                        <a href="#" class="text-light opacity-75"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-light opacity-75"><i class="fab fa-behance fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 opacity-25">
+            <div class="text-center">
+                <p class="mb-0 text-light opacity-50">&copy; 2024 Thanatsitt Santisamranwilai. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Fade in animation on scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        fadeElements.forEach(element => {
+            fadeObserver.observe(element);
+        });
+    </script>
+</body>
+</html>
