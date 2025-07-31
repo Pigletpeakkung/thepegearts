@@ -1,54 +1,60 @@
 /**
- * Main JavaScript file for Pegearts Portfolio
- * Author: Thanatsitt Santisamranwilai
- * Version: 2.0.0
+ * Pegearts Portfolio - Complete Main JavaScript
+ * Enhanced interactive features and animations with all functionality
+ * Author: Thanatsitt Santisamranwilai (Pegearts)
  */
 
-(function() {
-    'use strict';
-
-    // Configuration
-    const CONFIG = {
-        animation: {
-            duration: 300,
-            easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-            staggerDelay: 100
-        },
-        scroll: {
-            threshold: 100,
-            smooth: true
-        },
-        performance: {
-            debounceDelay: 16,
-            throttleDelay: 100
-        },
-        audio: {
-            fadeTime: 0.5,
-            crossfadeTime: 0.3
-        }
-    };
-
-    // Utility Functions
-    const Utils = {
-        // Debounce function
+// Global variables and utilities
+const PegeArts = {
+    config: {
+        animationDuration: 300,
+        scrollOffset: 80,
+        particleCount: 50,
+        starCount: 100,
+        typingSpeed: 50,
+        autoSaveInterval: 30000, // 30 seconds
+        notificationDuration: 5000,
+        audioFadeTime: 500,
+        portfolioTransitionTime: 400
+    },
+    
+    state: {
+        isLoaded: false,
+        currentSection: 'home',
+        isScrolling: false,
+        isMobile: window.innerWidth <= 768,
+        theme: localStorage.getItem('theme') || 'auto',
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        highContrast: window.matchMedia('(prefers-contrast: high)').matches,
+        currentAudio: null,
+        portfolioFilter: 'all',
+        formData: new Map()
+    },
+    
+    elements: {},
+    animations: {},
+    observers: {},
+    audioPlayers: new Map(),
+    
+    // Utility functions
+    utils: {
         debounce(func, wait, immediate) {
             let timeout;
             return function executedFunction(...args) {
                 const later = () => {
                     timeout = null;
-                    if (!immediate) func.apply(this, args);
+                    if (!immediate) func(...args);
                 };
                 const callNow = immediate && !timeout;
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
-                if (callNow) func.apply(this, args);
+                if (callNow) func(...args);
             };
         },
-
-        // Throttle function
+        
         throttle(func, limit) {
             let inThrottle;
-            return function executedFunction(...args) {
+            return function(...args) {
                 if (!inThrottle) {
                     func.apply(this, args);
                     inThrottle = true;
@@ -56,3332 +62,3456 @@
                 }
             };
         },
-
-        // Get element by ID safely
-        $(id) {
-            return document.getElementById(id);
+        
+        lerp(start, end, factor) {
+            return start + (end - start) * factor;
         },
-
-        // Query selector with error handling
-        qs(selector, context = document) {
-            try {
-                return context.querySelector(selector);
-            } catch (error) {
-                console.warn(`Invalid selector: ${selector}`);
-                return null;
-            }
+        
+        map(value, start1, stop1, start2, stop2) {
+            return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
         },
-
-        // Query selector all with error handling
-        qsa(selector, context = document) {
-            try {
-                return context.querySelectorAll(selector);
-            } catch (error) {
-                console.warn(`Invalid selector: ${selector}`);
-                return [];
-            }
+        
+        random(min, max) {
+            return Math.random() * (max - min) + min;
         },
-
-        // Add multiple event listeners
-        addEvents(element, events, handler) {
-            if (!element) return;
-            events.split(' ').forEach(event => {
-                element.addEventListener(event, handler);
-            });
+        
+        randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-
-        // Remove multiple event listeners
-        removeEvents(element, events, handler) {
-            if (!element) return;
-            events.split(' ').forEach(event => {
-                element.removeEventListener(event, handler);
-            });
+        
+        formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         },
-
-        // Check if element is in viewport
-        isInViewport(element, threshold = 0) {
-            if (!element) return false;
+        
+        isElementInViewport(element, threshold = 0) {
             const rect = element.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+            
             return (
-                rect.top >= 0 - threshold &&
-                rect.left >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) + threshold &&
-                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                rect.top >= -threshold &&
+                rect.left >= -threshold &&
+                rect.bottom <= windowHeight + threshold &&
+                rect.right <= windowWidth + threshold
             );
         },
-
-        // Smooth scroll to element
-        scrollTo(element, offset = 0) {
-            if (!element) return;
-            const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - offset;
-            
-            if ('scrollBehavior' in document.documentElement.style) {
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            } else {
-                // Fallback for browsers without smooth scroll support
-                this.animateScrollTo(targetPosition);
-            }
+        
+        getFocusableElements(element) {
+            return element.querySelectorAll(
+                'a[href], button, textarea, input[type="text"], input[type="email"], input[type="tel"], input[type="radio"], input[type="checkbox"], select'
+            );
         },
-
-        // Animate scroll for fallback
-        animateScrollTo(targetPosition, duration = 500) {
-            const startPosition = window.pageYOffset;
-            const distance = targetPosition - startPosition;
-            let startTime = null;
-
-            const animation = (currentTime) => {
-                if (startTime === null) startTime = currentTime;
-                const timeElapsed = currentTime - startTime;
-                const run = this.easeInOutQuad(timeElapsed, startPosition, distance, duration);
-                window.scrollTo(0, run);
-                if (timeElapsed < duration) requestAnimationFrame(animation);
+        
+        trapFocus(element) {
+            const focusableElements = this.getFocusableElements(element);
+            const firstFocusable = focusableElements[0];
+            const lastFocusable = focusableElements[focusableElements.length - 1];
+            
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstFocusable) {
+                            lastFocusable.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        if (document.activeElement === lastFocusable) {
+                            firstFocusable.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            });
+        },
+        
+        validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        },
+        
+        validatePhone(phone) {
+            const re = /^[\+]?[1-9][\d]{0,15}$/;
+            return re.test(phone.replace(/\s/g, ''));
+        },
+        
+        sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        },
+        
+        getDeviceInfo() {
+            return {
+                isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+                isTablet: /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent),
+                isTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+                browser: this.getBrowserInfo(),
+                screen: {
+                    width: window.screen.width,
+                    height: window.screen.height,
+                    devicePixelRatio: window.devicePixelRatio || 1
+                }
             };
-
-            requestAnimationFrame(animation);
         },
-
-        // Easing function
-        easeInOutQuad(t, b, c, d) {
-            t /= d / 2;
-            if (t < 1) return c / 2 * t * t + b;
-            t--;
-            return -c / 2 * (t * (t - 2) - 1) + b;
-        },
-
-        // Format time for audio players
-        formatTime(seconds) {
-            if (isNaN(seconds)) return '0:00';
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = Math.floor(seconds % 60);
-            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-        },
-
-        // Generate unique ID
-        generateId(prefix = 'id') {
-            return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        },
-
-        // Local storage helpers
-        storage: {
-            get(key, defaultValue = null) {
-                try {
-                    const item = localStorage.getItem(key);
-                    return item ? JSON.parse(item) : defaultValue;
-                } catch (error) {
-                    console.warn(`Error reading from localStorage: ${error}`);
-                    return defaultValue;
-                }
-            },
-
-            set(key, value) {
-                try {
-                    localStorage.setItem(key, JSON.stringify(value));
-                    return true;
-                } catch (error) {
-                    console.warn(`Error writing to localStorage: ${error}`);
-                    return false;
-                }
-            },
-
-            remove(key) {
-                try {
-                    localStorage.removeItem(key);
-                    return true;
-                } catch (error) {
-                    console.warn(`Error removing from localStorage: ${error}`);
-                    return false;
-                }
-            }
-        },
-
-        // Performance monitoring
-        performance: {
-            mark(name) {
-                if ('performance' in window && 'mark' in performance) {
-                    performance.mark(name);
-                }
-            },
-
-            measure(name, startMark, endMark) {
-                if ('performance' in window && 'measure' in performance) {
-                    try {
-                        performance.measure(name, startMark, endMark);
-                    } catch (error) {
-                        console.warn(`Performance measurement failed: ${error}`);
-                    }
-                }
-            }
+        
+        getBrowserInfo() {
+            const ua = navigator.userAgent;
+            if (ua.indexOf('Chrome') > -1) return 'Chrome';
+            if (ua.indexOf('Firefox') > -1) return 'Firefox';
+            if (ua.indexOf('Safari') > -1) return 'Safari';
+            if (ua.indexOf('Edge') > -1) return 'Edge';
+            return 'Unknown';
         }
-    };
+    }
+};
 
-    // App State Management
-    const AppState = {
-        isLoading: false,
-        currentSection: '',
-        audioPlayers: new Map(),
-        activeModals: [],
-        scrollPosition: 0,
-        viewportSize: {
-            width: window.innerWidth,
-            height: window.innerHeight
-        },
-        userPreferences: {
-            reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-            highContrast: window.matchMedia('(prefers-contrast: high)').matches,
-            theme: Utils.storage.get('theme', 'dark'),
-            volume: Utils.storage.get('audioVolume', 0.8),
-            autoplay: Utils.storage.get('audioAutoplay', false)
-        },
+// =============================================================================
+// AUDIO PLAYER FUNCTIONALITY
+// =============================================================================
 
-        // Update state
-        setState(key, value) {
-            this[key] = value;
-            this.notifyStateChange(key, value);
-        },
-
-        // State change notifications
-        stateListeners: new Map(),
-
-        addStateListener(key, callback) {
-            if (!this.stateListeners.has(key)) {
-                this.stateListeners.set(key, []);
-            }
-            this.stateListeners.get(key).push(callback);
-        },
-
-        notifyStateChange(key, value) {
-            if (this.stateListeners.has(key)) {
-                this.stateListeners.get(key).forEach(callback => {
-                    try {
-                        callback(value);
-                    } catch (error) {
-                        console.error(`State listener error for ${key}:`, error);
-                    }
-                });
-            }
-        }
-    };
-
-    // Preloader Management
-    class PreloaderManager {
-        constructor() {
-            this.preloader = Utils.qs('.preloader');
-            this.progressBar = Utils.qs('.loader-progress-fill');
-            this.percentageEl = Utils.qs('.loader-percentage');
-            this.resources = [];
-            this.loadedCount = 0;
-            this.isComplete = false;
-        }
-
-        init() {
-            if (!this.preloader) return;
-
-            this.collectResources();
-            this.startLoading();
+class AudioPlayerManager {
+    constructor() {
+        this.players = new Map();
+        this.currentlyPlaying = null;
+        this.visualizers = new Map();
+        
+        this.init();
+    }
+    
+    init() {
+        // Initialize all audio players on the page
+        const audioContainers = document.querySelectorAll('.audio-player-container');
+        audioContainers.forEach(container => {
+            this.initializePlayer(container);
+        });
+        
+        // Global audio event handlers
+        this.setupGlobalAudioHandlers();
+    }
+    
+    initializePlayer(container) {
+        const audio = container.querySelector('audio');
+        const playerId = container.id || 'player_' + Date.now();
+        
+        if (!audio) return;
+        
+        const player = {
+            container,
+            audio,
+            id: playerId,
+            isPlaying: false,
+            duration: 0,
+            currentTime: 0,
+            volume: 0.8,
+            muted: false,
+            loading: false,
+            error: null,
             
-            // Fallback timeout
+            // UI elements
+            playBtn: container.querySelector('.play-btn'),
+            pauseBtn: container.querySelector('.pause-btn'),
+            stopBtn: container.querySelector('.stop-btn'),
+            progressBar: container.querySelector('.progress-bar'),
+            progressFill: container.querySelector('.progress-fill'),
+            progressHandle: container.querySelector('.progress-handle'),
+            timeDisplay: container.querySelector('.time-display'),
+            currentTimeEl: container.querySelector('.current-time'),
+            durationEl: container.querySelector('.duration'),
+            volumeSlider: container.querySelector('.volume-slider'),
+            volumeBtn: container.querySelector('.volume-btn'),
+            downloadBtn: container.querySelector('.download-btn'),
+            waveform: container.querySelector('.waveform'),
+            loadingIndicator: container.querySelector('.loading-indicator')
+        };
+        
+        this.setupPlayerEvents(player);
+        this.setupPlayerUI(player);
+        this.players.set(playerId, player);
+        
+        // Initialize waveform if available
+        if (player.waveform) {
+            this.initializeWaveform(player);
+        }
+        
+        return player;
+    }
+    
+    setupPlayerEvents(player) {
+        const { audio } = player;
+        
+        // Audio events
+        audio.addEventListener('loadstart', () => {
+            this.setPlayerState(player, { loading: true });
+        });
+        
+        audio.addEventListener('loadedmetadata', () => {
+            player.duration = audio.duration;
+            this.updateDurationDisplay(player);
+            this.setPlayerState(player, { loading: false });
+        });
+        
+        audio.addEventListener('loadeddata', () => {
+            this.generateWaveform(player);
+        });
+        
+        audio.addEventListener('timeupdate', () => {
+            player.currentTime = audio.currentTime;
+            this.updateProgressBar(player);
+            this.updateTimeDisplay(player);
+            this.updateWaveformProgress(player);
+        });
+        
+        audio.addEventListener('ended', () => {
+            this.stopAudio(player.id);
+            this.trackAudioEvent('audio_complete', player);
+        });
+        
+        audio.addEventListener('error', (e) => {
+            this.handleAudioError(player, e);
+        });
+        
+        audio.addEventListener('play', () => {
+            this.setPlayerState(player, { isPlaying: true });
+            this.currentlyPlaying = player.id;
+        });
+        
+        audio.addEventListener('pause', () => {
+            this.setPlayerState(player, { isPlaying: false });
+        });
+        
+        // Volume change
+        audio.addEventListener('volumechange', () => {
+            player.volume = audio.volume;
+            player.muted = audio.muted;
+            this.updateVolumeUI(player);
+        });
+        
+        // Buffer progress
+        audio.addEventListener('progress', () => {
+            this.updateBufferProgress(player);
+        });
+    }
+    
+    setupPlayerUI(player) {
+        // Play button
+        if (player.playBtn) {
+            player.playBtn.addEventListener('click', () => {
+                this.playAudio(player.id);
+            });
+        }
+        
+        // Pause button
+        if (player.pauseBtn) {
+            player.pauseBtn.addEventListener('click', () => {
+                this.pauseAudio(player.id);
+            });
+        }
+        
+        // Stop button
+        if (player.stopBtn) {
+            player.stopBtn.addEventListener('click', () => {
+                this.stopAudio(player.id);
+            });
+        }
+        
+        // Progress bar interaction
+        if (player.progressBar) {
+            this.setupProgressBarInteraction(player);
+        }
+        
+        // Volume controls
+        if (player.volumeSlider) {
+            this.setupVolumeControls(player);
+        }
+        
+        // Download button
+        if (player.downloadBtn) {
+            player.downloadBtn.addEventListener('click', () => {
+                this.downloadAudio(player);
+            });
+        }
+        
+        // Keyboard controls
+        player.container.addEventListener('keydown', (e) => {
+            this.handleKeyboardControls(player, e);
+        });
+    }
+    
+    setupProgressBarInteraction(player) {
+        const { progressBar, progressHandle } = player;
+        let isDragging = false;
+        
+        const startDrag = (e) => {
+            isDragging = true;
+            this.pauseAudio(player.id);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', endDrag);
+        };
+        
+        const drag = (e) => {
+            if (!isDragging) return;
+            
+            const rect = progressBar.getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const progress = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            const newTime = progress * player.duration;
+            
+            this.seekTo(player.id, newTime);
+            this.updateProgressBar(player, progress);
+        };
+        
+        const endDrag = () => {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', endDrag);
+        };
+        
+        // Mouse events
+        progressBar.addEventListener('mousedown', startDrag);
+        if (progressHandle) {
+            progressHandle.addEventListener('mousedown', startDrag);
+        }
+        
+        // Touch events
+        progressBar.addEventListener('touchstart', startDrag);
+        if (progressHandle) {
+            progressHandle.addEventListener('touchstart', startDrag);
+        }
+        
+        // Click to seek
+        progressBar.addEventListener('click', (e) => {
+            if (isDragging) return;
+            
+            const rect = progressBar.getBoundingClientRect();
+            const progress = (e.clientX - rect.left) / rect.width;
+            const newTime = progress * player.duration;
+            
+            this.seekTo(player.id, newTime);
+        });
+    }
+    
+    setupVolumeControls(player) {
+        const { volumeSlider, volumeBtn } = player;
+        
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                const volume = parseFloat(e.target.value);
+                this.setVolume(player.id, volume);
+            });
+        }
+        
+        if (volumeBtn) {
+            volumeBtn.addEventListener('click', () => {
+                this.toggleMute(player.id);
+            });
+        }
+    }
+    
+    initializeWaveform(player) {
+        if (!player.waveform) return;
+        
+        // Create canvas for waveform visualization
+        const canvas = document.createElement('canvas');
+        canvas.className = 'waveform-canvas';
+        player.waveform.appendChild(canvas);
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        const resizeCanvas = () => {
+            const rect = player.waveform.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        };
+        
+        resizeCanvas();
+        window.addEventListener('resize', PegeArts.utils.debounce(resizeCanvas, 250));
+        
+        player.waveformCanvas = canvas;
+        player.waveformCtx = ctx;
+    }
+    
+    generateWaveform(player) {
+        if (!player.waveformCanvas || !player.audio) return;
+        
+        // This is a simplified waveform generation
+        // In production, you'd want to use Web Audio API for more accurate waveforms
+        const { waveformCanvas, waveformCtx } = player;
+        const width = waveformCanvas.width / window.devicePixelRatio;
+        const height = waveformCanvas.height / window.devicePixelRatio;
+        
+        // Clear canvas
+        waveformCtx.clearRect(0, 0, width, height);
+        
+        // Generate random waveform (placeholder)
+        // In real implementation, analyze audio buffer
+        const bars = 100;
+        const barWidth = width / bars;
+        
+        waveformCtx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+        
+        for (let i = 0; i < bars; i++) {
+            const barHeight = Math.random() * height * 0.8;
+            const x = i * barWidth;
+            const y = (height - barHeight) / 2;
+            
+            waveformCtx.fillRect(x, y, barWidth - 1, barHeight);
+        }
+    }
+    
+    updateWaveformProgress(player) {
+        if (!player.waveformCanvas || !player.duration) return;
+        
+        const progress = player.currentTime / player.duration;
+        const width = player.waveformCanvas.width / window.devicePixelRatio;
+        const height = player.waveformCanvas.height / window.devicePixelRatio;
+        
+        // Redraw waveform with progress
+        this.generateWaveform(player);
+        
+        // Draw progress overlay
+        player.waveformCtx.fillStyle = 'rgba(139, 92, 246, 0.8)';
+        player.waveformCtx.fillRect(0, 0, width * progress, height);
+    }
+    
+    // Public methods
+    playAudio(playerId) {
+        const player = this.players.get(playerId);
+        if (!player) return;
+        
+        // Pause other playing audio
+        if (this.currentlyPlaying && this.currentlyPlaying !== playerId) {
+            this.pauseAudio(this.currentlyPlaying);
+        }
+        
+        player.audio.play().then(() => {
+            this.trackAudioEvent('audio_play', player);
+        }).catch(error => {
+            this.handleAudioError(player, error);
+        });
+    }
+    
+    pauseAudio(playerId) {
+        const player = this.players.get(playerId);
+        if (!player) return;
+        
+        player.audio.pause();
+        this.trackAudioEvent('audio_pause', player);
+    }
+    
+    stopAudio(playerId) {
+        const player = this.players.get(playerId);
+        if (!player) return;
+        
+        player.audio.pause();
+        player.audio.currentTime = 0;
+        this.setPlayerState(player, { isPlaying: false });
+        
+        if (this.currentlyPlaying === playerId) {
+            this.currentlyPlaying = null;
+        }
+        
+        this.trackAudioEvent('audio_stop', player);
+    }
+    
+    seekTo(playerId, time) {
+        const player = this.players.get(playerId);
+        if (!player || !player.duration) return;
+        
+        const clampedTime = Math.max(0, Math.min(time, player.duration));
+        player.audio.currentTime = clampedTime;
+        
+        this.trackAudioEvent('audio_seek', player, { seekTime: clampedTime });
+    }
+    
+    setVolume(playerId, volume) {
+        const player = this.players.get(playerId);
+        if (!player) return;
+        
+        const clampedVolume = Math.max(0, Math.min(1, volume));
+        player.audio.volume = clampedVolume;
+    }
+    
+    toggleMute(playerId) {
+        const player = this.players.get(playerId);
+        if (!player) return;
+        
+        player.audio.muted = !player.audio.muted;
+        this.trackAudioEvent('audio_mute', player, { muted: player.audio.muted });
+    }
+    
+    downloadAudio(player) {
+        const audioSrc = player.audio.currentSrc || player.audio.src;
+        if (!audioSrc) return;
+        
+        const link = document.createElement('a');
+        link.href = audioSrc;
+        link.download = audioSrc.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        this.trackAudioEvent('audio_download', player);
+    }
+    
+    // UI Update methods
+    setPlayerState(player, state) {
+        Object.assign(player, state);
+        this.updatePlayerUI(player);
+    }
+    
+    updatePlayerUI(player) {
+        const { container, isPlaying, loading, error } = player;
+        
+        // Update play/pause buttons
+        container.classList.toggle('playing', isPlaying);
+        container.classList.toggle('loading', loading);
+        container.classList.toggle('error', !!error);
+        
+        // Update loading indicator
+        if (player.loadingIndicator) {
+            player.loadingIndicator.style.display = loading ? 'block' : 'none';
+        }
+    }
+    
+    updateProgressBar(player, customProgress = null) {
+        if (!player.progressFill || !player.duration) return;
+        
+        const progress = customProgress !== null ? customProgress : player.currentTime / player.duration;
+        const percentage = Math.max(0, Math.min(100, progress * 100));
+        
+        player.progressFill.style.width = percentage + '%';
+        
+        if (player.progressHandle) {
+            player.progressHandle.style.left = percentage + '%';
+        }
+    }
+    
+    updateTimeDisplay(player) {
+        if (player.currentTimeEl) {
+            player.currentTimeEl.textContent = PegeArts.utils.formatTime(player.currentTime);
+        }
+    }
+    
+    updateDurationDisplay(player) {
+        if (player.durationEl) {
+            player.durationEl.textContent = PegeArts.utils.formatTime(player.duration);
+        }
+    }
+    
+    updateVolumeUI(player) {
+        if (player.volumeSlider) {
+            player.volumeSlider.value = player.muted ? 0 : player.volume;
+        }
+        
+        if (player.volumeBtn) {
+            const icon = player.volumeBtn.querySelector('i');
+            if (icon) {
+                icon.className = player.muted || player.volume === 0 
+                    ? 'fas fa-volume-mute' 
+                    : player.volume < 0.5 
+                    ? 'fas fa-volume-down' 
+                    : 'fas fa-volume-up';
+            }
+        }
+    }
+    
+    updateBufferProgress(player) {
+        const { audio } = player;
+        if (!audio.buffered.length) return;
+        
+        const bufferEnd = audio.buffered.end(audio.buffered.length - 1);
+        const bufferProgress = bufferEnd / audio.duration;
+        
+        const bufferBar = player.container.querySelector('.buffer-progress');
+        if (bufferBar) {
+            bufferBar.style.width = (bufferProgress * 100) + '%';
+        }
+    }
+    
+    handleKeyboardControls(player, event) {
+        switch (event.code) {
+            case 'Space':
+                event.preventDefault();
+                if (player.isPlaying) {
+                    this.pauseAudio(player.id);
+                } else {
+                    this.playAudio(player.id);
+                }
+                break;
+                
+            case 'ArrowLeft':
+                event.preventDefault();
+                this.seekTo(player.id, player.currentTime - 10);
+                break;
+                
+            case 'ArrowRight':
+                event.preventDefault();
+                this.seekTo(player.id, player.currentTime + 10);
+                break;
+                
+            case 'ArrowUp':
+                event.preventDefault();
+                this.setVolume(player.id, Math.min(1, player.volume + 0.1));
+                break;
+                
+            case 'ArrowDown':
+                event.preventDefault();
+                this.setVolume(player.id, Math.max(0, player.volume - 0.1));
+                break;
+                
+            case 'KeyM':
+                event.preventDefault();
+                this.toggleMute(player.id);
+                break;
+        }
+    }
+    
+    handleAudioError(player, error) {
+        console.error('Audio error:', error);
+        this.setPlayerState(player, { 
+            error: error.message || 'Audio loading failed',
+            loading: false 
+        });
+        
+        PegeArts.notifications.show(
+            'Sorry, there was an error loading the audio file.',
+            'error',
+            5000
+        );
+    }
+    
+    setupGlobalAudioHandlers() {
+        // Pause all audio when page loses focus
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && this.currentlyPlaying) {
+                this.pauseAudio(this.currentlyPlaying);
+            }
+        });
+        
+        // Handle media session API (if available)
+        if ('mediaSession' in navigator) {
+            this.setupMediaSession();
+        }
+    }
+    
+    setupMediaSession() {
+        navigator.mediaSession.setActionHandler('play', () => {
+            if (this.currentlyPlaying) {
+                this.playAudio(this.currentlyPlaying);
+            }
+        });
+        
+        navigator.mediaSession.setActionHandler('pause', () => {
+            if (this.currentlyPlaying) {
+                this.pauseAudio(this.currentlyPlaying);
+            }
+        });
+        
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+            if (this.currentlyPlaying) {
+                const player = this.players.get(this.currentlyPlaying);
+                this.seekTo(this.currentlyPlaying, player.currentTime - 10);
+            }
+        });
+        
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+            if (this.currentlyPlaying) {
+                const player = this.players.get(this.currentlyPlaying);
+                this.seekTo(this.currentlyPlaying, player.currentTime + 10);
+            }
+        });
+    }
+    
+    trackAudioEvent(eventName, player, additionalData = {}) {
+        if (typeof gtag !== 'undefined') {
+            gtag('event', eventName, {
+                event_category: 'Audio Interaction',
+                event_label: player.id,
+                value: Math.round(player.currentTime),
+                custom_map: {
+                    duration: Math.round(player.duration),
+                    ...additionalData
+                }
+            });
+        }
+    }
+}
+
+// =============================================================================
+// PORTFOLIO FUNCTIONALITY
+// =============================================================================
+
+class PortfolioManager {
+    constructor() {
+        this.portfolioGrid = document.querySelector('.portfolio-grid');
+        this.filterButtons = document.querySelectorAll('.portfolio-filter-btn');
+        this.portfolioItems = document.querySelectorAll('.portfolio-item');
+        this.portfolioModal = document.getElementById('portfolio-details-modal');
+        this.currentFilter = 'all';
+        this.isAnimating = false;
+        
+        // Portfolio data
+        this.portfolioData = new Map();
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.portfolioGrid) return;
+        
+        this.loadPortfolioData();
+        this.setupFilterButtons();
+        this.setupPortfolioItems();
+        this.setupModal();
+        this.setupKeyboardNavigation();
+    }
+    
+    loadPortfolioData() {
+        // Portfolio project details
+        const projectsData = {
+            'ai-voice-assistant': {
+                title: 'AI Voice Assistant Platform',
+                category: 'ai-development',
+                technologies: ['Python', 'TensorFlow', 'Speech Recognition', 'NLP', 'AWS'],
+                description: 'Advanced multilingual voice assistant with natural language processing capabilities.',
+                features: [
+                    'Multi-language support (English, Thai, Japanese)',
+                    'Context-aware conversation handling',
+                    'Real-time speech-to-text processing',
+                    'Custom wake word detection',
+                    'Cloud-based neural network processing'
+                ],
+                challenges: 'Implementing accurate multilingual speech recognition while maintaining low latency and high accuracy across different accents.',
+                results: '95% accuracy rate, 200ms response time, 50% improvement over previous solutions',
+                images: ['project-ai-voice-1.jpg', 'project-ai-voice-2.jpg', 'project-ai-voice-3.jpg'],
+                liveUrl: '#',
+                githubUrl: 'https://github.com/thanattsitt',
+                year: '2024'
+            },
+            
+            'commercial-voiceover': {
+                title: 'Commercial Voice-Over Portfolio',
+                category: 'voice-acting',
+                technologies: ['Pro Tools', 'Audio Post-Processing', 'Multiple Languages'],
+                description: 'Professional voice-over work for commercials, e-learning, and multimedia projects.',
+                features: [
+                    'Commercial advertisements',
+                    'E-learning narration',
+                    'Character voices for animation',
+                    'Podcast introductions',
+                    'IVR system recordings'
+                ],
+                languages: ['English (Native-level fluency)', 'Thai (Native)', 'Japanese (Conversational)'],
+                voiceTypes: ['Corporate Professional', 'Friendly Conversational', 'Energetic Commercial', 'Calm Educational'],
+                audioSamples: ['commercial-sample-1.mp3', 'elearning-sample-1.mp3', 'character-sample-1.mp3'],
+                clients: ['Tech Startups', 'E-learning Platforms', 'Animation Studios', 'Corporate Training'],
+                year: '2024'
+            },
+            
+            'ecommerce-platform': {
+                title: 'AI-Powered E-commerce Platform',
+                category: 'web-development',
+                technologies: ['React', 'Node.js', 'MongoDB', 'Machine Learning', 'Stripe'],
+                description: 'Full-stack e-commerce platform with AI-driven product recommendations and inventory management.',
+                features: [
+                    'AI-powered product recommendations',
+                    'Smart inventory management',
+                    'Real-time analytics dashboard',
+                    'Multi-payment gateway integration',
+                    'Advanced search with filters'
+                ],
+                challenges: 'Implementing real-time inventory synchronization across multiple sales channels while maintaining data consistency.',
+                results: '40% increase in conversion rate, 60% reduction in inventory holding costs',
+                images: ['ecommerce-dashboard.jpg', 'ecommerce-products.jpg', 'ecommerce-analytics.jpg'],
+                liveUrl: '#',
+                githubUrl: 'https://github.com/thanattsitt',
+                year: '2024'
+            },
+            
+            'ml-prediction-model': {
+                title: 'Predictive Analytics ML Model',
+                category: 'ai-development',
+                technologies: ['Python', 'Scikit-learn', 'TensorFlow', 'Data Analysis', 'API Development'],
+                description: 'Machine learning model for predictive analytics in business intelligence applications.',
+                features: [
+                    'Time series forecasting',
+                    'Anomaly detection',
+                    'Real-time data processing',
+                    'RESTful API integration',
+                    'Interactive visualization dashboard'
+                ],
+                challenges: 'Handling large datasets with missing values while maintaining prediction accuracy and model interpretability.',
+                results: '85% prediction accuracy, 70% reduction in manual analysis time',
+                images: ['ml-dashboard.jpg', 'ml-predictions.jpg', 'ml-analytics.jpg'],
+                liveUrl: '#',
+                githubUrl: 'https://github.com/thanattsitt',
+                year: '2024'
+            },
+            
+            'voice-ai-integration': {
+                title: 'Voice AI Integration Project',
+                category: 'voice-technology',
+                technologies: ['Speech Synthesis', 'Voice Cloning', 'AI Models', 'Real-time Processing'],
+                description: 'Integration of advanced voice AI technology with custom voice models for personalized experiences.',
+                features: [
+                    'Custom voice cloning',
+                    'Real-time voice synthesis',
+                    'Emotion recognition in speech',
+                    'Multi-accent adaptation',
+                    'Voice authentication system'
+                ],
+                voiceFeatures: [
+                    'Natural-sounding speech synthesis',
+                    'Emotion-aware voice modulation',
+                    'Custom pronunciation training',
+                    'Background noise reduction',
+                    'Real-time voice conversion'
+                ],
+                applications: ['Virtual Assistants', 'Audiobook Narration', 'Game Character Voices', 'Accessibility Tools'],
+                year: '2024'
+            },
+            
+            'responsive-portfolio': {
+                title: 'Interactive Portfolio Website',
+                category: 'web-development',
+                technologies: ['HTML5', 'CSS3', 'JavaScript', 'GSAP', 'WebGL'],
+                description: 'Modern, interactive portfolio website with advanced animations and responsive design.',
+                features: [
+                    'Advanced CSS animations',
+                    'WebGL particle systems',
+                    'Progressive Web App (PWA)',
+                    'Accessibility compliance',
+                    'Performance optimization'
+                ],
+                challenges: 'Creating smooth 60fps animations while maintaining excellent performance across all devices and browsers.',
+                results: '98 Google Lighthouse score, 100% accessibility compliance, <2s load time',
+                images: ['portfolio-home.jpg', 'portfolio-projects.jpg', 'portfolio-contact.jpg'],
+                liveUrl: '#',
+                githubUrl: 'https://github.com/thanattsitt',
+                year: '2024'
+            }
+        };
+        
+        // Store in portfolio data map
+        Object.entries(projectsData).forEach(([key, data]) => {
+            this.portfolioData.set(key, data);
+        });
+    }
+    
+    setupFilterButtons() {
+        this.filterButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const filter = button.getAttribute('data-filter');
+                this.filterPortfolio(filter);
+                
+                // Update active state
+                this.filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Track filter usage
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'portfolio_filter', {
+                        event_category: 'User Interaction',
+                        event_label: filter,
+                        value: 1
+                    });
+                }
+            });
+        });
+    }
+    
+    setupPortfolioItems() {
+        this.portfolioItems.forEach(item => {
+            // Add hover effects
+            item.addEventListener('mouseenter', () => {
+                if (!PegeArts.state.reducedMotion) {
+                    this.animateItemHover(item, true);
+                }
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                if (!PegeArts.state.reducedMotion) {
+                    this.animateItemHover(item, false);
+                }
+            });
+            
+            // Click to open modal
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const projectId = item.getAttribute('data-project');
+                this.openProjectModal(projectId);
+            });
+            
+            // Keyboard accessibility
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const projectId = item.getAttribute('data-project');
+                    this.openProjectModal(projectId);
+                }
+            });
+        });
+    }
+    
+    setupModal() {
+        if (!this.portfolioModal) return;
+        
+        // Close modal events
+        this.portfolioModal.addEventListener('click', (e) => {
+            if (e.target === this.portfolioModal) {
+                this.closeProjectModal();
+            }
+        });
+        
+        // Close button
+        const closeBtn = this.portfolioModal.querySelector('.btn-close, [data-bs-dismiss="modal"]');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeProjectModal();
+            });
+        }
+        
+        // Keyboard navigation
+        this.portfolioModal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeProjectModal();
+            }
+        });
+    }
+    
+    setupKeyboardNavigation() {
+        // Arrow key navigation for portfolio items
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement && document.activeElement.classList.contains('portfolio-item')) {
+                this.handleArrowKeyNavigation(e);
+            }
+        });
+    }
+    
+    filterPortfolio(filter) {
+        if (this.isAnimating || this.currentFilter === filter) return;
+        
+        this.isAnimating = true;
+        this.currentFilter = filter;
+        
+        // Get visible and hidden items
+        const visibleItems = [];
+        const hiddenItems = [];
+        
+        this.portfolioItems.forEach(item => {
+            const categories = item.getAttribute('data-category').split(' ');
+            const shouldShow = filter === 'all' || categories.includes(filter);
+            
+            if (shouldShow) {
+                visibleItems.push(item);
+            } else {
+                hiddenItems.push(item);
+            }
+        });
+        
+        // Animate out hidden items
+        this.animateItemsOut(hiddenItems).then(() => {
+            // Hide items
+            hiddenItems.forEach(item => {
+                item.style.display = 'none';
+            });
+            
+            // Show and animate in visible items
+            visibleItems.forEach(item => {
+                item.style.display = 'block';
+            });
+            
+            return this.animateItemsIn(visibleItems);
+        }).then(() => {
+            this.isAnimating = false;
+            
+            // Update URL hash
+            if (filter !== 'all') {
+                history.replaceState(null, null, `#portfolio-${filter}`);
+            } else {
+                history.replaceState(null, null, '#portfolio');
+            }
+            
+            // Announce to screen readers
+            PegeArts.accessibility.announce(`Showing ${visibleItems.length} ${filter === 'all' ? '' : filter} projects`);
+        });
+    }
+    
+    animateItemsOut(items) {
+        if (PegeArts.state.reducedMotion) {
+            return Promise.resolve();
+        }
+        
+        const animations = items.map(item => {
+            return new Promise(resolve => {
+                item.style.transition = `opacity ${PegeArts.config.portfolioTransitionTime}ms ease, transform ${PegeArts.config.portfolioTransitionTime}ms ease`;
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.8) translateY(20px)';
+                
+                setTimeout(resolve, PegeArts.config.portfolioTransitionTime);
+            });
+        });
+        
+        return Promise.all(animations);
+    }
+    
+    animateItemsIn(items) {
+        if (PegeArts.state.reducedMotion) {
+            return Promise.resolve();
+        }
+        
+        // Reset transform and opacity
+        items.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8) translateY(20px)';
+            
             setTimeout(() => {
-                if (!this.isComplete) {
-                    this.complete();
-                }
-            }, 10000);
+                item.style.transition = `opacity ${PegeArts.config.portfolioTransitionTime}ms ease, transform ${PegeArts.config.portfolioTransitionTime}ms ease`;
+                item.style.opacity = '1';
+                item.style.transform = 'scale(1) translateY(0)';
+            }, index * 100); // Stagger animation
+        });
+        
+        return new Promise(resolve => {
+            setTimeout(resolve, PegeArts.config.portfolioTransitionTime + (items.length * 100));
+        });
+    }
+    
+    animateItemHover(item, isHover) {
+        if (!item) return;
+        
+        const overlay = item.querySelector('.portfolio-overlay');
+        const image = item.querySelector('.portfolio-image img');
+        
+        if (isHover) {
+            if (overlay) {
+                overlay.style.opacity = '1';
+            }
+            if (image) {
+                image.style.transform = 'scale(1.1)';
+            }
+            item.style.transform = 'translateY(-5px)';
+        } else {
+            if (overlay) {
+                overlay.style.opacity = '0';
+            }
+            if (image) {
+                image.style.transform = 'scale(1)';
+            }
+            item.style.transform = 'translateY(0)';
         }
-
-        collectResources() {
-            // Collect images
-            const images = Utils.qsa('img[src]');
-            images.forEach(img => {
-                if (img.src && !img.complete) {
-                    this.resources.push({
-                        type: 'image',
-                        element: img,
-                        src: img.src
-                    });
-                }
+    }
+    
+    openProjectModal(projectId) {
+        const projectData = this.portfolioData.get(projectId);
+        if (!projectData || !this.portfolioModal) return;
+        
+        // Store focus for restoration
+        PegeArts.accessibility.storeFocus();
+        
+        // Populate modal content
+        this.populateModalContent(projectData);
+        
+        // Show modal
+        this.portfolioModal.classList.add('show');
+        this.portfolioModal.style.display = 'block';
+        this.portfolioModal.setAttribute('aria-hidden', 'false');
+        
+        // Focus management
+        setTimeout(() => {
+            const firstFocusable = this.portfolioModal.querySelector('button, a, input, [tabindex="0"]');
+            if (firstFocusable) {
+                firstFocusable.focus();
+            }
+        }, 150);
+        
+        // Trap focus in modal
+        PegeArts.utils.trapFocus(this.portfolioModal);
+        
+        // Prevent body scroll
+        document.body.classList.add('modal-open');
+        
+        // Track modal opening
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'portfolio_modal_open', {
+                event_category: 'User Interaction',
+                event_label: projectId,
+                value: 1
             });
-
-            // Collect background images
-            const bgElements = Utils.qsa('[style*="background-image"]');
-            bgElements.forEach(el => {
-                const bgImage = getComputedStyle(el).backgroundImage;
-                const matches = bgImage.match(/url\(['"]?([^'"()]+)['"]?\)/);
-                if (matches) {
-                    this.resources.push({
-                        type: 'background',
-                        element: el,
-                        src: matches[1]
-                    });
+        }
+    }
+    
+    closeProjectModal() {
+        if (!this.portfolioModal) return;
+        
+        // Hide modal
+        this.portfolioModal.classList.remove('show');
+        this.portfolioModal.style.display = 'none';
+        this.portfolioModal.setAttribute('aria-hidden', 'true');
+        
+        // Allow body scroll
+        document.body.classList.remove('modal-open');
+        
+        // Restore focus
+        PegeArts.accessibility.restoreFocus();
+    }
+    
+    populateModalContent(projectData) {
+        const modalContent = this.portfolioModal.querySelector('#portfolioDetailsContent');
+        if (!modalContent) return;
+        
+        const {
+            title,
+            category,
+            technologies = [],
+            description,
+            features = [],
+            challenges = '',
+            results = '',
+            images = [],
+            liveUrl = '',
+            githubUrl = '',
+            year = '',
+            languages = [],
+            voiceTypes = [],
+            audioSamples = [],
+            clients = [],
+            voiceFeatures = [],
+            applications = []
+        } = projectData;
+        
+        // Build modal HTML
+        let modalHTML = `
+            <div class="project-modal-header">
+                <div class="project-meta">
+                    <span class="project-category">${this.getCategoryDisplayName(category)}</span>
+                    ${year ? `<span class="project-year">${year}</span>` : ''}
+                </div>
+                <h2 class="project-title">${title}</h2>
+                <p class="project-description">${description}</p>
+                
+                <div class="project-tech-stack">
+                    ${technologies.map(tech => `<span class="tech-badge">${tech}</span>`).join('')}
+                </div>
+            </div>
+            
+            <div class="project-modal-body">
+                ${images.length > 0 ? this.createImageGallery(images) : ''}
+                ${audioSamples.length > 0 ? this.createAudioSamples(audioSamples) : ''}
+                
+                <div class="project-details-grid">
+                    ${features.length > 0 ? `
+                        <div class="detail-section">
+                            <h4><i class="fas fa-star"></i> Key Features</h4>
+                            <ul class="feature-list">
+                                ${features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${languages.length > 0 ? `
+                        <div class="detail-section">
+                            <h4><i class="fas fa-globe"></i> Languages</h4>
+                            <ul class="language-list">
+                                ${languages.map(lang => `<li>${lang}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${voiceTypes.length > 0 ? `
+                        <div class="detail-section">
+                            <h4><i class="fas fa-microphone"></i> Voice Types</h4>
+                            <ul class="voice-type-list">
+                                ${voiceTypes.map(type => `<li>${type}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${voiceFeatures.length > 0 ? `
+                        <div class="detail-section">
+                            <h4><i class="fas fa-magic"></i> Voice AI Features</h4>
+                            <ul class="voice-feature-list">
+                                ${voiceFeatures.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${applications.length > 0 ? `
+                        <div class="detail-section">
+                            <h4><i class="fas fa-rocket"></i> Applications</h4>
+                            <ul class="application-list">
+                                ${applications.map(app => `<li>${app}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${clients.length > 0 ? `
+                        <div class="detail-section">
+                            <h4><i class="fas fa-users"></i> Client Types</h4>
+                            <ul class="client-list">
+                                ${clients.map(client => `<li>${client}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${challenges ? `
+                        <div class="detail-section full-width">
+                            <h4><i class="fas fa-puzzle-piece"></i> Challenges</h4>
+                            <p class="challenge-text">${challenges}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${results ? `
+                        <div class="detail-section full-width">
+                            <h4><i class="fas fa-chart-line"></i> Results</h4>
+                            <p class="results-text">${results}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <div class="project-modal-footer">
+                <div class="project-actions">
+                    ${liveUrl && liveUrl !== '#' ? `
+                        <a href="${liveUrl}" 
+                           class="btn btn-primary" 
+                           target="_blank" 
+                           rel="noopener"
+                           data-track="portfolio-live-demo">
+                            <i class="fas fa-external-link-alt"></i>
+                            Live Demo
+                        </a>
+                    ` : ''}
+                    
+                    ${githubUrl && githubUrl !== '#' ? `
+                        <a href="${githubUrl}" 
+                           class="btn btn-outline" 
+                           target="_blank" 
+                           rel="noopener"
+                           data-track="portfolio-github">
+                            <i class="fab fa-github"></i>
+                            View Code
+                        </a>
+                    ` : ''}
+                    
+                    ${category === 'voice-acting' ? `
+                        <button class="btn btn-secondary" 
+                                onclick="PegeArts.contact.openContactModal('${title}')">
+                            <i class="fas fa-envelope"></i>
+                            Hire for Similar Project
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        modalContent.innerHTML = modalHTML;
+        
+        // Initialize any audio players in the modal
+        if (audioSamples.length > 0) {
+            setTimeout(() => {
+                PegeArts.audioPlayer.init();
+            }, 100);
+        }
+    }
+    
+    createImageGallery(images) {
+        if (!images.length) return '';
+        
+        return `
+            <div class="project-image-gallery">
+                <div class="main-image">
+                    <img src="images/portfolio/${images[0]}" 
+                         alt="Project screenshot" 
+                         loading="lazy"
+                         onclick="PegeArts.portfolio.openImageLightbox(this)">
+                </div>
+                ${images.length > 1 ? `
+                    <div class="thumbnail-gallery">
+                        ${images.map((img, index) => `
+                            <img src="images/portfolio/${img}" 
+                                 alt="Project screenshot ${index + 1}"
+                                 class="thumbnail ${index === 0 ? 'active' : ''}"
+                                 loading="lazy"
+                                 onclick="PegeArts.portfolio.switchMainImage(this, '${img}')">
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    createAudioSamples(audioSamples) {
+        if (!audioSamples.length) return '';
+        
+        return `
+            <div class="project-audio-samples">
+                <h4><i class="fas fa-headphones"></i> Listen to Samples</h4>
+                <div class="audio-samples-grid">
+                    ${audioSamples.map((audio, index) => `
+                        <div class="audio-player-container sample-player" id="sample-player-${index}">
+                            <audio preload="metadata">
+                                <source src="audio/samples/${audio}" type="audio/mpeg">
+                                <source src="audio/samples/${audio.replace('.mp3', '.ogg')}" type="audio/ogg">
+                                Your browser does not support the audio element.
+                            </audio>
+                            
+                            <div class="audio-player-controls">
+                                <button class="play-btn" aria-label="Play sample ${index + 1}">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="pause-btn" aria-label="Pause sample ${index + 1}">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                    <div class="progress-handle"></div>
+                                </div>
+                                
+                                <div class="time-display">
+                                    <span class="current-time">0:00</span>
+                                    <span class="duration">0:00</span>
+                                </div>
+                            </div>
+                            
+                            <div class="sample-info">
+                                <div class="sample-title">Sample ${index + 1}</div>
+                                <div class="sample-description">
+                                    ${this.getSampleDescription(audio, index)}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    getSampleDescription(audio, index) {
+        const descriptions = [
+            'Commercial advertisement voice-over',
+            'E-learning narration sample',
+            'Character voice for animation',
+            'Podcast introduction',
+            'Corporate presentation narration'
+        ];
+        
+        return descriptions[index] || 'Professional voice sample';
+    }
+    
+    getCategoryDisplayName(category) {
+        const categoryNames = {
+            'all': 'All Projects',
+            'ai-development': 'AI Development',
+            'voice-acting': 'Voice Acting',
+            'web-development': 'Web Development',
+            'voice-technology': 'Voice Technology',
+            'seo-strategy': 'SEO Strategy'
+        };
+        
+        return categoryNames[category] || category;
+    }
+    
+    switchMainImage(thumbnail, imageSrc) {
+        const gallery = thumbnail.closest('.project-image-gallery');
+        const mainImage = gallery.querySelector('.main-image img');
+        const thumbnails = gallery.querySelectorAll('.thumbnail');
+        
+        // Update main image
+        mainImage.src = `images/portfolio/${imageSrc}`;
+        
+        // Update active thumbnail
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        thumbnail.classList.add('active');
+    }
+    
+    openImageLightbox(image) {
+        // Create lightbox overlay
+        const lightbox = document.createElement('div');
+        lightbox.className = 'image-lightbox';
+        lightbox.innerHTML = `
+            <div class="lightbox-backdrop" onclick="this.parentElement.remove()"></div>
+            <div class="lightbox-content">
+                <img src="${image.src}" alt="${image.alt}" loading="lazy">
+                <button class="lightbox-close" onclick="this.closest('.image-lightbox').remove()" aria-label="Close lightbox">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(lightbox);
+        
+        // Fade in
+        setTimeout(() => {
+            lightbox.classList.add('show');
+        }, 10);
+        
+        // Keyboard support
+        lightbox.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                lightbox.remove();
+            }
+        });
+        
+        // Focus the close button
+        lightbox.querySelector('.lightbox-close').focus();
+    }
+    
+    handleArrowKeyNavigation(e) {
+        const currentItem = document.activeElement;
+        const items = Array.from(this.portfolioItems).filter(item => 
+            item.style.display !== 'none'
+        );
+        const currentIndex = items.indexOf(currentItem);
+        let newIndex;
+        
+        switch (e.key) {
+            case 'ArrowLeft':
+                e.preventDefault();
+                newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                items[newIndex].focus();
+                break;
+                
+            case 'ArrowRight':
+                e.preventDefault();
+                newIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                items[newIndex].focus();
+                break;
+                
+            case 'ArrowUp':
+                e.preventDefault();
+                const itemsPerRow = this.getItemsPerRow();
+                newIndex = currentIndex - itemsPerRow;
+                if (newIndex >= 0) {
+                    items[newIndex].focus();
                 }
-            });
-
-            // Collect audio files
-            const audioElements = Utils.qsa('audio[src], audio source[src]');
-            audioElements.forEach(audio => {
-                const src = audio.src || (audio.querySelector('source') && audio.querySelector('source').src);
-                if (src) {
-                    this.resources.push({
-                        type: 'audio',
-                        element: audio,
-                        src: src
-                    });
+                break;
+                
+            case 'ArrowDown':
+                e.preventDefault();
+                const itemsPerRowDown = this.getItemsPerRow();
+                newIndex = currentIndex + itemsPerRowDown;
+                if (newIndex < items.length) {
+                    items[newIndex].focus();
                 }
-            });
+                break;
+        }
+    }
+    
+    getItemsPerRow() {
+        // Calculate items per row based on current grid layout
+        const containerWidth = this.portfolioGrid.offsetWidth;
+        const itemWidth = this.portfolioItems[0]?.offsetWidth || 300;
+        return Math.floor(containerWidth / itemWidth);
+    }
+}
 
-            // Collect critical CSS/JS (if dynamically loaded)
-            const criticalResources = Utils.qsa('[data-critical-resource]');
-            criticalResources.forEach(resource => {
-                this.resources.push({
-                    type: resource.tagName.toLowerCase(),
-                    element: resource,
-                    src: resource.src || resource.href
+// =============================================================================
+// CONTACT FORM FUNCTIONALITY
+// =============================================================================
+
+class ContactFormManager {
+    constructor() {
+        this.contactForm = document.getElementById('contactForm');
+        this.newsletterForm = document.getElementById('newsletterForm');
+        this.formData = new Map();
+        this.validators = new Map();
+        this.isSubmitting = false;
+        
+        // Form validation rules
+        this.validationRules = {
+            name: {
+                required: true,
+                minLength: 2,
+                pattern: /^[a-zA-Z\s\-']{2,50}$/,
+                message: 'Please enter a valid name (2-50 characters, letters only)'
+            },
+            email: {
+                required: true,
+                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'Please enter a valid email address'
+            },
+            phone: {
+                required: false,
+                pattern: /^[\+]?[1-9][\d]{0,15}$/,
+                message: 'Please enter a valid phone number'
+            },
+            subject: {
+                required: true,
+                minLength: 5,
+                maxLength: 100,
+                message: 'Subject must be between 5-100 characters'
+            },
+            message: {
+                required: true,
+                minLength: 10,
+                maxLength: 1000,
+                message: 'Message must be between 10-1000 characters'
+            },
+            budget: {
+                required: false
+            },
+            timeline: {
+                required: false
+            },
+            projectType: {
+                required: true,
+                message: 'Please select a project type'
+            }
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        if (this.contactForm) {
+            this.setupContactForm();
+        }
+        
+        if (this.newsletterForm) {
+            this.setupNewsletterForm();
+        }
+        
+        this.setupFormValidation();
+        this.setupRealTimeValidation();
+        this.setupFormPersistence();
+    }
+    
+    setupContactForm() {
+        this.contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleContactFormSubmit();
+        });
+        
+        // Reset form button
+        const resetBtn = this.contactForm.querySelector('[type="button"]');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetContactForm();
+            });
+        }
+        
+        // File upload handling
+        const fileInput = this.contactForm.querySelector('input[type="file"]');
+        if (fileInput) {
+            this.setupFileUpload(fileInput);
+        }
+        
+        // Character counter for textarea
+        const messageField = this.contactForm.querySelector('[name="message"]');
+        if (messageField) {
+            this.setupCharacterCounter(messageField);
+        }
+        
+        // Auto-resize textarea
+        const textareas = this.contactForm.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+            this.setupAutoResize(textarea);
+        });
+    }
+    
+    setupNewsletterForm() {
+        this.newsletterForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleNewsletterSubmit();
+        });
+    }
+    
+    setupFormValidation() {
+        Object.keys(this.validationRules).forEach(fieldName => {
+            this.validators.set(fieldName, (value, rules) => {
+                return this.validateField(value, rules);
+            });
+        });
+    }
+    
+    setupRealTimeValidation() {
+        if (!this.contactForm) return;
+        
+        const formFields = this.contactForm.querySelectorAll('input, textarea, select');
+        
+        formFields.forEach(field => {
+            // Validate on blur
+            field.addEventListener('blur', () => {
+                this.validateSingleField(field);
+            });
+            
+            // Clear errors on input
+            field.addEventListener('input', () => {
+                this.clearFieldError(field);
+                
+                // Save to local storage for persistence
+                this.saveFieldData(field);
+            });
+            
+            // Validate on change for select fields
+            if (field.tagName === 'SELECT') {
+                field.addEventListener('change', () => {
+                    this.validateSingleField(field);
                 });
+            }
+        });
+    }
+    
+    setupFormPersistence() {
+        // Load saved form data
+        this.loadFormData();
+        
+        // Auto-save form data
+        setInterval(() => {
+            this.saveFormData();
+        }, 30000); // Save every 30 seconds
+        
+        // Save on page unload
+        window.addEventListener('beforeunload', () => {
+            this.saveFormData();
+        });
+    }
+    
+    setupFileUpload(fileInput) {
+        const dropZone = fileInput.closest('.file-upload-area');
+        if (!dropZone) return;
+        
+        // Drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, this.preventDefaults);
+        });
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('drag-over');
             });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-over');
+            });
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            this.handleFileSelection(files, fileInput);
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            this.handleFileSelection(e.target.files, fileInput);
+        });
+    }
+    
+    setupCharacterCounter(textarea) {
+        const maxLength = textarea.getAttribute('maxlength') || 1000;
+        const counter = document.createElement('div');
+        counter.className = 'character-counter';
+        textarea.parentNode.appendChild(counter);
+        
+        const updateCounter = () => {
+            const remaining = maxLength - textarea.value.length;
+            counter.textContent = `${remaining} characters remaining`;
+            counter.classList.toggle('warning', remaining < 50);
+            counter.classList.toggle('danger', remaining < 10);
+        };
+        
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial count
+    }
+    
+    setupAutoResize(textarea) {
+        const adjustHeight = () => {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        };
+        
+        textarea.addEventListener('input', adjustHeight);
+        textarea.addEventListener('focus', adjustHeight);
+        
+        // Initial adjustment
+        setTimeout(adjustHeight, 100);
+    }
+    
+    validateField(value, rules) {
+        const errors = [];
+        
+        // Required validation
+        if (rules.required && (!value || value.trim() === '')) {
+            errors.push('This field is required');
         }
-
-        startLoading() {
-            if (this.resources.length === 0) {
-                this.complete();
+        
+        // Skip other validations if field is empty and not required
+        if (!value && !rules.required) {
+            return { isValid: true, errors: [] };
+        }
+        
+        // Length validations
+        if (rules.minLength && value.length < rules.minLength) {
+            errors.push(`Must be at least ${rules.minLength} characters`);
+        }
+        
+        if (rules.maxLength && value.length > rules.maxLength) {
+            errors.push(`Must be no more than ${rules.maxLength} characters`);
+        }
+        
+        // Pattern validation
+        if (rules.pattern && !rules.pattern.test(value)) {
+            errors.push(rules.message || 'Invalid format');
+        }
+        
+        return {
+            isValid: errors.length === 0,
+            errors
+        };
+    }
+    
+    validateSingleField(field) {
+        const fieldName = field.name;
+        const value = field.value;
+        const rules = this.validationRules[fieldName];
+        
+        if (!rules) return true;
+        
+        const validation = this.validateField(value, rules);
+        
+        if (validation.isValid) {
+            this.showFieldSuccess(field);
+            return true;
+        } else {
+            this.showFieldError(field, validation.errors[0]);
+            return false;
+        }
+    }
+    
+    validateForm() {
+        let isFormValid = true;
+        const formFields = this.contactForm.querySelectorAll('[name]');
+        
+        formFields.forEach(field => {
+            const fieldValid = this.validateSingleField(field);
+            if (!fieldValid) {
+                isFormValid = false;
+            }
+        });
+        
+        return isFormValid;
+    }
+    
+    showFieldError(field, message) {
+        this.clearFieldError(field);
+        
+        field.classList.add('error');
+        
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.textContent = message;
+        errorElement.setAttribute('role', 'alert');
+        
+        const fieldGroup = field.closest('.form-group') || field.parentNode;
+        fieldGroup.appendChild(errorElement);
+        
+        // Announce error to screen readers
+        PegeArts.accessibility.announce(`Error: ${message}`);
+    }
+    
+    showFieldSuccess(field) {
+        this.clearFieldError(field);
+        field.classList.add('success');
+        field.classList.remove('error');
+    }
+    
+    clearFieldError(field) {
+        field.classList.remove('error', 'success');
+        
+        const fieldGroup = field.closest('.form-group') || field.parentNode;
+        const existingError = fieldGroup.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+    }
+    
+    async handleContactFormSubmit() {
+        if (this.isSubmitting) return;
+        
+        // Validate form
+        if (!this.validateForm()) {
+            PegeArts.notifications.show(
+                'Please correct the errors in the form before submitting.',
+                'error',
+                5000
+            );
+            
+            // Focus first error field
+            const firstError = this.contactForm.querySelector('.error');
+            if (firstError) {
+                firstError.focus();
+            }
+            return;
+        }
+        
+        this.isSubmitting = true;
+        this.showSubmitLoading();
+        
+        try {
+            // Collect form data
+            const formData = new FormData(this.contactForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Add metadata
+            data.timestamp = new Date().toISOString();
+            data.userAgent = navigator.userAgent;
+            data.referrer = document.referrer;
+            
+            // Submit form (replace with your actual endpoint)
+            const response = await this.submitContactForm(data);
+            
+            if (response.success) {
+                this.showFormSuccess();
+                this.clearFormData(); // Clear saved data
+                
+                // Track successful submission
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'contact_form_submit', {
+                        event_category: 'Contact',
+                        event_label: data.projectType,
+                        value: 1
+                    });
+                }
+            } else {
+                throw new Error(response.message || 'Submission failed');
+            }
+            
+        } catch (error) {
+            console.error('Form submission error:', error);
+            this.showSubmitError(error.message);
+        } finally {
+            this.isSubmitting = false;
+            this.hideSubmitLoading();
+        }
+    }
+    
+    async submitContactForm(data) {
+        // Simulate API call (replace with actual endpoint)
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                // Simulate success/failure
+                const success = Math.random() > 0.1; // 90% success rate
+                resolve({
+                    success,
+                    message: success ? 'Message sent successfully!' : 'Server error occurred'
+                });
+            }, 2000);
+        });
+    }
+    
+    async handleNewsletterSubmit() {
+        const emailField = this.newsletterForm.querySelector('[name="email"], [type="email"]');
+        const email = emailField.value.trim();
+        
+        if (!PegeArts.utils.validateEmail(email)) {
+            this.showFieldError(emailField, 'Please enter a valid email address');
+            return;
+        }
+        
+        try {
+            // Submit newsletter subscription
+            const response = await this.submitNewsletter({ email });
+            
+            if (response.success) {
+                PegeArts.notifications.show(
+                    'Successfully subscribed to newsletter!',
+                    'success',
+                    4000
+                );
+                this.newsletterForm.reset();
+                
+                // Track subscription
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'newsletter_subscribe', {
+                        event_category: 'Newsletter',
+                        value: 1
+                    });
+                }
+            } else {
+                throw new Error(response.message || 'Subscription failed');
+            }
+            
+        } catch (error) {
+            PegeArts.notifications.show(
+                'Failed to subscribe. Please try again.',
+                'error',
+                4000
+            );
+        }
+    }
+    
+    async submitNewsletter(data) {
+        // Simulate API call
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({ success: true });
+            }, 1000);
+        });
+    }
+    
+    showSubmitLoading() {
+        const submitBtn = this.contactForm.querySelector('[type="submit"]');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+        
+        if (btnText) btnText.style.display = 'none';
+        if (btnLoading) btnLoading.style.display = 'flex';
+    }
+    
+    hideSubmitLoading() {
+        const submitBtn = this.contactForm.querySelector('[type="submit"]');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+        
+        if (btnText) btnText.style.display = 'flex';
+        if (btnLoading) btnLoading.style.display = 'none';
+    }
+    
+    showFormSuccess() {
+        const form = this.contactForm;
+        const successMessage = document.getElementById('formSuccessMessage');
+        
+        if (form && successMessage) {
+            form.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            // Animate success message
+            setTimeout(() => {
+                successMessage.classList.add('show');
+            }, 100);
+            
+            // Focus the success message for accessibility
+            successMessage.focus();
+        }
+        
+        PegeArts.notifications.show(
+            'Message sent successfully! I\'ll get back to you soon.',
+            'success',
+            5000
+        );
+    }
+    
+    showSubmitError(message) {
+        PegeArts.notifications.show(
+            `Failed to send message: ${message}. Please try again.`,
+            'error',
+            6000,
+            [{
+                text: 'Retry',
+                action: 'retry',
+                handler: 'PegeArts.contact.handleContactFormSubmit()'
+            }]
+        );
+    }
+    
+    resetContactForm() {
+        if (!this.contactForm) return;
+        
+        // Clear form fields
+        this.contactForm.reset();
+        
+        // Clear validation states
+        const formFields = this.contactForm.querySelectorAll('input, textarea, select');
+        formFields.forEach(field => {
+            this.clearFieldError(field);
+        });
+        
+        // Clear saved data
+        this.clearFormData();
+        
+        // Update character counters
+        const textareas = this.contactForm.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+            const event = new Event('input');
+            textarea.dispatchEvent(event);
+        });
+        
+        PegeArts.notifications.show(
+            'Form has been reset',
+            'info',
+            2000
+        );
+    }
+    
+    handleFileSelection(files, fileInput) {
+        if (!files.length) return;
+        
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const validFiles = [];
+        
+        Array.from(files).forEach(file => {
+            if (!allowedTypes.includes(file.type)) {
+                PegeArts.notifications.show(
+                    `${file.name}: File type not supported`,
+                    'warning',
+                    4000
+                );
                 return;
             }
-
-            this.updateProgress(0);
-
-            this.resources.forEach((resource, index) => {
-                this.loadResource(resource).then(() => {
-                    this.loadedCount++;
-                    const progress = (this.loadedCount / this.resources.length) * 100;
-                    this.updateProgress(progress);
-
-                    if (this.loadedCount === this.resources.length) {
-                        setTimeout(() => this.complete(), 500);
-                    }
-                }).catch(error => {
-                    console.warn(`Failed to load resource: ${resource.src}`, error);
-                    this.loadedCount++;
-                    const progress = (this.loadedCount / this.resources.length) * 100;
-                    this.updateProgress(progress);
-
-                    if (this.loadedCount === this.resources.length) {
-                        setTimeout(() => this.complete(), 500);
-                    }
-                });
-            });
-        }
-
-        loadResource(resource) {
-            return new Promise((resolve, reject) => {
-                switch (resource.type) {
-                    case 'image':
-                    case 'background':
-                        const img = new Image();
-                        img.onload = resolve;
-                        img.onerror = reject;
-                        img.src = resource.src;
-                        break;
-
-                    case 'audio':
-                        const audio = new Audio();
-                        audio.addEventListener('canplaythrough', resolve, { once: true });
-                        audio.addEventListener('error', reject, { once: true });
-                        audio.src = resource.src;
-                        audio.load();
-                        break;
-
-                    default:
-                        // For other resources, just resolve after a short delay
-                        setTimeout(resolve, 100);
-                }
-            });
-        }
-
-        updateProgress(percentage) {
-            if (this.progressBar) {
-                this.progressBar.style.width = `${percentage}%`;
+            
+            if (file.size > maxSize) {
+                PegeArts.notifications.show(
+                    `${file.name}: File too large (max 5MB)`,
+                    'warning',
+                    4000
+                );
+                return;
             }
-            if (this.percentageEl) {
-                this.percentageEl.textContent = `${Math.round(percentage)}%`;
-            }
-        }
-
-        complete() {
-            if (this.isComplete) return;
-            this.isComplete = true;
-
-            this.updateProgress(100);
-
-            setTimeout(() => {
-                if (this.preloader) {
-                    this.preloader.classList.add('hidden');
-                    
-                    setTimeout(() => {
-                        this.preloader.style.display = 'none';
-                        document.body.classList.add('loaded');
-                        
-                        // Trigger page loaded event
-                        document.dispatchEvent(new CustomEvent('pageLoaded'));
-                    }, 500);
-                }
-            }, 300);
+            
+            validFiles.push(file);
+        });
+        
+        if (validFiles.length > 0) {
+            this.displaySelectedFiles(validFiles, fileInput);
         }
     }
-
-    // Navigation Management
-    class NavigationManager {
-        constructor() {
-            this.navbar = Utils.qs('.navbar');
-            this.navToggler = Utils.qs('.navbar-toggler');
-            this.navCollapse = Utils.qs('.navbar-collapse');
-            this.navLinks = Utils.qsa('.nav-link');
-            this.sections = Utils.qsa('section[id]');
-            this.isMenuOpen = false;
-            this.lastScrollY = 0;
-            this.scrollThreshold = 100;
-
-            this.handleScroll = Utils.throttle(this.onScroll.bind(this), CONFIG.performance.throttleDelay);
-            this.handleResize = Utils.debounce(this.onResize.bind(this), CONFIG.performance.debounceDelay);
+    
+    displaySelectedFiles(files, fileInput) {
+        const container = fileInput.closest('.file-upload-area');
+        let fileList = container.querySelector('.selected-files');
+        
+        if (!fileList) {
+            fileList = document.createElement('div');
+            fileList.className = 'selected-files';
+            container.appendChild(fileList);
         }
-
-        init() {
-            this.setupEventListeners();
-            this.updateActiveSection();
-            this.onScroll(); // Initial call
-        }
-
-        setupEventListeners() {
-            // Mobile menu toggle
-            if (this.navToggler) {
-                this.navToggler.addEventListener('click', this.toggleMobileMenu.bind(this));
-            }
-
-            // Navigation links
-            this.navLinks.forEach(link => {
-                link.addEventListener('click', this.handleNavClick.bind(this));
-            });
-
-            // Scroll events
-            window.addEventListener('scroll', this.handleScroll, { passive: true });
-            window.addEventListener('resize', this.handleResize);
-
-            // Close mobile menu on outside click
-            document.addEventListener('click', (e) => {
-                if (this.isMenuOpen && !this.navbar.contains(e.target)) {
-                    this.closeMobileMenu();
-                }
-            });
-
-            // Close mobile menu on escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && this.isMenuOpen) {
-                    this.closeMobileMenu();
-                }
-            });
-        }
-
-        toggleMobileMenu() {
-            this.isMenuOpen = !this.isMenuOpen;
-            
-            if (this.navToggler) {
-                this.navToggler.setAttribute('aria-expanded', this.isMenuOpen);
-            }
-            
-            if (this.navCollapse) {
-                this.navCollapse.classList.toggle('show', this.isMenuOpen);
-            }
-
-            // Prevent body scroll when menu is open
-            document.body.style.overflow = this.isMenuOpen ? 'hidden' : '';
-        }
-
-        closeMobileMenu() {
-            this.isMenuOpen = false;
-            
-            if (this.navToggler) {
-                this.navToggler.setAttribute('aria-expanded', false);
-            }
-            
-            if (this.navCollapse) {
-                this.navCollapse.classList.remove('show');
-            }
-
-            document.body.style.overflow = '';
-        }
-
-        handleNavClick(e) {
-            const link = e.currentTarget;
-            const href = link.getAttribute('href');
-
-            // Handle hash links
-            if (href && href.startsWith('#')) {
-                e.preventDefault();
-                const targetId = href.substring(1);
-                const targetElement = Utils.$(targetId);
-
-                if (targetElement) {
-                    const headerHeight = this.navbar ? this.navbar.offsetHeight : 0;
-                    Utils.scrollTo(targetElement, headerHeight + 20);
-                }
-
-                // Close mobile menu
-                if (this.isMenuOpen) {
-                    this.closeMobileMenu();
-                }
-            }
-        }
-
-        onScroll() {
-            const currentScrollY = window.pageYOffset;
-
-            // Update navbar appearance
-            if (this.navbar) {
-                if (currentScrollY > this.scrollThreshold) {
-                    this.navbar.classList.add('scrolled');
-                } else {
-                    this.navbar.classList.remove('scrolled');
-                }
-            }
-
-            // Update active section
-            this.updateActiveSection();
-
-            // Store scroll position
-            AppState.scrollPosition = currentScrollY;
-            this.lastScrollY = currentScrollY;
-        }
-
-        onResize() {
-            // Close mobile menu on large screens
-            if (window.innerWidth >= 992 && this.isMenuOpen) {
-                this.closeMobileMenu();
-            }
-
-            // Update viewport size
-            AppState.viewportSize = {
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
-        }
-
-        updateActiveSection() {
-            const headerHeight = this.navbar ? this.navbar.offsetHeight : 0;
-            const scrollPosition = window.pageYOffset + headerHeight + 100;
-
-            let activeSection = '';
-
-            this.sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.offsetHeight;
-
-                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                    activeSection = section.id;
-                }
-            });
-
-            // Update active nav links
-            this.navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && href.startsWith('#')) {
-                    const targetId = href.substring(1);
-                    link.classList.toggle('active', targetId === activeSection);
-                }
-            });
-
-            // Update app state
-            if (activeSection !== AppState.currentSection) {
-                AppState.setState('currentSection', activeSection);
-            }
-        }
+        
+        fileList.innerHTML = files.map(file => `
+            <div class="selected-file">
+                <i class="fas ${this.getFileIcon(file.type)}"></i>
+                <span class="file-name">${file.name}</span>
+                <span class="file-size">${this.formatFileSize(file.size)}</span>
+                <button type="button" 
+                        class="remove-file" 
+                        onclick="this.parentElement.remove()"
+                        aria-label="Remove ${file.name}">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
     }
-
-    // Audio Player Management
-    class AudioPlayerManager {
-        constructor() {
-            this.players = new Map();
-            this.currentlyPlaying = null;
-            this.globalVolume = AppState.userPreferences.volume;
-        }
-
-        init() {
-            this.initializePlayers();
-            this.setupGlobalEventListeners();
-        }
-
-        initializePlayers() {
-            const audioContainers = Utils.qsa('.audio-player');
-            
-            audioContainers.forEach(container => {
-                const audioElement = container.querySelector('audio');
-                if (audioElement) {
-                    const player = new AudioPlayer(container, audioElement, this);
-                    this.players.set(container.id || this.generatePlayerId(), player);
-                }
-            });
-        }
-
-        generatePlayerId() {
-            return `audio-player-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        }
-
-        setupGlobalEventListeners() {
-            // Global keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-                switch (e.key) {
-                    case ' ':
-                        e.preventDefault();
-                        if (this.currentlyPlaying) {
-                            this.currentlyPlaying.togglePlayPause();
-                        }
-                        break;
-                    case 'ArrowLeft':
-                        if (this.currentlyPlaying) {
-                            e.preventDefault();
-                            this.currentlyPlaying.seek(-10);
-                        }
-                        break;
-                    case 'ArrowRight':
-                        if (this.currentlyPlaying) {
-                            e.preventDefault();
-                            this.currentlyPlaying.seek(10);
-                        }
-                        break;
-                }
-            });
-
-            // Handle visibility change
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && this.currentlyPlaying) {
-                    // Optionally pause when tab becomes hidden
-                    if (!AppState.userPreferences.playInBackground) {
-                        this.currentlyPlaying.pause();
-                    }
-                }
-            });
-        }
-
-        setCurrentlyPlaying(player) {
-            // Pause other players
-            if (this.currentlyPlaying && this.currentlyPlaying !== player) {
-                this.currentlyPlaying.pause();
-            }
-            this.currentlyPlaying = player;
-        }
-
-        setGlobalVolume(volume) {
-            this.globalVolume = Math.max(0, Math.min(1, volume));
-            AppState.userPreferences.volume = this.globalVolume;
-            Utils.storage.set('audioVolume', this.globalVolume);
-
-            // Update all players
-            this.players.forEach(player => {
-                player.updateVolume();
-            });
-        }
+    
+    getFileIcon(mimeType) {
+        if (mimeType.startsWith('image/')) return 'fa-image';
+        if (mimeType === 'application/pdf') return 'fa-file-pdf';
+        if (mimeType.startsWith('text/')) return 'fa-file-alt';
+        return 'fa-file';
     }
-
-    // Individual Audio Player
-    class AudioPlayer {
-        constructor(container, audioElement, manager) {
-            this.container = container;
-            this.audio = audioElement;
-            this.manager = manager;
-            this.isPlaying = false;
-            this.duration = 0;
-            this.currentTime = 0;
-            this.volume = 1;
-            this.playbackRate = 1;
-            this.isLoading = false;
-            
-            this.initializeElements();
-            this.setupEventListeners();
-            this.initializeVisualizer();
-        }
-
-        initializeElements() {
-            // Control elements
-            this.playBtn = this.container.querySelector('.large-play-btn');
-            this.progressBar = this.container.querySelector('.progress-bar');
-            this.progressFill = this.container.querySelector('.progress-fill');
-            this.progressHandle = this.container.querySelector('.progress-handle');
-            this.currentTimeEl = this.container.querySelector('.current-time');
-            this.durationEl = this.container.querySelector('.duration');
-            this.volumeSlider = this.container.querySelector('.volume-slider');
-            this.volumeFill = this.container.querySelector('.volume-fill');
-            this.volumePercentage = this.container.querySelector('.volume-percentage');
-            this.speedControl = this.container.querySelector('.speed-control');
-            this.downloadBtn = this.container.querySelector('.download-btn');
-            this.waveformContainer = this.container.querySelector('.waveform-container');
-            this.waveformCanvas = this.container.querySelector('.waveform-canvas');
-            this.visualizer = this.container.querySelector('.audio-visualizer');
-
-            // Initialize waveform canvas if present
-            if (this.waveformCanvas) {
-                this.waveformCtx = this.waveformCanvas.getContext('2d');
-                this.resizeCanvas();
-            }
-        }
-
-        setupEventListeners() {
-            // Audio element events
-            this.audio.addEventListener('loadedmetadata', () => {
-                this.duration = this.audio.duration;
-                this.updateDurationDisplay();
-                this.generateWaveform();
-            });
-
-            this.audio.addEventListener('timeupdate', () => {
-                this.currentTime = this.audio.currentTime;
-                this.updateProgress();
-                this.updateTimeDisplay();
-            });
-
-            this.audio.addEventListener('play', () => {
-                this.isPlaying = true;
-                this.updatePlayButton();
-                this.manager.setCurrentlyPlaying(this);
-                this.startVisualizer();
-            });
-
-            this.audio.addEventListener('pause', () => {
-                this.isPlaying = false;
-                this.updatePlayButton();
-                this.stopVisualizer();
-            });
-
-            this.audio.addEventListener('ended', () => {
-                this.isPlaying = false;
-                this.updatePlayButton();
-                this.stopVisualizer();
-                this.currentTime = 0;
-                this.updateProgress();
-            });
-
-            this.audio.addEventListener('loadstart', () => {
-                this.isLoading = true;
-                this.updateLoadingState();
-            });
-
-            this.audio.addEventListener('canplay', () => {
-                this.isLoading = false;
-                this.updateLoadingState();
-            });
-
-            this.audio.addEventListener('error', (e) => {
-                console.error('Audio loading error:', e);
-                this.handleError();
-            });
-
-            // Control events
-            if (this.playBtn) {
-                this.playBtn.addEventListener('click', () => this.togglePlayPause());
-            }
-
-            if (this.progressBar) {
-                this.progressBar.addEventListener('click', (e) => this.handleProgressClick(e));
-                this.progressBar.addEventListener('mousedown', (e) => this.startProgressDrag(e));
-            }
-
-            if (this.volumeSlider) {
-                this.volumeSlider.addEventListener('input', (e) => {
-                    this.setVolume(e.target.value / 100);
-                });
-            }
-
-            if (this.speedControl) {
-                this.speedControl.addEventListener('click', () => this.cyclePlaybackRate());
-            }
-
-            if (this.downloadBtn) {
-                this.downloadBtn.addEventListener('click', () => this.downloadAudio());
-            }
-
-            // Window resize for canvas
-            window.addEventListener('resize', Utils.debounce(() => {
-                if (this.waveformCanvas) {
-                    this.resizeCanvas();
-                    this.generateWaveform();
-                }
-            }, 300));
-        }
-
-        togglePlayPause() {
-            if (this.isPlaying) {
-                this.pause();
-            } else {
-                this.play();
-            }
-        }
-
-        play() {
-            if (this.audio.readyState >= 2) {
-                const playPromise = this.audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.error('Play failed:', error);
-                        this.handleError();
-                    });
-                }
-            }
-        }
-
-        pause() {
-            this.audio.pause();
-        }
-
-        seek(seconds) {
-            const newTime = Math.max(0, Math.min(this.duration, this.currentTime + seconds));
-            this.audio.currentTime = newTime;
-        }
-
-        setVolume(volume) {
-            this.volume = Math.max(0, Math.min(1, volume));
-            this.updateVolume();
-            this.updateVolumeDisplay();
-        }
-
-        updateVolume() {
-            const finalVolume = this.volume * this.manager.globalVolume;
-            this.audio.volume = finalVolume;
-        }
-
-        cyclePlaybackRate() {
-            const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
-            const currentIndex = rates.indexOf(this.playbackRate);
-            const nextIndex = (currentIndex + 1) % rates.length;
-            this.playbackRate = rates[nextIndex];
-            this.audio.playbackRate = this.playbackRate;
-            
-            if (this.speedControl) {
-                this.speedControl.textContent = `${this.playbackRate}x`;
-            }
-        }
-
-        handleProgressClick(e) {
-            if (!this.duration) return;
-            
-            const rect = this.progressBar.getBoundingClientRect();
-            const percentage = (e.clientX - rect.left) / rect.width;
-            const newTime = percentage * this.duration;
-            this.audio.currentTime = newTime;
-        }
-
-        startProgressDrag(e) {
-            e.preventDefault();
-            const handleDrag = (e) => this.handleProgressDrag(e);
-            const stopDrag = () => {
-                document.removeEventListener('mousemove', handleDrag);
-                document.removeEventListener('mouseup', stopDrag);
-            };
-
-            document.addEventListener('mousemove', handleDrag);
-            document.addEventListener('mouseup', stopDrag);
-        }
-
-        handleProgressDrag(e) {
-            if (!this.duration) return;
-            
-            const rect = this.progressBar.getBoundingClientRect();
-            const percentage = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-            const newTime = percentage * this.duration;
-            this.audio.currentTime = newTime;
-        }
-
-        updateProgress() {
-            if (!this.duration) return;
-            
-            const percentage = (this.currentTime / this.duration) * 100;
-            
-            if (this.progressFill) {
-                this.progressFill.style.width = `${percentage}%`;
-            }
-            
-            if (this.progressHandle) {
-                this.progressHandle.style.left = `${percentage}%`;
-            }
-
-            // Update waveform progress
-            this.updateWaveformProgress(percentage);
-        }
-
-        updateTimeDisplay() {
-            if (this.currentTimeEl) {
-                this.currentTimeEl.textContent = Utils.formatTime(this.currentTime);
-            }
-        }
-
-        updateDurationDisplay() {
-            if (this.durationEl) {
-                this.durationEl.textContent = Utils.formatTime(this.duration);
-            }
-        }
-
-        updatePlayButton() {
-            if (!this.playBtn) return;
-            
-            const icon = this.playBtn.querySelector('i');
-            if (icon) {
-                if (this.isPlaying) {
-                    icon.className = 'fas fa-pause';
-                    this.playBtn.setAttribute('aria-label', 'Pause');
-                } else {
-                    icon.className = 'fas fa-play';
-                    this.playBtn.setAttribute('aria-label', 'Play');
-                }
-            }
-        }
-
-        updateVolumeDisplay() {
-            const percentage = Math.round(this.volume * 100);
-            
-            if (this.volumeFill) {
-                this.volumeFill.style.width = `${percentage}%`;
-            }
-            
-            if (this.volumePercentage) {
-                this.volumePercentage.textContent = `${percentage}%`;
-            }
-            
-            if (this.volumeSlider) {
-                this.volumeSlider.value = percentage;
-            }
-        }
-
-        updateLoadingState() {
-            this.container.classList.toggle('loading', this.isLoading);
-            
-            if (this.playBtn) {
-                this.playBtn.disabled = this.isLoading;
-            }
-        }
-
-        handleError() {
-            this.container.classList.add('error');
-            NotificationManager.show('Audio playback error', 'error');
-        }
-
-        downloadAudio() {
-            if (!this.audio.src) return;
-            
-            const a = document.createElement('a');
-            a.href = this.audio.src;
-            a.download = this.audio.getAttribute('data-title') || 'audio';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        // Waveform Generation
-        resizeCanvas() {
-            if (!this.waveformCanvas) return;
-            
-            const container = this.waveformCanvas.parentElement;
-            const rect = container.getBoundingClientRect();
-            
-            this.waveformCanvas.width = rect.width * window.devicePixelRatio;
-            this.waveformCanvas.height = rect.height * window.devicePixelRatio;
-            this.waveformCanvas.style.width = rect.width + 'px';
-            this.waveformCanvas.style.height = rect.height + 'px';
-            
-            this.waveformCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        }
-
-        async generateWaveform() {
-            if (!this.waveformCanvas || !this.audio.src) return;
-            
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const response = await fetch(this.audio.src);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-                
-                this.drawWaveform(audioBuffer);
-            } catch (error) {
-                console.warn('Waveform generation failed:', error);
-                this.drawPlaceholderWaveform();
-            }
-        }
-
-        drawWaveform(audioBuffer) {
-            const ctx = this.waveformCtx;
-            const canvas = this.waveformCanvas;
-            const width = canvas.width / window.devicePixelRatio;
-            const height = canvas.height / window.devicePixelRatio;
-            
-            ctx.clearRect(0, 0, width, height);
-            
-            const data = audioBuffer.getChannelData(0);
-            const step = Math.ceil(data.length / width);
-            const amp = height / 2;
-            
-            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
-            ctx.strokeStyle = 'rgba(139, 92, 246, 0.8)';
-            ctx.lineWidth = 1;
-            
-            ctx.beginPath();
-            ctx.moveTo(0, amp);
-            
-            for (let i = 0; i < width; i++) {
-                let min = 1.0;
-                let max = -1.0;
-                
-                for (let j = 0; j < step; j++) {
-                    const datum = data[(i * step) + j];
-                    if (datum < min) min = datum;
-                    if (datum > max) max = datum;
-                }
-                
-                const yMin = (1 + min) * amp;
-                const yMax = (1 + max) * amp;
-                
-                ctx.fillRect(i, yMin, 1, yMax - yMin);
-            }
-            
-            ctx.stroke();
-        }
-
-        drawPlaceholderWaveform() {
-            const ctx = this.waveformCtx;
-            const canvas = this.waveformCanvas;
-            const width = canvas.width / window.devicePixelRatio;
-            const height = canvas.height / window.devicePixelRatio;
-            
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
-            
-            // Generate random waveform pattern
-            for (let i = 0; i < width; i += 2) {
-                const barHeight = Math.random() * height * 0.8 + height * 0.1;
-                const y = (height - barHeight) / 2;
-                ctx.fillRect(i, y, 1, barHeight);
-            }
-        }
-
-        updateWaveformProgress(percentage) {
-            // This would update the waveform progress indicator
-            // Implementation depends on specific design requirements
-        }
-
-        // Audio Visualizer
-        initializeVisualizer() {
-            if (!this.visualizer) return;
-            
-            try {
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                this.analyser = this.audioContext.createAnalyser();
-                this.source = this.audioContext.createMediaElementSource(this.audio);
-                
-                this.source.connect(this.analyser);
-                this.analyser.connect(this.audioContext.destination);
-                
-                this.analyser.fftSize = 64;
-                this.bufferLength = this.analyser.frequencyBinCount;
-                this.dataArray = new Uint8Array(this.bufferLength);
-                
-                this.setupVisualizerBars();
-            } catch (error) {
-                console.warn('Audio visualizer initialization failed:', error);
-            }
-        }
-
-        setupVisualizerBars() {
-            if (!this.visualizer) return;
-            
-            // Clear existing bars
-            this.visualizer.innerHTML = '';
-            
-            // Create frequency bars
-            for (let i = 0; i < 12; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'freq-bar';
-                bar.style.setProperty('--delay', `${i * 0.1}s`);
-                this.visualizer.appendChild(bar);
-            }
-            
-            this.visualizerBars = this.visualizer.querySelectorAll('.freq-bar');
-        }
-
-        startVisualizer() {
-            if (!this.analyser || !this.visualizerBars) return;
-            
-            this.visualizer.classList.add('playing');
-            this.animateVisualizer();
-        }
-
-        stopVisualizer() {
-            if (this.visualizer) {
-                this.visualizer.classList.remove('playing');
-            }
-            
-            if (this.visualizerAnimationId) {
-                cancelAnimationFrame(this.visualizerAnimationId);
-            }
-        }
-
-        animateVisualizer() {
-            if (!this.isPlaying) return;
-            
-            this.analyser.getByteFrequencyData(this.dataArray);
-            
-            this.visualizerBars.forEach((bar, index) => {
-                const value = this.dataArray[index * 2] || 0;
-                const height = (value / 255) * 100;
-                bar.style.height = `${Math.max(10, height)}%`;
-            });
-            
-            this.visualizerAnimationId = requestAnimationFrame(() => this.animateVisualizer());
-        }
+    
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-
-    // Notification System
-    class NotificationManager {
-        constructor() {
-            this.container = null;
-            this.notifications = [];
-            this.maxNotifications = 5;
-            this.defaultDuration = 5000;
-            
-            this.createContainer();
-        }
-
-        createContainer() {
-            this.container = document.createElement('div');
-            this.container.className = 'notification-container';
-            this.container.setAttribute('aria-live', 'polite');
-            this.container.setAttribute('aria-label', 'Notifications');
-            document.body.appendChild(this.container);
-        }
-
-        show(message, type = 'info', duration = this.defaultDuration, options = {}) {
-            const notification = this.createNotification(message, type, options);
-            
-            // Remove excess notifications
-            while (this.notifications.length >= this.maxNotifications) {
-                this.remove(this.notifications[0]);
-            }
-            
-            this.notifications.push(notification);
-            this.container.appendChild(notification.element);
-            
-            // Trigger animation
-            requestAnimationFrame(() => {
-                notification.element.style.transform = 'translateX(0)';
-                notification.element.style.opacity = '1';
-            });
-
-            // Auto remove
-            if (duration > 0) {
-                notification.timeout = setTimeout(() => {
-                    this.remove(notification);
-                }, duration);
-            }
-
-            return notification;
-        }
-
-        createNotification(message, type, options) {
-            const id = Utils.generateId('notification');
-            const element = document.createElement('div');
-            
-            element.className = `notification notification-${type}`;
-            element.setAttribute('role', type === 'error' ? 'alert' : 'status');
-            element.setAttribute('id', id);
-            
-            const iconMap = {
-                success: 'fas fa-check-circle',
-                error: 'fas fa-exclamation-circle',
-                warning: 'fas fa-exclamation-triangle',
-                info: 'fas fa-info-circle'
-            };
-
-            element.innerHTML = `
-                <div class="notification-content">
-                    <div class="notification-icon">
-                        <i class="${iconMap[type] || iconMap.info}"></i>
-                    </div>
-                    <div class="notification-message">${message}</div>
-                    <button class="notification-close" aria-label="Close notification">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-            const notification = {
-                id,
-                element,
-                type,
-                message,
-                timeout: null
-            };
-
-            // Close button event
-            const closeBtn = element.querySelector('.notification-close');
-            closeBtn.addEventListener('click', () => this.remove(notification));
-
-            // Click to dismiss (optional)
-            if (options.clickToDismiss !== false) {
-                element.addEventListener('click', () => this.remove(notification));
-            }
-
-            return notification;
-        }
-
-        remove(notification) {
-            if (!notification || !notification.element) return;
-
-            // Clear timeout
-            if (notification.timeout) {
-                clearTimeout(notification.timeout);
-            }
-
-            // Remove from array
-            const index = this.notifications.indexOf(notification);
-            if (index > -1) {
-                this.notifications.splice(index, 1);
-            }
-
-            // Animate out
-            notification.element.style.transform = 'translateX(100%)';
-            notification.element.style.opacity = '0';
-
-            setTimeout(() => {
-                if (notification.element.parentNode) {
-                    notification.element.parentNode.removeChild(notification.element);
-                }
-            }, 300);
-        }
-
-        clear() {
-            [...this.notifications].forEach(notification => {
-                this.remove(notification);
-            });
-        }
-
-        // Static methods for easy access
-        static success(message, duration, options) {
-            return app.notificationManager.show(message, 'success', duration, options);
-        }
-
-        static error(message, duration, options) {
-            return app.notificationManager.show(message, 'error', duration, options);
-        }
-
-        static warning(message, duration, options) {
-            return app.notificationManager.show(message, 'warning', duration, options);
-        }
-
-        static info(message, duration, options) {
-            return app.notificationManager.show(message, 'info', duration, options);
-        }
+    
+    preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
-
-    // Form Management
-    class FormManager {
-        constructor() {
-            this.forms = new Map();
-            this.validationRules = new Map();
-            this.autoSaveDelay = 2000;
-        }
-
-        init() {
-            this.initializeForms();
-        }
-
-        initializeForms() {
-            const formElements = Utils.qsa('form[data-form-handler]');
-            
-            formElements.forEach(form => {
-                const formId = form.id || Utils.generateId('form');
-                const handler = new FormHandler(form, this);
-                this.forms.set(formId, handler);
-            });
-        }
-
-        registerValidationRule(name, rule) {
-            this.validationRules.set(name, rule);
-        }
-
-        getValidationRule(name) {
-            return this.validationRules.get(name);
-        }
+    
+    saveFormData() {
+        if (!this.contactForm) return;
+        
+        const formData = new FormData(this.contactForm);
+        const data = Object.fromEntries(formData.entries());
+        
+        localStorage.setItem('pegearts_contact_form', JSON.stringify({
+            data,
+            timestamp: Date.now()
+        }));
     }
-
-    // Individual Form Handler
-    class FormHandler {
-        constructor(form, manager) {
-            this.form = form;
-            this.manager = manager;
-            this.fields = new Map();
-            this.isSubmitting = false;
-            this.autoSaveTimeout = null;
-            this.progressTracker = null;
-
-            this.initializeFields();
-            this.setupEventListeners();
-            this.setupAutoSave();
-            this.setupProgressTracker();
-        }
-
-        initializeFields() {
-            const fieldElements = this.form.querySelectorAll(
-                'input, textarea, select'
-            );
-
-            fieldElements.forEach(field => {
-                if (field.name) {
-                    const fieldHandler = new FieldHandler(field, this);
-                    this.fields.set(field.name, fieldHandler);
-                }
-            });
-        }
-
-        setupEventListeners() {
-            this.form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleSubmit();
-            });
-
-            // Real-time validation
-            this.form.addEventListener('input', Utils.debounce((e) => {
-                if (e.target.name && this.fields.has(e.target.name)) {
-                    this.validateField(e.target.name);
-                    this.updateProgress();
-                    this.scheduleAutoSave();
-                }
-            }, 300));
-
-            this.form.addEventListener('change', (e) => {
-                if (e.target.name && this.fields.has(e.target.name)) {
-                    this.validateField(e.target.name);
-                    this.updateProgress();
-                    this.scheduleAutoSave();
-                }
-            });
-        }
-
-        setupAutoSave() {
-            const autoSaveKey = `autosave_${this.form.id || 'form'}`;
+    
+    saveFieldData(field) {
+        const key = `pegearts_field_${field.name}`;
+        localStorage.setItem(key, JSON.stringify({
+            value: field.value,
+            timestamp: Date.now()
+        }));
+    }
+    
+    loadFormData() {
+        if (!this.contactForm) return;
+        
+        try {
+            const saved = localStorage.getItem('pegearts_contact_form');
+            if (!saved) return;
             
-            // Load saved data
-            const savedData = Utils.storage.get(autoSaveKey);
-            if (savedData) {
-                this.loadFormData(savedData);
-                this.showAutoSaveStatus('Data restored from auto-save', 'info');
-            }
-        }
-
-        setupProgressTracker() {
-            const progressEl = this.form.querySelector('.form-progress .progress-fill');
-            const progressText = this.form.querySelector('.progress-text');
+            const { data, timestamp } = JSON.parse(saved);
             
-            if (progressEl || progressText) {
-                this.progressTracker = { progressEl, progressText };
-                this.updateProgress();
+            // Don't load data older than 1 day
+            if (Date.now() - timestamp > 24 * 60 * 60 * 1000) {
+                this.clearFormData();
+                return;
             }
-        }
-
-        scheduleAutoSave() {
-            if (this.autoSaveTimeout) {
-                clearTimeout(this.autoSaveTimeout);
-            }
-
-            this.autoSaveTimeout = setTimeout(() => {
-                this.performAutoSave();
-            }, this.manager.autoSaveDelay);
-        }
-
-        performAutoSave() {
-            const formData = this.getFormData();
-            const autoSaveKey = `autosave_${this.form.id || 'form'}`;
             
-            if (Utils.storage.set(autoSaveKey, formData)) {
-                this.showAutoSaveStatus('Draft saved', 'success');
-            }
-        }
-
-        loadFormData(data) {
+            // Restore form values
             Object.entries(data).forEach(([name, value]) => {
-                const field = this.form.querySelector(`[name="${name}"]`);
-                if (field) {
+                const field = this.contactForm.querySelector(`[name="${name}"]`);
+                if (field && field.type !== 'file') {
                     if (field.type === 'checkbox' || field.type === 'radio') {
-                        field.checked = value;
+                        field.checked = value === 'on';
                     } else {
                         field.value = value;
                     }
                 }
             });
-        }
-
-        getFormData() {
-            const data = {};
-            this.fields.forEach((fieldHandler, name) => {
-                data[name] = fieldHandler.getValue();
-            });
-            return data;
-        }
-
-        async handleSubmit() {
-            if (this.isSubmitting) return;
-
-            // Validate all fields
-            const isValid = this.validateForm();
-            if (!isValid) {
-                this.showFormMessage('Please correct the errors above.', 'error');
-                return;
-            }
-
-            this.isSubmitting = true;
-            this.updateSubmitButton(true);
-
-            try {
-                const formData = this.getFormData();
-                const endpoint = this.form.getAttribute('action') || '/api/contact';
-                const method = this.form.getAttribute('method') || 'POST';
-
-                const response = await this.submitForm(endpoint, method, formData);
-                
-                if (response.success) {
-                    this.handleSubmitSuccess(response);
-                } else {
-                    this.handleSubmitError(response.message || 'Submission failed');
-                }
-            } catch (error) {
-                this.handleSubmitError(error.message);
-            } finally {
-                this.isSubmitting = false;
-                this.updateSubmitButton(false);
-            }
-        }
-
-        async submitForm(endpoint, method, data) {
-            const response = await fetch(endpoint, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            return await response.json();
-        }
-
-        handleSubmitSuccess(response) {
-            this.showFormMessage(
-                response.message || 'Thank you! Your message has been sent.',
-                'success'
+            
+            // Show restore notification
+            PegeArts.notifications.show(
+                'Previous form data has been restored',
+                'info',
+                3000
             );
             
-            // Clear form
-            this.form.reset();
-            this.fields.forEach(fieldHandler => fieldHandler.clearValidation());
-            
-            // Clear auto-save
-            const autoSaveKey = `autosave_${this.form.id || 'form'}`;
-            Utils.storage.remove(autoSaveKey);
-            
-            // Reset progress
-            this.updateProgress();
-            
-            // Show success notification
-            NotificationManager.success('Message sent successfully!');
+        } catch (error) {
+            console.error('Error loading form data:', error);
+            this.clearFormData();
         }
-
-        handleSubmitError(message) {
-            this.showFormMessage(
-                `Error: ${message}. Please try again.`,
-                'error'
-            );
-            
-            NotificationManager.error('Failed to send message');
-        }
-
-        validateForm() {
-            let isValid = true;
-            
-            this.fields.forEach((fieldHandler, name) => {
-                if (!fieldHandler.validate()) {
-                    isValid = false;
-                }
-            });
-
-            return isValid;
-        }
-
-        validateField(fieldName) {
-            const fieldHandler = this.fields.get(fieldName);
-            return fieldHandler ? fieldHandler.validate() : true;
-        }
-
-        updateProgress() {
-            if (!this.progressTracker) return;
-
-            const totalFields = this.fields.size;
-            let completedFields = 0;
-
-            this.fields.forEach((fieldHandler) => {
-                if (fieldHandler.isValid() && fieldHandler.getValue()) {
-                    completedFields++;
-                }
-            });
-
-            const percentage = totalFields > 0 ? (completedFields / totalFields) * 100 : 0;
-
-            if (this.progressTracker.progressEl) {
-                this.progressTracker.progressEl.style.width = `${percentage}%`;
-            }
-
-            if (this.progressTracker.progressText) {
-                this.progressTracker.progressText.textContent = 
-                    `${Math.round(percentage)}% Complete`;
-            }
-        }
-
-        updateSubmitButton(isLoading) {
-            const submitBtn = this.form.querySelector('[type="submit"]');
-            if (!submitBtn) return;
-
-            const btnText = submitBtn.querySelector('.btn-text');
-            const btnLoading = submitBtn.querySelector('.btn-loading');
-
-            if (isLoading) {
-                submitBtn.disabled = true;
-                if (btnText) btnText.style.opacity = '0';
-                if (btnLoading) btnLoading.style.opacity = '1';
-            } else {
-                submitBtn.disabled = false;
-                if (btnText) btnText.style.opacity = '1';
-                if (btnLoading) btnLoading.style.opacity = '0';
-            }
-        }
-
-        showFormMessage(message, type) {
-            let messageContainer = this.form.querySelector('.form-messages');
-            
-            if (!messageContainer) {
-                messageContainer = document.createElement('div');
-                messageContainer.className = 'form-messages';
-                this.form.appendChild(messageContainer);
-            }
-
-            messageContainer.innerHTML = `
-                <div class="alert alert-${type}">
-                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
-                    <span>${message}</span>
+    }
+    
+    clearFormData() {
+        localStorage.removeItem('pegearts_contact_form');
+        
+        // Clear individual field data
+        Object.keys(this.validationRules).forEach(fieldName => {
+            localStorage.removeItem(`pegearts_field_${fieldName}`);
+        });
+    }
+    
+    openContactModal(projectTitle = '') {
+        const modal = document.createElement('div');
+        modal.className = 'contact-modal';
+        modal.innerHTML = `
+            <div class="modal-backdrop" onclick="this.parentElement.remove()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Get In Touch</h3>
+                    <button class="modal-close" onclick="this.closest('.contact-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-            `;
-
-            const alert = messageContainer.querySelector('.alert');
-            setTimeout(() => alert.classList.add('show'), 10);
-
-            // Auto-hide after delay
-            setTimeout(() => {
-                if (alert && alert.parentNode) {
-                    alert.classList.remove('show');
-                    setTimeout(() => {
-                        if (alert.parentNode) {
-                            alert.parentNode.removeChild(alert);
-                        }
-                    }, 300);
-                }
-            }, 5000);
-        }
-
-        showAutoSaveStatus(message, type) {
-            const statusEl = this.form.querySelector('.auto-save-status');
-            if (!statusEl) return;
-
-            statusEl.textContent = message;
-            statusEl.className = `auto-save-status ${type} show`;
-
-            setTimeout(() => {
-                statusEl.classList.remove('show');
-            }, 2000);
+                <div class="modal-body">
+                    <p>Interested in working together? Let's discuss your project!</p>
+                    ${projectTitle ? `<p class="project-ref">Reference: <strong>${projectTitle}</strong></p>` : ''}
+                    <div class="contact-options">
+                                                <a href="mailto:thanattsitt.info@yahoo.com" class="contact-option">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email Me</span>
+                        </a>
+                        <a href="#contact" class="contact-option" onclick="PegeArts.navigation.scrollToSection('contact'); this.closest('.contact-modal').remove();">
+                            <i class="fas fa-form"></i>
+                            <span>Contact Form</span>
+                        </a>
+                        <a href="https://linkedin.com/in/thanattsitt" class="contact-option" target="_blank" rel="noopener">
+                            <i class="fab fa-linkedin"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Show modal with animation
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+        
+        // Focus management
+        const closeBtn = modal.querySelector('.modal-close');
+        if (closeBtn) closeBtn.focus();
+        
+        // Keyboard support
+        modal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+            }
+        });
+        
+        // Track modal opening
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'contact_modal_open', {
+                event_category: 'Contact',
+                event_label: projectTitle || 'General Inquiry',
+                value: 1
+            });
         }
     }
+}
 
-    // Individual Field Handler
-    class FieldHandler {
-        constructor(field, formHandler) {
-            this.field = field;
-            this.formHandler = formHandler;
-            this.validationRules = [];
-            this.isValidField = true;
-            this.errorMessage = '';
+// =============================================================================
+// ADVANCED ANIMATIONS FUNCTIONALITY
+// =============================================================================
 
-            this.parseValidationRules();
-            this.setupFieldEventListeners();
-        }
-
-        parseValidationRules() {
-            // Required
-            if (this.field.hasAttribute('required')) {
-                this.validationRules.push({
-                    type: 'required',
-                    message: `${this.getFieldLabel()} is required.`
-                });
-            }
-
-            // Email
-            if (this.field.type === 'email') {
-                this.validationRules.push({
-                    type: 'email',
-                    message: 'Please enter a valid email address.'
-                });
-            }
-
-            // Pattern
-            if (this.field.hasAttribute('pattern')) {
-                this.validationRules.push({
-                    type: 'pattern',
-                    pattern: new RegExp(this.field.getAttribute('pattern')),
-                    message: this.field.getAttribute('data-pattern-message') || 
-                             'Please match the required format.'
-                });
-            }
-
-            // Length constraints
-            if (this.field.hasAttribute('minlength')) {
-                const minLength = parseInt(this.field.getAttribute('minlength'));
-                this.validationRules.push({
-                    type: 'minlength',
-                    value: minLength,
-                    message: `Must be at least ${minLength} characters.`
-                });
-            }
-
-            if (this.field.hasAttribute('maxlength')) {
-                const maxLength = parseInt(this.field.getAttribute('maxlength'));
-                this.validationRules.push({
-                    type: 'maxlength',
-                    value: maxLength,
-                    message: `Must be no more than ${maxLength} characters.`
-                });
-            }
-
-            // Custom validation rules
-            const customRules = this.field.getAttribute('data-validation');
-            if (customRules) {
-                customRules.split(' ').forEach(ruleName => {
-                    const rule = this.formHandler.manager.getValidationRule(ruleName);
-                    if (rule) {
-                        this.validationRules.push(rule);
-                    }
-                });
-            }
-        }
-
-        setupFieldEventListeners() {
-            // Character count for textareas
-            if (this.field.tagName === 'TEXTAREA') {
-                const charCount = this.field.parentNode.querySelector('.character-count');
-                if (charCount) {
-                    this.updateCharacterCount();
-                    this.field.addEventListener('input', () => this.updateCharacterCount());
-                }
-            }
-
-            // Real-time validation feedback
-            this.field.addEventListener('blur', () => {
-                this.validate();
-            });
-
-            this.field.addEventListener('input', Utils.debounce(() => {
-                if (this.field.value.length > 0) {
-                    this.validate();
-                }
-            }, 500));
-        }
-
-        validate() {
-            this.isValidField = true;
-            this.errorMessage = '';
-
-            const value = this.getValue();
-
-            for (const rule of this.validationRules) {
-                if (!this.validateRule(rule, value)) {
-                    this.isValidField = false;
-                    this.errorMessage = rule.message;
-                    break;
-                }
-            }
-
-            this.updateFieldUI();
-            return this.isValidField;
-        }
-
-        validateRule(rule, value) {
-            switch (rule.type) {
-                case 'required':
-                    return value.trim().length > 0;
-
-                case 'email':
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return !value || emailRegex.test(value);
-
-                case 'pattern':
-                    return !value || rule.pattern.test(value);
-
-                case 'minlength':
-                    return !value || value.length >= rule.value;
-
-                case 'maxlength':
-                    return !value || value.length <= rule.value;
-
-                case 'custom':
-                    return rule.validator(value, this.field);
-
-                default:
-                    return true;
-            }
-        }
-
-        updateFieldUI() {
-            // Update field classes
-            this.field.classList.toggle('valid', this.isValidField && this.getValue());
-            this.field.classList.toggle('invalid', !this.isValidField);
-
-            // Update error message
-            this.updateErrorMessage();
-
-            // Update success icon
-            this.updateSuccessIcon();
-        }
-
-        updateErrorMessage() {
-            const errorEl = this.field.parentNode.querySelector('.form-error');
-            
-            if (!this.isValidField && this.errorMessage) {
-                if (errorEl) {
-                    errorEl.textContent = this.errorMessage;
-                    errorEl.classList.add('show');
-                } else {
-                    const newErrorEl = document.createElement('small');
-                    newErrorEl.className = 'form-error show';
-                    newErrorEl.textContent = this.errorMessage;
-                    this.field.parentNode.appendChild(newErrorEl);
-                }
-            } else if (errorEl) {
-                errorEl.classList.remove('show');
-            }
-        }
-
-        updateSuccessIcon() {
-            const iconEl = this.field.parentNode.querySelector('.form-success-icon');
-            const shouldShow = this.isValidField && this.getValue().trim().length > 0;
-            
-            if (shouldShow && !iconEl) {
-                const newIconEl = document.createElement('i');
-                newIconEl.className = 'fas fa-check form-success-icon';
-                this.field.parentNode.appendChild(newIconEl);
-            }
-            
-            if (iconEl) {
-                this.field.parentNode.classList.toggle('valid', shouldShow);
-            }
-        }
-
-        updateCharacterCount() {
-            const charCount = this.field.parentNode.querySelector('.character-count');
-            if (!charCount) return;
-
-            const current = this.field.value.length;
-            const max = this.field.getAttribute('maxlength');
-            
-            if (max) {
-                charCount.textContent = `${current}/${max}`;
-                charCount.classList.toggle('warning', current > max * 0.8);
-                charCount.classList.toggle('error', current >= max);
-            } else {
-                charCount.textContent = `${current} characters`;
-            }
-        }
-
-        getValue() {
-            if (this.field.type === 'checkbox') {
-                return this.field.checked;
-            } else if (this.field.type === 'radio') {
-                const checked = this.formHandler.form.querySelector(`[name="${this.field.name}"]:checked`);
-                return checked ? checked.value : '';
-            } else {
-                return this.field.value || '';
-            }
-        }
-
-        getFieldLabel() {
-            const label = this.formHandler.form.querySelector(`label[for="${this.field.id}"]`);
-            return label ? label.textContent.replace('*', '').trim() : this.field.name;
-        }
-
-        isValid() {
-            return this.isValidField;
-        }
-
-        clearValidation() {
-            this.isValidField = true;
-            this.errorMessage = '';
-            this.field.classList.remove('valid', 'invalid');
-            
-            const errorEl = this.field.parentNode.querySelector('.form-error');
-            if (errorEl) {
-                errorEl.classList.remove('show');
-            }
-        }
+class AdvancedAnimationsManager {
+    constructor() {
+        this.scrollTriggers = new Map();
+        this.parallaxElements = new Map();
+        this.morphingElements = new Map();
+        this.particleSystems = new Map();
+        this.animatedCounters = new Map();
+        this.textAnimations = new Map();
+        this.mouseFollower = null;
+        this.cursorTrail = [];
+        this.lastMousePosition = { x: 0, y: 0 };
+        
+        this.init();
     }
-
-    // Portfolio Filter Management
-    class PortfolioManager {
-        constructor() {
-            this.filterContainer = Utils.qs('.portfolio-filters');
-            this.portfolioGrid = Utils.qs('.portfolio-grid');
-            this.portfolioItems = Utils.qsa('.portfolio-item');
-            this.filterButtons = Utils.qsa('.filter-btn');
-            this.loadMoreBtn = Utils.qs('.load-more-btn');
-            this.currentFilter = 'all';
-            this.itemsPerPage = 6;
-            this.currentPage = 1;
-            this.isLoading = false;
+    
+    init() {
+        if (!PegeArts.state.reducedMotion) {
+            this.initScrollAnimations();
+            this.initParallaxEffects();
+            this.initMorphingElements();
+            this.initTextAnimations();
+            this.initMouseEffects();
+            this.initParticleEffects();
+            this.initAdvancedCounters();
+            this.initPageTransitions();
         }
-
-        init() {
-            if (!this.portfolioGrid) return;
-
-            this.setupFilterEventListeners();
-            this.setupLoadMore();
-            this.initializeIsotope();
-        }
-
-        setupFilterEventListeners() {
-            this.filterButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const filter = btn.getAttribute('data-filter') || 'all';
-                    this.setActiveFilter(filter);
-                    this.filterPortfolio(filter);
-                });
-            });
-        }
-
-        setupLoadMore() {
-            if (this.loadMoreBtn) {
-                this.loadMoreBtn.addEventListener('click', () => {
-                    this.loadMoreItems();
-                });
-            }
-        }
-
-        setActiveFilter(filter) {
-            this.currentFilter = filter;
+        
+        this.initIntersectionObservers();
+    }
+    
+    initScrollAnimations() {
+        // Enhanced scroll-triggered animations
+        const animatedElements = document.querySelectorAll('[data-animate]');
+        
+        animatedElements.forEach(element => {
+            const animationType = element.getAttribute('data-animate');
+            const delay = parseInt(element.getAttribute('data-delay')) || 0;
+            const duration = parseInt(element.getAttribute('data-duration')) || 800;
+            const offset = element.getAttribute('data-offset') || '10%';
             
-            // Update button states
-            this.filterButtons.forEach(btn => {
-                const btnFilter = btn.getAttribute('data-filter') || 'all';
-                btn.classList.toggle('active', btnFilter === filter);
-            });
-        }
-
-        filterPortfolio(filter) {
-            // Show loading state
-            this.portfolioGrid.classList.add('filtering');
-
-            // Filter items with animation
-            this.portfolioItems.forEach((item, index) => {
-                const itemCategories = (item.getAttribute('data-category') || '').split(' ');
-                const shouldShow = filter === 'all' || itemCategories.includes(filter);
-
-                setTimeout(() => {
-                    if (shouldShow) {
-                        item.classList.remove('filtered-out');
-                        item.style.display = 'block';
-                    } else {
-                        item.classList.add('filtered-out');
+            const scrollTrigger = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
                         setTimeout(() => {
-                            if (item.classList.contains('filtered-out')) {
-                                item.style.display = 'none';
-                            }
-                        }, 500);
+                            this.playScrollAnimation(element, animationType, duration);
+                        }, delay);
+                        scrollTrigger.unobserve(element);
                     }
-                }, index * 50);
-            });
-
-            // Remove loading state
-            setTimeout(() => {
-                this.portfolioGrid.classList.remove('filtering');
-                this.updateLoadMoreButton();
-            }, 1000);
-        }
-
-        initializeIsotope() {
-            // If Isotope is available, use it for better animations
-            if (typeof Isotope !== 'undefined') {
-                this.isotope = new Isotope(this.portfolioGrid, {
-                    itemSelector: '.portfolio-item',
-                    layoutMode: 'fitRows',
-                    transitionDuration: '0.6s'
                 });
-            }
-        }
-
-        async loadMoreItems() {
-            if (this.isLoading) return;
-
-            this.isLoading = true;
-            this.loadMoreBtn.classList.add('loading');
-            this.loadMoreBtn.disabled = true;
-
-            try {
-                // Simulate API call - replace with actual endpoint
-                const response = await fetch(`/api/portfolio?page=${this.currentPage + 1}&filter=${this.currentFilter}`);
-                const data = await response.json();
-
-                if (data.items && data.items.length > 0) {
-                    this.appendNewItems(data.items);
-                    this.currentPage++;
-                    
-                    if (!data.hasMore) {
-                        this.loadMoreBtn.style.display = 'none';
-                    }
-                } else {
-                    this.loadMoreBtn.style.display = 'none';
-                    NotificationManager.info('No more items to load');
-                }
-            } catch (error) {
-                console.error('Failed to load more items:', error);
-                NotificationManager.error('Failed to load more items');
-            } finally {
-                this.isLoading = false;
-                this.loadMoreBtn.classList.remove('loading');
-                this.loadMoreBtn.disabled = false;
-            }
-        }
-
-        appendNewItems(items) {
-            const newElements = items.map(item => this.createPortfolioItem(item));
+            }, {
+                rootMargin: `0px 0px -${offset} 0px`,
+                threshold: 0.1
+            });
             
-            newElements.forEach((element, index) => {
+            scrollTrigger.observe(element);
+            this.scrollTriggers.set(element, scrollTrigger);
+        });
+    }
+    
+    playScrollAnimation(element, type, duration) {
+        element.style.transition = `all ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+        
+        switch (type) {
+            case 'fade-in':
                 element.style.opacity = '0';
                 element.style.transform = 'translateY(30px)';
-                this.portfolioGrid.appendChild(element);
-                
                 setTimeout(() => {
                     element.style.opacity = '1';
                     element.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-
-            // Update Isotope if available
-            if (this.isotope) {
-                this.isotope.appended(newElements);
-            }
+                }, 50);
+                break;
+                
+            case 'slide-left':
+                element.style.transform = 'translateX(-50px)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.transform = 'translateX(0)';
+                    element.style.opacity = '1';
+                }, 50);
+                break;
+                
+            case 'slide-right':
+                element.style.transform = 'translateX(50px)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.transform = 'translateX(0)';
+                    element.style.opacity = '1';
+                }, 50);
+                break;
+                
+            case 'scale-in':
+                element.style.transform = 'scale(0.8)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                    element.style.opacity = '1';
+                }, 50);
+                break;
+                
+            case 'rotate-in':
+                element.style.transform = 'rotate(-15deg) scale(0.8)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.transform = 'rotate(0deg) scale(1)';
+                    element.style.opacity = '1';
+                }, 50);
+                break;
+                
+            case 'flip-in':
+                element.style.transform = 'rotateY(90deg)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.transform = 'rotateY(0deg)';
+                    element.style.opacity = '1';
+                }, 50);
+                break;
+                
+            case 'bounce-in':
+                element.style.transform = 'scale(0.3)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.animation = `bounceIn ${duration}ms cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards`;
+                    element.style.opacity = '1';
+                }, 50);
+                break;
         }
-
-        createPortfolioItem(data) {
-            // Create portfolio item HTML - customize based on your data structure
-            const item = document.createElement('div');
-            item.className = 'portfolio-item';
-            item.setAttribute('data-category', data.category);
-            
-            item.innerHTML = `
-                <div class="portfolio-card glass-card hover-lift">
-                    <div class="portfolio-image">
-                        <img src="${data.image}" alt="${data.title}" loading="lazy">
-                        <div class="portfolio-overlay">
-                            <div class="portfolio-actions">
-                                <a href="${data.liveUrl}" class="portfolio-btn" target="_blank" rel="noopener">
-                                    <i class="fas fa-external-link-alt"></i>
-                                </a>
-                                <a href="${data.image}" class="portfolio-btn" data-lightbox="portfolio">
-                                    <i class="fas fa-search"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="portfolio-content">
-                        <div class="portfolio-header">
-                            <h3 class="portfolio-title">${data.title}</h3>
-                            <div class="portfolio-status">
-                                <span class="status-badge ${data.status}">${data.status}</span>
-                            </div>
-                        </div>
-                        <p class="portfolio-description">${data.description}</p>
-                        <div class="portfolio-tech">
-                            ${data.technologies.map(tech => 
-                                `<span class="tech-tag">${tech}</span>`
-                            ).join('')}
-                        </div>
-                        <div class="portfolio-metrics">
-                            <div class="metric">
-                                <i class="fas fa-calendar"></i>
-                                <span>${data.date}</span>
-                            </div>
-                            <div class="metric">
-                                <i class="fas fa-eye"></i>
-                                <span>${data.views}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            return item;
-        }
-
-        updateLoadMoreButton() {
-            // Update load more button visibility based on current filter
-            const visibleItems = this.portfolioItems.filter(item => 
-                !item.classList.contains('filtered-out')
-            ).length;
-
-            if (this.loadMoreBtn) {
-                this.loadMoreBtn.style.display = visibleItems >= this.itemsPerPage ? 'block' : 'none';
-            }
-        }
+        
+        element.classList.add('animated');
     }
-
-    // Scroll Effects Manager
-    class ScrollEffectsManager {
-        constructor() {
-            this.elements = [];
-            this.ticking = false;
-            this.lastKnownScrollPosition = 0;
+    
+    initParallaxEffects() {
+        const parallaxElements = document.querySelectorAll('[data-parallax]');
+        
+        parallaxElements.forEach(element => {
+            const speed = parseFloat(element.getAttribute('data-parallax')) || 0.5;
+            const direction = element.getAttribute('data-parallax-direction') || 'vertical';
             
-            this.handleScroll = this.onScroll.bind(this);
-        }
-
-        init() {
-            this.collectElements();
-            this.setupEventListeners();
-            this.onScroll(); // Initial check
-        }
-
-        collectElements() {
-            // Parallax elements
-            const parallaxElements = Utils.qsa('[data-parallax]');
-            parallaxElements.forEach(el => {
-                const speed = parseFloat(el.getAttribute('data-parallax')) || 0.5;
-                this.elements.push({
-                    element: el,
-                    type: 'parallax',
-                    speed: speed,
-                    offset: el.getBoundingClientRect().top + window.pageYOffset
-                });
-            });
-
-            // Fade in elements
-            const fadeElements = Utils.qsa('[data-fade]');
-            fadeElements.forEach(el => {
-                const direction = el.getAttribute('data-fade') || 'up';
-                const delay = parseInt(el.getAttribute('data-delay')) || 0;
-                this.elements.push({
-                    element: el,
-                    type: 'fade',
-                    direction: direction,
-                    delay: delay,
-                    hasAnimated: false
-                });
-            });
-
-            // Count up elements
-            const countElements = Utils.qsa('[data-count]');
-            countElements.forEach(el => {
-                const endValue = parseInt(el.getAttribute('data-count')) || 0;
-                const duration = parseInt(el.getAttribute('data-duration')) || 2000;
-                this.elements.push({
-                    element: el,
-                    type: 'count',
-                    endValue: endValue,
-                    duration: duration,
-                    hasAnimated: false
-                });
-            });
-
-            // Progress bars
-            const progressElements = Utils.qsa('[data-progress]');
-            progressElements.forEach(el => {
-                const percentage = parseInt(el.getAttribute('data-progress')) || 0;
-                const delay = parseInt(el.getAttribute('data-delay')) || 0;
-                this.elements.push({
-                    element: el,
-                    type: 'progress',
-                    percentage: percentage,
-                    delay: delay,
-                    hasAnimated: false
-                });
-            });
-        }
-
-        setupEventListeners() {
-            window.addEventListener('scroll', () => {
-                this.lastKnownScrollPosition = window.pageYOffset;
-                this.requestTick();
-            }, { passive: true });
-
-            window.addEventListener('resize', Utils.debounce(() => {
-                this.elements.forEach(item => {
-                    if (item.type === 'parallax') {
-                        item.offset = item.element.getBoundingClientRect().top + window.pageYOffset;
-                    }
-                });
-            }, 250));
-        }
-
-        requestTick() {
-            if (!this.ticking) {
-                requestAnimationFrame(this.handleScroll);
-                this.ticking = true;
-            }
-        }
-
-        onScroll() {
-            this.ticking = false;
-            const scrollTop = this.lastKnownScrollPosition;
-            
-            this.elements.forEach(item => {
-                this.processElement(item, scrollTop);
-            });
-        }
-
-        processElement(item, scrollTop) {
-            const { element, type } = item;
-            const rect = element.getBoundingClientRect();
-            const isInViewport = Utils.isInViewport(element, 100);
-
-            switch (type) {
-                case 'parallax':
-                    this.handleParallax(item, scrollTop);
-                    break;
-
-                case 'fade':
-                    if (isInViewport && !item.hasAnimated) {
-                        this.handleFadeIn(item);
-                    }
-                    break;
-
-                case 'count':
-                    if (isInViewport && !item.hasAnimated) {
-                        this.handleCountUp(item);
-                    }
-                    break;
-
-                case 'progress':
-                    if (isInViewport && !item.hasAnimated) {
-                        this.handleProgressBar(item);
-                    }
-                    break;
-            }
-        }
-
-        handleParallax(item, scrollTop) {
-            if (AppState.userPreferences.reducedMotion) return;
-            
-            const { element, speed, offset } = item;
-            const yPos = -(scrollTop - offset) * speed;
-            element.style.transform = `translateY(${yPos}px) translateZ(0)`;
-        }
-
-        handleFadeIn(item) {
-            const { element, direction, delay } = item;
-            
-            element.style.opacity = '0';
-            
-            switch (direction) {
-                case 'up':
-                    element.style.transform = 'translateY(30px)';
-                    break;
-                case 'down':
-                    element.style.transform = 'translateY(-30px)';
-                    break;
-                case 'left':
-                    element.style.transform = 'translateX(30px)';
-                    break;
-                case 'right':
-                    element.style.transform = 'translateX(-30px)';
-                    break;
-                case 'scale':
-                    element.style.transform = 'scale(0.8)';
-                    break;
-            }
-
-            setTimeout(() => {
-                element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-                element.style.opacity = '1';
-                element.style.transform = 'translateY(0) translateX(0) scale(1)';
-            }, delay);
-
-            item.hasAnimated = true;
-        }
-
-        handleCountUp(item) {
-            const { element, endValue, duration } = item;
-            
-            let startValue = 0;
-            const startTime = Date.now();
-            const prefix = element.getAttribute('data-prefix') || '';
-            const suffix = element.getAttribute('data-suffix') || '';
-
-            const updateCount = () => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const currentValue = Math.floor(
-                    startValue + (endValue - startValue) * this.easeOutQuart(progress)
-                );
-                
-                element.textContent = prefix + currentValue.toLocaleString() + suffix;
-
-                if (progress < 1) {
-                    requestAnimationFrame(updateCount);
-                }
-            };
-
-            updateCount();
-            item.hasAnimated = true;
-        }
-
-        handleProgressBar(item) {
-            const { element, percentage, delay } = item;
-            const progressFill = element.querySelector('.progress-fill') || element;
-
-            setTimeout(() => {
-                progressFill.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                progressFill.style.width = `${percentage}%`;
-            }, delay);
-
-            item.hasAnimated = true;
-        }
-
-        easeOutQuart(t) {
-            return 1 - (--t) * t * t * t;
-        }
-    }
-
-    // Background Effects Manager
-    class BackgroundEffectsManager {
-        constructor() {
-            this.effects = [];
-            this.isActive = !AppState.userPreferences.reducedMotion;
-            this.animationFrame = null;
-        }
-
-        init() {
-            if (!this.isActive) return;
-
-            this.initializeStarField();
-            this.initializeFloatingParticles();
-            this.initializeShootingStars();
-            this.startAnimationLoop();
-        }
-
-        initializeStarField() {
-            const starField = Utils.qs('.star-field');
-            if (!starField) return;
-
-            const starCount = 200;
-            
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                star.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                
-                const size = Math.random() * 2 + 1;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                
-                starField.appendChild(star);
-                this.effects.push({
-                    element: star,
-                    type: 'star',
-                    speed: Math.random() * 0.5 + 0.1
-                });
-            }
-        }
-
-        initializeFloatingParticles() {
-            const particleContainers = Utils.qsa('.floating-particles-container');
-            
-            particleContainers.forEach(container => {
-                const particleCount = parseInt(container.getAttribute('data-count')) || 50;
-                
-                for (let i = 0; i < particleCount; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'floating-particle';
-                    
-                    // Random positioning
-                    particle.style.left = Math.random() * 100 + '%';
-                    particle.style.top = Math.random() * 100 + '%';
-                    
-                    // Random size
-                    const size = Math.random() * 6 + 2;
-                    particle.style.width = size + 'px';
-                    particle.style.height = size + 'px';
-                    
-                    // Random animation properties
-                    particle.style.animationDelay = Math.random() * 20 + 's';
-                    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                    
-                    container.appendChild(particle);
-                    
-                    this.effects.push({
-                        element: particle,
-                        type: 'particle',
-                        container: container,
-                        speed: {
-                            x: (Math.random() - 0.5) * 0.5,
-                            y: (Math.random() - 0.5) * 0.5
-                        },
-                        position: {
-                            x: Math.random() * 100,
-                            y: Math.random() * 100
-                        }
-                    });
-                }
-            });
-        }
-
-        initializeShootingStars() {
-            const heroSection = Utils.qs('.hero-section');
-            if (!heroSection) return;
-
-            setInterval(() => {
-                if (Math.random() < 0.3) { // 30% chance every interval
-                    this.createShootingStar(heroSection);
-                }
-            }, 3000);
-        }
-
-        createShootingStar(container) {
-            const shootingStar = document.createElement('div');
-            shootingStar.className = 'shooting-star';
-            
-            // Random starting position (top or right edge)
-            if (Math.random() > 0.5) {
-                shootingStar.style.top = Math.random() * 50 + '%';
-                shootingStar.style.left = '100%';
-            } else {
-                shootingStar.style.top = '0%';
-                shootingStar.style.left = Math.random() * 50 + '%';
-            }
-            
-            container.appendChild(shootingStar);
-            
-            // Remove after animation
-            setTimeout(() => {
-                if (shootingStar.parentNode) {
-                    shootingStar.parentNode.removeChild(shootingStar);
-                }
-            }, 2000);
-        }
-
-        startAnimationLoop() {
-            if (!this.isActive) return;
-            
-            const animate = () => {
-                this.updateParticles();
-                this.animationFrame = requestAnimationFrame(animate);
-            };
-            
-            animate();
-        }
-
-        updateParticles() {
-            this.effects.forEach(effect => {
-                if (effect.type === 'particle') {
-                    this.updateParticle(effect);
-                }
-            });
-        }
-
-        updateParticle(effect) {
-            const { element, speed, position, container } = effect;
-            
-            // Update position
-            position.x += speed.x;
-            position.y += speed.y;
-            
-            // Wrap around edges
-            if (position.x > 100) position.x = 0;
-            if (position.x < 0) position.x = 100;
-            if (position.y > 100) position.y = 0;
-            if (position.y < 0) position.y = 100;
-            
-            // Apply position
-            element.style.left = position.x + '%';
-            element.style.top = position.y + '%';
-        }
-
-        destroy() {
-            if (this.animationFrame) {
-                cancelAnimationFrame(this.animationFrame);
-            }
-            
-            this.effects.forEach(effect => {
-                if (effect.element && effect.element.parentNode) {
-                    effect.element.parentNode.removeChild(effect.element);
-                }
-            });
-            
-            this.effects = [];
-        }
-
-        toggle(active) {
-            this.isActive = active;
-            
-            if (active && this.effects.length === 0) {
-                this.init();
-            } else if (!active) {
-                this.destroy();
-            }
-        }
-    }
-
-    // Modal Manager
-    class ModalManager {
-        constructor() {
-            this.modals = new Map();
-            this.activeModals = [];
-            this.scrollBarWidth = this.getScrollBarWidth();
-        }
-
-        init() {
-            this.setupEventListeners();
-            this.initializeModals();
-        }
-
-        setupEventListeners() {
-            // Listen for modal triggers
-            document.addEventListener('click', (e) => {
-                const trigger = e.target.closest('[data-modal-target]');
-                if (trigger) {
-                    e.preventDefault();
-                    const modalId = trigger.getAttribute('data-modal-target');
-                    this.open(modalId);
-                }
-            });
-
-            // Close modal on escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && this.activeModals.length > 0) {
-                    this.close();
-                }
-            });
-
-            // Close modal on backdrop click
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal-backdrop')) {
-                    this.close();
-                }
-            });
-        }
-
-        initializeModals() {
-            const modalElements = Utils.qsa('.modal');
-            modalElements.forEach(modal => {
-                const modalId = modal.id;
-                if (modalId) {
-                    this.modals.set(modalId, new Modal(modal, this));
-                }
-            });
-        }
-
-        open(modalId, options = {}) {
-            const modal = this.modals.get(modalId);
-            if (!modal) return;
-
-            // Close previous modals if not stacking
-            if (!options.stack) {
-                this.closeAll();
-            }
-
-            modal.open(options);
-            this.activeModals.push(modal);
-            
-            // Prevent body scroll
-            this.preventBodyScroll();
-        }
-
-        close(modalId = null) {
-            if (modalId) {
-                const modal = this.modals.get(modalId);
-                if (modal) {
-                    modal.close();
-                    this.removeActiveModal(modal);
-                }
-            } else {
-                // Close the topmost modal
-                if (this.activeModals.length > 0) {
-                    const modal = this.activeModals[this.activeModals.length - 1];
-                    modal.close();
-                    this.removeActiveModal(modal);
-                }
-            }
-
-            // Restore body scroll if no modals are open
-            if (this.activeModals.length === 0) {
-                this.restoreBodyScroll();
-            }
-        }
-
-        closeAll() {
-            [...this.activeModals].forEach(modal => {
-                modal.close();
-            });
-            this.activeModals = [];
-            this.restoreBodyScroll();
-        }
-
-        removeActiveModal(modal) {
-            const index = this.activeModals.indexOf(modal);
-            if (index > -1) {
-                this.activeModals.splice(index, 1);
-            }
-        }
-
-        preventBodyScroll() {
-            const body = document.body;
-            body.style.paddingRight = this.scrollBarWidth + 'px';
-            body.style.overflow = 'hidden';
-        }
-
-        restoreBodyScroll() {
-            const body = document.body;
-            body.style.paddingRight = '';
-            body.style.overflow = '';
-        }
-
-        getScrollBarWidth() {
-            const outer = document.createElement('div');
-            outer.style.visibility = 'hidden';
-            outer.style.overflow = 'scroll';
-            outer.style.msOverflowStyle = 'scrollbar';
-            document.body.appendChild(outer);
-
-            const inner = document.createElement('div');
-            outer.appendChild(inner);
-
-            const scrollBarWidth = outer.offsetWidth - inner.offsetWidth;
-            outer.parentNode.removeChild(outer);
-
-            return scrollBarWidth;
-        }
-    }
-
-    // Individual Modal Class
-    class Modal {
-        constructor(element, manager) {
-            this.element = element;
-            this.manager = manager;
-            this.isOpen = false;
-            this.options = {};
-            
-            this.setupModalEventListeners();
-        }
-
-        setupModalEventListeners() {
-            // Close button
-            const closeBtn = this.element.querySelector('.btn-close, [data-modal-close]');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    this.close();
-                });
-            }
-
-            // Modal content click shouldn't close modal
-            const modalContent = this.element.querySelector('.modal-content, .modal-dialog');
-            if (modalContent) {
-                modalContent.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                });
-            }
-        }
-
-        open(options = {}) {
-            if (this.isOpen) return;
-
-            this.options = { ...options };
-            this.isOpen = true;
-
-            // Show modal
-            this.element.style.display = 'block';
-            this.element.classList.add('show');
-            this.element.setAttribute('aria-hidden', 'false');
-
-            // Focus management
-            this.manageFocus();
-
-            // Trigger open event
-            this.element.dispatchEvent(new CustomEvent('modal:open', {
-                detail: { modal: this, options: this.options }
-            }));
-
-            // Animation
-            requestAnimationFrame(() => {
-                this.element.classList.add('open');
-            });
-        }
-
-        close() {
-            if (!this.isOpen) return;
-
-            this.isOpen = false;
-            this.element.classList.remove('open');
-
-            // Wait for animation
-            setTimeout(() => {
-                this.element.style.display = 'none';
-                this.element.classList.remove('show');
-                this.element.setAttribute('aria-hidden', 'true');
-
-                // Restore focus
-                this.restoreFocus();
-
-                // Trigger close event
-                this.element.dispatchEvent(new CustomEvent('modal:close', {
-                    detail: { modal: this }
-                }));
-            }, 300);
-        }
-
-        manageFocus() {
-            // Store currently focused element
-            this.previouslyFocused = document.activeElement;
-
-            // Focus first focusable element in modal
-            const focusableElements = this.element.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            
-            if (focusableElements.length > 0) {
-                focusableElements[0].focus();
-            }
-
-            // Trap focus within modal
-            this.element.addEventListener('keydown', this.handleFocusTrap.bind(this));
-        }
-
-        restoreFocus() {
-            if (this.previouslyFocused) {
-                this.previouslyFocused.focus();
-            }
-        }
-
-        handleFocusTrap(e) {
-            if (e.key !== 'Tab') return;
-
-            const focusableElements = this.element.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-
-            if (e.shiftKey) {
-                if (document.activeElement === firstElement) {
-                    e.preventDefault();
-                    lastElement.focus();
-                }
-            } else {
-                if (document.activeElement === lastElement) {
-                    e.preventDefault();
-                    firstElement.focus();
-                }
-            }
-        }
-    }
-
-    // Back to Top Button Manager
-    class BackToTopManager {
-        constructor() {
-            this.button = Utils.qs('.back-to-top');
-            this.threshold = 300;
-            this.isVisible = false;
-            
-            this.handleScroll = Utils.throttle(this.onScroll.bind(this), 100);
-        }
-
-        init() {
-            if (!this.button) {
-                this.createButton();
-            }
-            
-            this.setupEventListeners();
-        }
-
-        createButton() {
-            this.button = document.createElement('button');
-            this.button.className = 'back-to-top';
-            this.button.setAttribute('aria-label', 'Back to top');
-            this.button.innerHTML = '<i class="fas fa-chevron-up"></i>';
-            document.body.appendChild(this.button);
-        }
-
-        setupEventListeners() {
-            this.button.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.scrollToTop();
-            });
-
-            window.addEventListener('scroll', this.handleScroll, { passive: true });
-        }
-
-        onScroll() {
-            const scrollTop = window.pageYOffset;
-            const shouldShow = scrollTop > this.threshold;
-
-            if (shouldShow && !this.isVisible) {
-                this.show();
-            } else if (!shouldShow && this.isVisible) {
-                this.hide();
-            }
-        }
-
-        show() {
-            this.isVisible = true;
-            this.button.classList.add('visible');
-        }
-
-        hide() {
-            this.isVisible = false;
-            this.button.classList.remove('visible');
-        }
-
-        scrollToTop() {
-            if ('scrollBehavior' in document.documentElement.style) {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            } else {
-                Utils.animateScrollTo(0, 800);
-            }
-        }
-    }
-
-    // Cookie Consent Manager
-    class CookieConsentManager {
-        constructor() {
-            this.banner = null;
-            this.hasConsent = Utils.storage.get('cookieConsent', false);
-            this.consentDate = Utils.storage.get('cookieConsentDate', null);
-            this.consentExpiry = 365; // days
-        }
-
-        init() {
-            if (this.shouldShowBanner()) {
-                this.createBanner();
-                this.showBanner();
-            }
-        }
-
-        shouldShowBanner() {
-            if (!this.hasConsent) return true;
-
-            // Check if consent has expired
-            if (this.consentDate) {
-                const consentAge = (Date.now() - new Date(this.consentDate).getTime()) / (1000 * 60 * 60 * 24);
-                return consentAge > this.consentExpiry;
-            }
-
-            return false;
-        }
-
-        createBanner() {
-            this.banner = document.createElement('div');
-            this.banner.className = 'cookie-banner';
-            this.banner.setAttribute('role', 'banner');
-            this.banner.setAttribute('aria-label', 'Cookie consent');
-            
-            this.banner.innerHTML = `
-                <div class="cookie-content">
-                    <div class="cookie-text">
-                        <i class="fas fa-cookie-bite"></i>
-                        <span>We use cookies to enhance your browsing experience and analyze our traffic. 
-                        By clicking "Accept", you consent to our use of cookies.</span>
-                    </div>
-                    <div class="cookie-actions">
-                        <button class="btn btn-sm btn-outline" data-action="preferences">
-                            Preferences
-                        </button>
-                        <button class="btn btn-sm btn-primary" data-action="accept">
-                            Accept All
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(this.banner);
-            this.setupBannerEventListeners();
-        }
-
-        setupBannerEventListeners() {
-            const acceptBtn = this.banner.querySelector('[data-action="accept"]');
-            const preferencesBtn = this.banner.querySelector('[data-action="preferences"]');
-
-            acceptBtn.addEventListener('click', () => {
-                this.acceptAll();
-            });
-
-            preferencesBtn.addEventListener('click', () => {
-                this.showPreferences();
-            });
-        }
-
-        showBanner() {
-            if (!this.banner) return;
-            
-            setTimeout(() => {
-                this.banner.classList.add('show');
-            }, 1000);
-        }
-
-        hideBanner() {
-            if (!this.banner) return;
-            
-            this.banner.classList.remove('show');
-            
-            setTimeout(() => {
-                if (this.banner.parentNode) {
-                    this.banner.parentNode.removeChild(this.banner);
-                }
-            }, 300);
-        }
-
-        acceptAll() {
-            this.setConsent(true);
-            this.hideBanner();
-            this.enableAnalytics();
-            NotificationManager.success('Cookie preferences saved');
-        }
-
-        showPreferences() {
-            // This would open a more detailed cookie preferences modal
-            // For now, just show a simple message
-            NotificationManager.info('Detailed cookie preferences coming soon');
-        }
-
-        setConsent(hasConsent) {
-            this.hasConsent = hasConsent;
-            this.consentDate = new Date().toISOString();
-            
-            Utils.storage.set('cookieConsent', hasConsent);
-            Utils.storage.set('cookieConsentDate', this.consentDate);
-        }
-
-        enableAnalytics() {
-            // Enable Google Analytics or other tracking
-            // This is where you'd initialize your analytics
-            if (typeof gtag !== 'undefined') {
-                gtag('consent', 'update', {
-                    'analytics_storage': 'granted'
-                });
-            }
-        }
-    }
-
-    // PWA Install Manager
-    class PWAInstallManager {
-        constructor() {
-            this.installPrompt = null;
-            this.installButton = null;
-            this.isInstalled = false;
-        }
-
-        init() {
-            this.setupEventListeners();
-            this.checkInstallStatus();
-        }
-
-        setupEventListeners() {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                this.installPrompt = e;
-                this.showInstallButton();
-            });
-
-            window.addEventListener('appinstalled', () => {
-                this.isInstalled = true;
-                this.hideInstallButton();
-                NotificationManager.success('App installed successfully!');
-            });
-        }
-
-        checkInstallStatus() {
-            // Check if already installed
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                this.isInstalled = true;
-                return;
-            }
-
-            // Check if in PWA mode
-            if (window.navigator.standalone === true) {
-                this.isInstalled = true;
-                return;
-            }
-        }
-
-        showInstallButton() {
-            if (this.isInstalled || this.installButton) return;
-
-            this.installButton = document.createElement('button');
-            this.installButton.className = 'pwa-install-btn';
-            this.installButton.innerHTML = `
-                <i class="fas fa-download"></i>
-                <span>Install App</span>
-            `;
-
-            document.body.appendChild(this.installButton);
-
-            setTimeout(() => {
-                this.installButton.classList.add('show');
-            }, 2000);
-
-            this.installButton.addEventListener('click', () => {
-                this.triggerInstall();
-            });
-        }
-
-        hideInstallButton() {
-            if (!this.installButton) return;
-
-            this.installButton.classList.remove('show');
-            
-            setTimeout(() => {
-                if (this.installButton.parentNode) {
-                    this.installButton.parentNode.removeChild(this.installButton);
-                }
-                this.installButton = null;
-            }, 300);
-        }
-
-        async triggerInstall() {
-            if (!this.installPrompt) return;
-
-            try {
-                const result = await this.installPrompt.prompt();
-                
-                if (result.outcome === 'accepted') {
-                    this.hideInstallButton();
-                } else {
-                    NotificationManager.info('Install cancelled');
-                }
-            } catch (error) {
-                console.error('Install failed:', error);
-                NotificationManager.error('Install failed');
-            }
-
-            this.installPrompt = null;
-        }
-    }
-
-    // Performance Monitor
-    class PerformanceMonitor {
-        constructor() {
-            this.metrics = new Map();
-            this.observers = [];
-        }
-
-        init() {
-            this.monitorPageLoad();
-            this.monitorResourceTiming();
-            this.monitorUserTiming();
-            this.monitorWebVitals();
-        }
-
-        monitorPageLoad() {
-            window.addEventListener('load', () => {
-                const navigation = performance.getEntriesByType('navigation')[0];
-                
-                this.metrics.set('page-load', {
-                    loadComplete: navigation.loadEventEnd,
-                    domComplete: navigation.domComplete,
-                    domInteractive: navigation.domInteractive,
-                    firstPaint: this.getFirstPaint(),
-                    firstContentfulPaint: this.getFirstContentfulPaint()
-                });
-
-                this.reportMetrics();
-            });
-        }
-
-        monitorResourceTiming() {
-            // Monitor critical resources
-            const criticalResources = ['stylesheet', 'script', 'image'];
-            
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.duration > 1000) { // Resources taking > 1s
-                        console.warn(`Slow resource: ${entry.name} (${entry.duration}ms)`);
-                    }
-                }
-            });
-
-            observer.observe({ entryTypes: ['resource'] });
-            this.observers.push(observer);
-        }
-
-        monitorUserTiming() {
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    this.metrics.set(`user-timing-${entry.name}`, {
-                        duration: entry.duration,
-                        startTime: entry.startTime
-                    });
-                }
-            });
-
-            observer.observe({ entryTypes: ['measure'] });
-            this.observers.push(observer);
-        }
-
-        monitorWebVitals() {
-            // Monitor Core Web Vitals
-            this.observeLCP();
-            this.observeFID();
-            this.observeCLS();
-        }
-
-        observeLCP() {
-            const observer = new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                const lastEntry = entries[entries.length - 1];
-                this.metrics.set('lcp', lastEntry.startTime);
-            });
-
-            observer.observe({ entryTypes: ['largest-contentful-paint'] });
-            this.observers.push(observer);
-        }
-
-        observeFID() {
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    this.metrics.set('fid', entry.processingStart - entry.startTime);
-                }
-            });
-
-            observer.observe({ entryTypes: ['first-input'] });
-            this.observers.push(observer);
-        }
-
-        observeCLS() {
-            let clsValue = 0;
-            let clsEntries = [];
-
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (!entry.hadRecentInput) {
-                        clsEntries.push(entry);
-                        clsValue += entry.value;
-                    }
-                }
-                this.metrics.set('cls', clsValue);
-            });
-
-            observer.observe({ entryTypes: ['layout-shift'] });
-            this.observers.push(observer);
-        }
-
-        getFirstPaint() {
-            const paintEntries = performance.getEntriesByType('paint');
-            const fpEntry = paintEntries.find(entry => entry.name === 'first-paint');
-            return fpEntry ? fpEntry.startTime : null;
-        }
-
-        getFirstContentfulPaint() {
-            const paintEntries = performance.getEntriesByType('paint');
-            const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
-            return fcpEntry ? fcpEntry.startTime : null;
-        }
-
-        reportMetrics() {
-            // In production, send to analytics
-            if (process.env.NODE_ENV === 'production') {
-                this.sendToAnalytics();
-            } else {
-                console.group('Performance Metrics');
-                this.metrics.forEach((value, key) => {
-                    console.log(`${key}:`, value);
-                });
-                console.groupEnd();
-            }
-        }
-
-        sendToAnalytics() {
-            // Send to Google Analytics, other analytics platforms
-            this.metrics.forEach((value, key) => {
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'timing_complete', {
-                        name: key,
-                        value: Math.round(typeof value === 'object' ? value.duration || 0 : value)
-                    });
-                }
-            });
-        }
-
-        destroy() {
-            this.observers.forEach(observer => observer.disconnect());
-            this.observers = [];
-            this.metrics.clear();
-        }
-    }
-
-    // Main Application Class
-    class PegeartsApp {
-        constructor() {
-            this.managers = {};
-            this.isInitialized = false;
-            this.version = '2.0.0';
-        }
-
-        async init() {
-            if (this.isInitialized) return;
-
-            try {
-                Utils.performance.mark('app-init-start');
-
-                // Initialize critical managers first
-                await this.initCriticalManagers();
-                
-                // Initialize other managers
-                await this.initSecondaryManagers();
-                
-                // Setup global event listeners
-                this.setupGlobalEventListeners();
-                
-                // Mark as initialized
-                this.isInitialized = true;
-                
-                Utils.performance.mark('app-init-end');
-                Utils.performance.measure('app-init', 'app-init-start', 'app-init-end');
-                
-                console.log(`🎨 Pegearts Portfolio v${this.version} initialized`);
-                
-                // Dispatch ready event
-                document.dispatchEvent(new CustomEvent('app:ready'));
-                
-            } catch (error) {
-                console.error('Failed to initialize app:', error);
-                this.handleInitError(error);
-            }
-        }
-
-        async initCriticalManagers() {
-            // Preloader (must be first)
-            this.managers.preloader = new PreloaderManager();
-            this.managers.preloader.init();
-
-            // Wait for page load before continuing
-            await new Promise(resolve => {
-                if (document.readyState === 'complete') {
-                    resolve();
-                } else {
-                    window.addEventListener('load', resolve, { once: true });
-                }
-            });
-
-            // Navigation
-            this.managers.navigation = new NavigationManager();
-            this.managers.navigation.init();
-
-            // Notification system
-            this.managers.notification = new NotificationManager();
-            
-            // Form management
-            this.managers.form = new FormManager();
-            this.managers.form.init();
-        }
-
-        async initSecondaryManagers() {
-            // Audio players
-            this.managers.audio = new AudioPlayerManager();
-            this.managers.audio.init();
-
-            // Portfolio filtering
-            this.managers.portfolio = new PortfolioManager();
-            this.managers.portfolio.init();
-
-            // Scroll effects
-            this.managers.scrollEffects = new ScrollEffectsManager();
-            this.managers.scrollEffects.init();
-
-            // Background effects
-            this.managers.backgroundEffects = new BackgroundEffectsManager();
-            this.managers.backgroundEffects.init();
-
-            // Modal system
-            this.managers.modal = new ModalManager();
-            this.managers.modal.init();
-
-            // Back to top button
-            this.managers.backToTop = new BackToTopManager();
-            this.managers.backToTop.init();
-
-            // Cookie consent
-            this.managers.cookieConsent = new CookieConsentManager();
-            this.managers.cookieConsent.init();
-
-            // PWA install
-            this.managers.pwaInstall = new PWAInstallManager();
-            this.managers.pwaInstall.init();
-
-            // Performance monitoring
-            this.managers.performance = new PerformanceMonitor();
-            this.managers.performance.init();
-        }
-
-        setupGlobalEventListeners() {
-            // Handle uncaught errors
-            window.addEventListener('error', (e) => {
-                this.handleGlobalError(e.error);
-            });
-
-            // Handle unhandled promise rejections
-            window.addEventListener('unhandledrejection', (e) => {
-                this.handleGlobalError(e.reason);
-            });
-
-            // Handle visibility change
-            document.addEventListener('visibilitychange', () => {
-                this.handleVisibilityChange();
-            });
-
-            // Handle online/offline status
-            window.addEventListener('online', () => {
-                NotificationManager.success('Connection restored');
-            });
-
-            window.addEventListener('offline', () => {
-                NotificationManager.warning('Connection lost');
-            });
-
-            // Handle reduced motion preference changes
-            const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-            reducedMotionQuery.addListener((e) => {
-                AppState.userPreferences.reducedMotion = e.matches;
-                this.managers.backgroundEffects?.toggle(!e.matches);
-            });
-        }
-
-        handleInitError(error) {
-            // Fallback initialization for critical functionality
-            console.error('App initialization failed, using fallback mode');
-            
-            // Basic navigation
-            const navLinks = Utils.qsa('.nav-link[href^="#"]');
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    const href = link.getAttribute('href');
-                    const target = Utils.qs(href);
-                    if (target) {
-                        e.preventDefault();
-                        target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
-            });
-        }
-
-        handleGlobalError(error) {
-            console.error('Global error:', error);
-            
-            // Don't show error notifications for network errors or script loading errors
-            if (error && !error.message?.includes('Loading')) {
-                NotificationManager.error('An unexpected error occurred');
-            }
-        }
-
-        handleVisibilityChange() {
-            if (document.hidden) {
-                // Page is hidden - pause non-essential animations
-                this.managers.backgroundEffects?.toggle(false);
-            } else {
-                // Page is visible - resume animations (if user preference allows)
-                if (!AppState.userPreferences.reducedMotion) {
-                    this.managers.backgroundEffects?.toggle(true);
-                }
-            }
-        }
-
-        // Public API methods
-        getManager(name) {
-            return this.managers[name];
-        }
-
-        // Graceful shutdown
-        destroy() {
-            Object.values(this.managers).forEach(manager => {
-                if (manager && typeof manager.destroy === 'function') {
-                    manager.destroy();
-                }
-            });
-            
-            this.managers = {};
-            this.isInitialized = false;
-        }
-    }
-
-    // Global app instance
-    window.app = new PegeartsApp();
-
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            app.init();
+            this.parallaxElements.set(element, { speed, direction });
         });
-    } else {
-        app.init();
+        
+        // Parallax scroll handler
+        window.addEventListener('scroll', PegeArts.utils.throttle(() => {
+            this.updateParallaxElements();
+        }, 16));
     }
-
-    // Expose NotificationManager globally for easy access
-    window.NotificationManager = NotificationManager;
-
-    // Add ripple effect to buttons
-    document.addEventListener('click', function(e) {
-        const button = e.target.closest('.btn, .card, .portfolio-card');
-        if (!button) return;
+    
+    updateParallaxElements() {
+        const scrollTop = window.pageYOffset;
         
-        const rect = button.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
+        this.parallaxElements.forEach(({ speed, direction }, element) => {
+            const rect = element.getBoundingClientRect();
+            const elementTop = rect.top + scrollTop;
+            const elementHeight = rect.height;
+            const windowHeight = window.innerHeight;
+            
+            // Only animate if element is in viewport
+            if (rect.top < windowHeight && rect.bottom > 0) {
+                const parallaxValue = (scrollTop - elementTop) * speed;
+                
+                if (direction === 'vertical') {
+                    element.style.transform = `translate3d(0, ${parallaxValue}px, 0)`;
+                } else if (direction === 'horizontal') {
+                    element.style.transform = `translate3d(${parallaxValue}px, 0, 0)`;
+                } else if (direction === 'both') {
+                    element.style.transform = `translate3d(${parallaxValue * 0.5}px, ${parallaxValue}px, 0)`;
+                }
+            }
+        });
+    }
+    
+    initMorphingElements() {
+        const morphElements = document.querySelectorAll('[data-morph]');
         
-        const ripple = document.createElement('span');
-        ripple.className = 'btn-ripple';
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
+        morphElements.forEach(element => {
+            const morphData = JSON.parse(element.getAttribute('data-morph'));
+            const trigger = morphData.trigger || 'hover';
+            const duration = morphData.duration || 300;
+            
+            this.morphingElements.set(element, morphData);
+            
+            if (trigger === 'hover') {
+                element.addEventListener('mouseenter', () => {
+                    this.applyMorph(element, morphData, true);
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    this.applyMorph(element, morphData, false);
+                });
+            } else if (trigger === 'scroll') {
+                this.setupScrollMorph(element, morphData);
+            }
+        });
+    }
+    
+    applyMorph(element, morphData, isActive) {
+        const { 
+            scale = 1, 
+            rotate = 0, 
+            translateX = 0, 
+            translateY = 0, 
+            opacity = 1,
+            borderRadius = '',
+            backgroundColor = '',
+            duration = 300
+        } = morphData;
         
-        button.appendChild(ripple);
+        element.style.transition = `all ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+        
+        if (isActive) {
+            element.style.transform = `scale(${scale}) rotate(${rotate}deg) translate(${translateX}px, ${translateY}px)`;
+            element.style.opacity = opacity;
+            if (borderRadius) element.style.borderRadius = borderRadius;
+            if (backgroundColor) element.style.backgroundColor = backgroundColor;
+        } else {
+            element.style.transform = 'scale(1) rotate(0deg) translate(0px, 0px)';
+            element.style.opacity = '1';
+            element.style.borderRadius = '';
+            element.style.backgroundColor = '';
+        }
+    }
+    
+    initTextAnimations() {
+        const textElements = document.querySelectorAll('[data-text-animate]');
+        
+        textElements.forEach(element => {
+            const animationType = element.getAttribute('data-text-animate');
+            const delay = parseInt(element.getAttribute('data-text-delay')) || 0;
+            const staggerDelay = parseInt(element.getAttribute('data-stagger')) || 50;
+            
+            this.textAnimations.set(element, { animationType, delay, staggerDelay });
+            
+            // Setup intersection observer for text animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            this.playTextAnimation(element, animationType, staggerDelay);
+                        }, delay);
+                        observer.unobserve(element);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            observer.observe(element);
+        });
+    }
+    
+    playTextAnimation(element, type, staggerDelay) {
+        const text = element.textContent;
+        
+        switch (type) {
+            case 'word-reveal':
+                this.animateWordReveal(element, text, staggerDelay);
+                break;
+            case 'letter-cascade':
+                this.animateLetterCascade(element, text, staggerDelay);
+                break;
+            case 'typewriter':
+                this.animateTypewriter(element, text, staggerDelay);
+                break;
+            case 'scramble':
+                this.animateTextScramble(element, text);
+                break;
+        }
+    }
+    
+    animateWordReveal(element, text, staggerDelay) {
+        const words = text.split(' ');
+        element.innerHTML = words.map(word => 
+            `<span class="word-reveal" style="opacity: 0; transform: translateY(20px);">${word}</span>`
+        ).join(' ');
+        
+        const wordElements = element.querySelectorAll('.word-reveal');
+        wordElements.forEach((word, index) => {
+            setTimeout(() => {
+                word.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                word.style.opacity = '1';
+                word.style.transform = 'translateY(0)';
+            }, index * staggerDelay);
+        });
+    }
+    
+    animateLetterCascade(element, text, staggerDelay) {
+        const letters = text.split('');
+        element.innerHTML = letters.map(letter => 
+            letter === ' ' ? ' ' : `<span class="letter-cascade" style="opacity: 0; transform: translateY(30px);">${letter}</span>`
+        ).join('');
+        
+        const letterElements = element.querySelectorAll('.letter-cascade');
+        letterElements.forEach((letter, index) => {
+            setTimeout(() => {
+                letter.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                letter.style.opacity = '1';
+                letter.style.transform = 'translateY(0)';
+            }, index * staggerDelay);
+        });
+    }
+    
+    animateTypewriter(element, text, speed) {
+        element.textContent = '';
+        let index = 0;
+        
+        const cursor = document.createElement('span');
+        cursor.className = 'typewriter-cursor';
+        cursor.textContent = '|';
+        element.appendChild(cursor);
+        
+        const typeInterval = setInterval(() => {
+            if (index < text.length) {
+                element.textContent = text.substring(0, index + 1);
+                element.appendChild(cursor);
+                index++;
+            } else {
+                clearInterval(typeInterval);
+                setTimeout(() => {
+                    cursor.style.animation = 'blink 1s infinite';
+                }, 500);
+            }
+        }, speed);
+    }
+    
+    animateTextScramble(element, finalText) {
+        const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let iteration = 0;
+        const originalText = element.textContent;
+        
+        const scrambleInterval = setInterval(() => {
+            element.textContent = finalText
+                .split('')
+                .map((char, index) => {
+                    if (index < iteration) {
+                        return finalText[index];
+                    }
+                    return chars[Math.floor(Math.random() * chars.length)];
+                })
+                .join('');
+            
+            if (iteration >= finalText.length) {
+                clearInterval(scrambleInterval);
+            }
+            
+            iteration += 1 / 3;
+        }, 30);
+    }
+    
+    initMouseEffects() {
+        // Create custom cursor
+        this.createCustomCursor();
+        
+        // Mouse follower elements
+        const followerElements = document.querySelectorAll('[data-mouse-follow]');
+        followerElements.forEach(element => {
+            this.initMouseFollower(element);
+        });
+        
+        // Magnetic elements
+        const magneticElements = document.querySelectorAll('[data-magnetic]');
+        magneticElements.forEach(element => {
+            this.initMagneticElement(element);
+        });
+        
+        // Cursor trail
+        this.initCursorTrail();
+    }
+    
+    createCustomCursor() {
+        const cursor = document.createElement('div');
+        cursor.className = 'custom-cursor';
+        cursor.innerHTML = `
+            <div class="cursor-dot"></div>
+            <div class="cursor-ring"></div>
+        `;
+        document.body.appendChild(cursor);
+        
+        this.customCursor = cursor;
+        
+        // Mouse move handler
+        document.addEventListener('mousemove', (e) => {
+            this.updateCustomCursor(e.clientX, e.clientY);
+        });
+        
+        // Hover effects for interactive elements
+        document.querySelectorAll('a, button, [data-cursor-hover]').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                this.customCursor.classList.add('cursor-hover');
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                this.customCursor.classList.remove('cursor-hover');
+            });
+        });
+    }
+    
+    updateCustomCursor(x, y) {
+        if (!this.customCursor) return;
+        
+        this.customCursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        this.lastMousePosition = { x, y };
+    }
+    
+    initMouseFollower(element) {
+        const speed = parseFloat(element.getAttribute('data-follow-speed')) || 0.1;
+        const offset = JSON.parse(element.getAttribute('data-follow-offset') || '{"x": 0, "y": 0}');
+        
+        let targetX = 0, targetY = 0;
+        let currentX = 0, currentY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            targetX = e.clientX + offset.x;
+            targetY = e.clientY + offset.y;
+        });
+        
+        const updatePosition = () => {
+            currentX += (targetX - currentX) * speed;
+            currentY += (targetY - currentY) * speed;
+            
+            element.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            
+            requestAnimationFrame(updatePosition);
+        };
+        
+        updatePosition();
+    }
+    
+    initMagneticElement(element) {
+        const strength = parseFloat(element.getAttribute('data-magnetic')) || 30;
+        
+        element.addEventListener('mousemove', (e) => {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const deltaX = (e.clientX - centerX) / rect.width;
+            const deltaY = (e.clientY - centerY) / rect.height;
+            
+            const moveX = deltaX * strength;
+            const moveY = deltaY * strength;
+            
+            element.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+        });
+        
+        element.addEventListener('mouseleave', () => {
+            element.style.transform = 'translate3d(0px, 0px, 0)';
+        });
+    }
+    
+    initCursorTrail() {
+        document.addEventListener('mousemove', PegeArts.utils.throttle((e) => {
+            this.addTrailPoint(e.clientX, e.clientY);
+        }, 16));
+    }
+    
+    addTrailPoint(x, y) {
+        const trailPoint = document.createElement('div');
+        trailPoint.className = 'cursor-trail-point';
+        trailPoint.style.left = x + 'px';
+        trailPoint.style.top = y + 'px';
+        
+        document.body.appendChild(trailPoint);
+        
+        // Animate and remove trail point
+        setTimeout(() => {
+            trailPoint.classList.add('fade-out');
+            setTimeout(() => {
+                if (trailPoint.parentNode) {
+                    trailPoint.parentNode.removeChild(trailPoint);
+                }
+            }, 300);
+        }, 100);
+    }
+    
+    initParticleEffects() {
+        const particleContainers = document.querySelectorAll('[data-particles]');
+        
+        particleContainers.forEach(container => {
+            const config = JSON.parse(container.getAttribute('data-particles'));
+            this.createParticleSystem(container, config);
+        });
+    }
+    
+    createParticleSystem(container, config) {
+        const {
+            count = 50,
+            speed = 1,
+            size = { min: 2, max: 4 },
+            color = '#8B5CF6',
+            opacity = { min: 0.3, max: 0.8 },
+            direction = 'up'
+        } = config;
+        
+        const particles = [];
+        
+        for (let i = 0; i < count; i++) {
+            const particle = this.createParticle(container, { speed, size, color, opacity, direction });
+            particles.push(particle);
+        }
+        
+        this.particleSystems.set(container, particles);
+        this.animateParticles(particles);
+    }
+    
+    createParticle(container, config) {
+        const particle = document.createElement('div');
+        particle.className = 'animated-particle';
+        
+        const particleSize = PegeArts.utils.random(config.size.min, config.size.max);
+        const particleOpacity = PegeArts.utils.random(config.opacity.min, config.opacity.max);
+        
+        particle.style.cssText = `
+            position: absolute;
+            width: ${particleSize}px;
+            height: ${particleSize}px;
+            background: ${config.color};
+            border-radius: 50%;
+            opacity: ${particleOpacity};
+            pointer-events: none;
+        `;
+        
+        // Random starting position
+        const containerRect = container.getBoundingClientRect();
+        particle.x = PegeArts.utils.random(0, containerRect.width);
+        particle.y = containerRect.height + 10;
+        particle.speedX = PegeArts.utils.random(-config.speed, config.speed);
+        particle.speedY = -PegeArts.utils.random(config.speed * 0.5, config.speed * 2);
+        particle.life = 1;
+        particle.decay = PegeArts.utils.random(0.005, 0.02);
+        
+        particle.style.left = particle.x + 'px';
+        particle.style.top = particle.y + 'px';
+        
+        container.appendChild(particle);
+        return particle;
+    }
+    
+    animateParticles(particles) {
+        const animate = () => {
+            particles.forEach(particle => {
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                particle.life -= particle.decay;
+                
+                particle.style.left = particle.x + 'px';
+                particle.style.top = particle.y + 'px';
+                particle.style.opacity = particle.life;
+                
+                // Reset particle if it's dead or out of bounds
+                if (particle.life <= 0 || particle.y < -10) {
+                    const container = particle.parentNode;
+                    const containerRect = container.getBoundingClientRect();
+                    
+                    particle.x = PegeArts.utils.random(0, containerRect.width);
+                    particle.y = containerRect.height + 10;
+                    particle.life = 1;
+                }
+            });
+            
+            requestAnimationFrame(animate);
+        };
+        
+        animate();
+    }
+    
+    initAdvancedCounters() {
+        const counterElements = document.querySelectorAll('[data-counter-advanced]');
+        
+        counterElements.forEach(element => {
+            const config = JSON.parse(element.getAttribute('data-counter-advanced'));
+            this.setup    initAdvancedCounters() {
+        const counterElements = document.querySelectorAll('[data-counter-advanced]');
+        
+        counterElements.forEach(element => {
+            const config = JSON.parse(element.getAttribute('data-counter-advanced'));
+            this.setupAdvancedCounter(element, config);
+        });
+    }
+    
+    setupAdvancedCounter(element, config) {
+        const {
+            start = 0,
+            end = 100,
+            duration = 2000,
+            easing = 'easeOutCubic',
+            suffix = '',
+            prefix = '',
+            separator = '',
+            decimal = 0,
+            trigger = 'scroll'
+        } = config;
+        
+        const counter = {
+            element,
+            start,
+            end,
+            current: start,
+            duration,
+            suffix,
+            prefix,
+            separator,
+            decimal,
+            isAnimating: false
+        };
+        
+        if (trigger === 'scroll') {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !counter.isAnimating) {
+                        this.animateAdvancedCounter(counter, easing);
+                        observer.unobserve(element);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            observer.observe(element);
+        }
+        
+        this.animatedCounters.set(element, counter);
+    }
+    
+    animateAdvancedCounter(counter, easing) {
+        counter.isAnimating = true;
+        const startTime = Date.now();
+        const { start, end, duration, element, suffix, prefix, separator, decimal } = counter;
+        
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Apply easing
+            const easedProgress = this.applyEasing(progress, easing);
+            const currentValue = start + (end - start) * easedProgress;
+            
+            // Format number
+            const formattedValue = this.formatCounterValue(currentValue, separator, decimal);
+            element.textContent = `${prefix}${formattedValue}${suffix}`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                counter.isAnimating = false;
+                counter.current = end;
+            }
+        };
+        
+        animate();
+    }
+    
+    formatCounterValue(value, separator, decimal) {
+        let formatted = parseFloat(value).toFixed(decimal);
+        
+        if (separator === ',') {
+            formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        
+        return formatted;
+    }
+    
+    applyEasing(t, easingType) {
+        const easingFunctions = {
+            linear: t => t,
+            easeInQuad: t => t * t,
+            easeOutQuad: t => t * (2 - t),
+            easeInOutQuad: t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
+            easeInCubic: t => t * t * t,
+            easeOutCubic: t => (--t) * t * t + 1,
+            easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+            easeOutBounce: t => {
+                if (t < 1 / 2.75) return 7.5625 * t * t;
+                if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+                if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+                return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+            }
+        };
+        
+        return easingFunctions[easingType] ? easingFunctions[easingType](t) : t;
+    }
+    
+    initPageTransitions() {
+        // Smooth page transitions for SPA-like experience
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href^="#"]');
+            if (link && link.hash) {
+                e.preventDefault();
+                this.smoothPageTransition(link.hash);
+            }
+        });
+    }
+    
+    smoothPageTransition(targetHash) {
+        const targetElement = document.querySelector(targetHash);
+        if (!targetElement) return;
+        
+        // Create loading overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'page-transition-overlay';
+        document.body.appendChild(overlay);
+        
+        // Fade in overlay
+        setTimeout(() => {
+            overlay.classList.add('active');
+        }, 10);
+        
+        // Scroll to target after fade
+        setTimeout(() => {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            // Fade out overlay
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    if (overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                    }
+                }, 300);
+            }, 500);
+        }, 300);
+    }
+    
+    initIntersectionObservers() {
+        // Performance-optimized observers for various elements
+        this.setupLazyLoading();
+        this.setupAnimationTriggers();
+        this.setupVisibilityTracking();
+    }
+    
+    setupLazyLoading() {
+        const lazyImages = document.querySelectorAll('img[data-src], [data-bg]');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        this.loadLazyContent(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '50px'
+            });
+            
+            lazyImages.forEach(img => imageObserver.observe(img));
+        } else {
+            // Fallback for browsers without IntersectionObserver
+            lazyImages.forEach(img => this.loadLazyContent(img));
+        }
+    }
+    
+    loadLazyContent(element) {
+        if (element.dataset.src) {
+            // Lazy load image
+            const img = new Image();
+            img.onload = () => {
+                element.src = element.dataset.src;
+                element.classList.add('loaded');
+                element.removeAttribute('data-src');
+            };
+            img.onerror = () => {
+                element.classList.add('error');
+            };
+            img.src = element.dataset.src;
+        }
+        
+        if (element.dataset.bg) {
+            // Lazy load background image
+            const img = new Image();
+            img.onload = () => {
+                element.style.backgroundImage = `url(${element.dataset.bg})`;
+                element.classList.add('bg-loaded');
+                element.removeAttribute('data-bg');
+            };
+            img.src = element.dataset.bg;
+        }
+    }
+    
+    setupAnimationTriggers() {
+        const animationElements = document.querySelectorAll('[data-aos], .animate-on-scroll');
+        
+        const animationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('aos-animate', 'in-view');
+                } else {
+                    // Remove animation class if element goes out of view (for repeatable animations)
+                    const repeat = entry.target.getAttribute('data-aos-repeat');
+                    if (repeat === 'true') {
+                        entry.target.classList.remove('aos-animate', 'in-view');
+                    }
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -10% 0px'
+        });
+        
+        animationElements.forEach(el => animationObserver.observe(el));
+    }
+    
+    setupVisibilityTracking() {
+        // Track which sections are visible for analytics
+        const sections = document.querySelectorAll('section[id]');
+        
+        const visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    PegeArts.state.currentSection = sectionId;
+                    
+                    // Update URL hash without jumping
+                    if (history.pushState) {
+                        history.pushState(null, null, `#${sectionId}`);
+                    }
+                    
+                    // Track section visibility
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'section_view', {
+                            event_category: 'Navigation',
+                            event_label: sectionId,
+                            non_interaction: true
+                        });
+                    }
+                }
+            });
+        }, {
+            threshold: 0.5,
+            rootMargin: '-20% 0px'
+        });
+        
+        sections.forEach(section => visibilityObserver.observe(section));
+    }
+    
+    // Public methods for external control
+    triggerAnimation(element, animationType, options = {}) {
+        if (PegeArts.state.reducedMotion) return;
+        
+        const duration = options.duration || 600;
+        const delay = options.delay || 0;
         
         setTimeout(() => {
-            ripple.remove();
-        }, 600);
-    });
+            this.playScrollAnimation(element, animationType, duration);
+        }, delay);
+    }
+    
+    pauseAllAnimations() {
+        // Pause all running animations
+        document.querySelectorAll('.animated, .aos-animate').forEach(element => {
+            element.style.animationPlayState = 'paused';
+        });
+        
+        // Stop particle systems
+        this.particleSystems.forEach(particles => {
+            particles.forEach(particle => {
+                particle.style.animationPlayState = 'paused';
+            });
+        });
+    }
+    
+    resumeAllAnimations() {
+        // Resume all paused animations
+        document.querySelectorAll('.animated, .aos-animate').forEach(element => {
+            element.style.animationPlayState = 'running';
+        });
+        
+        // Resume particle systems
+        this.particleSystems.forEach(particles => {
+            particles.forEach(particle => {
+                particle.style.animationPlayState = 'running';
+            });
+        });
+    }
+    
+    cleanup() {
+        // Clean up observers and event listeners
+        this.scrollTriggers.forEach(trigger => trigger.disconnect());
+        this.particleSystems.forEach(particles => {
+            particles.forEach(particle => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            });
+        });
+        
+        this.scrollTriggers.clear();
+        this.parallaxElements.clear();
+        this.morphingElements.clear();
+        this.particleSystems.clear();
+        this.animatedCounters.clear();
+        this.textAnimations.clear();
+    }
+}
 
-})();
+// =============================================================================
+// COMPLETE INITIALIZATION AND COMPONENT INTEGRATION
+// =============================================================================
 
-// Ripple animation keyframes
-const rippleStyles = document.createElement('style');
-rippleStyles.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
+// Star Field Manager (Enhanced version from earlier)
+class StarFieldManager {
+    constructor() {
+        this.canvas = document.getElementById('starfield');
+        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+        this.stars = [];
+        this.animationFrame = null;
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.isAnimating = true;
+        
+        if (this.ctx) {
+            this.init();
         }
     }
-`;
-document.head.appendChild(rippleStyles);
+    
+    init() {
+        this.resizeCanvas();
+        this.createStars();
+        this.bindEvents();
+        this.animate();
+    }
+    
+    resizeCanvas() {
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = rect.width * window.devicePixelRatio;
+        this.canvas.height = rect.height * window.devicePixelRatio;
+        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        this.canvas.style.width = rect.width + 'px';
+        this.canvas.style.height = rect.height + 'px';
+    }
+    
+    createStars() {
+        const numStars = Math.floor((this.canvas.width * this.canvas.height) / 15000);
+        this.stars = [];
+        
+        for (let i = 0; i < numStars; i++) {
+            this.stars.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 1.5,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                opacity: Math.random() * 0.8 + 0.2
+            });
+        }
+    }
+    
+    bindEvents() {
+        window.addEventListener('resize', PegeArts.utils.throttle(() => {
+            this.resizeCanvas();
+            this.createStars();
+        }, 250));
+        
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouseX = e.clientX - rect.left;
+            this.mouseY = e.clientY - rect.top;
+        });
+    }
+    
+    animate() {
+        if (!this.isAnimating) return;
+        
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.stars.forEach(star => {
+            // Mouse interaction
+            const dx = this.mouseX - star.x;
+            const dy = this.mouseY - star.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 100) {
+                const force = (100 - distance) / 100;
+                star.x -= dx * force * 0.01;
+                star.y -= dy * force * 0.01;
+            }
+            
+            // Update position
+            star.x += star.vx;
+            star.y += star.vy;
+            
+            // Wrap around edges
+            if (star.x < 0) star.x = this.canvas.width;
+            if (star.x > this.canvas.width) star.x = 0;
+            if (star.y < 0) star.y = this.canvas.height;
+            if (star.y > this.canvas.height) star.y = 0;
+            
+            // Draw star
+            this.ctx.beginPath();
+            this.ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+            this.ctx.fill();
+        });
+        
+        this.animationFrame = requestAnimationFrame(() => this.animate());
+    }
+    
+    stop() {
+        this.isAnimating = false;
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+        }
+    }
+    
+    start() {
+        this.isAnimating = true;
+        this.animate();
+    }
+}
+
+// Complete Notification System
+class NotificationManager {
+    constructor() {
+        this.container = null;
+        this.notifications = new Map();
+        this.maxNotifications = 5;
+        this.defaultDuration = 5000;
+        
+        this.init();
+    }
+    
+    init() {
+        this.createContainer();
+    }
+    
+    createContainer() {
+        this.container = document.createElement('div');
+        this.container.id = 'notification-container';
+        this.container.className = 'notification-container';
+        this.container.setAttribute('aria-live', 'polite');
+        this.container.setAttribute('aria-atomic', 'false');
+        document.body.appendChild(this.container);
+    }
+    
+    show(message, type = 'info', duration = this.defaultDuration, actions = []) {
+        const id = 'notification_' + Date.now() + Math.random().toString(36).substr(2, 9);
+        
+        const notification = this.createNotification(id, message, type, duration, actions);
+        this.container.appendChild(notification);
+        this.notifications.set(id, notification);
+        
+        // Enforce max notifications
+        if (this.notifications.size > this.maxNotifications) {
+            const oldestId = this.notifications.keys().next().value;
+            this.hide(oldestId);
+        }
+        
+        // Show animation
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Auto-hide if duration is specified
+        if (duration > 0) {
+            setTimeout(() => {
+                this.hide(id);
+            }, duration);
+        }
+        
+        // Announce to screen readers
+        if (PegeArts.accessibility) {
+            PegeArts.accessibility.announce(message, type === 'error' ? 'assertive' : 'polite');
+        }
+        
+        return id;
+    }
+    
+    createNotification(id, message, type, duration, actions) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
+        notification.setAttribute('data-id', id);
+        
+        const iconMap = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle'
+        };
+        
+        const progressBar = duration > 0 ? `
+            <div class="notification-progress">
+                <div class="notification-progress-bar" style="animation-duration: ${duration}ms"></div>
+            </div>
+        ` : '';
+        
+        const actionButtons = actions.length > 0 ? `
+            <div class="notification-actions">
+                ${actions.map(action => `
+                    <button class="notification-action" 
+                            onclick="${action.handler}" 
+                            data-action="${action.action}">
+                        ${action.text}
+                    </button>
+                `).join('')}
+            </div>
+        ` : '';
+        
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">
+                    <i class="fas ${iconMap[type]}"></i>
+                </div>
+                <div class="notification-message">
+                    ${message}
+                </div>
+                <button class="notification-close" 
+                        onclick="PegeArts.notifications.hide('${id}')"
+                        aria-label="Close notification">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            ${actionButtons}
+            ${progressBar}
+        `;
+        
+        return notification;
+    }
+    
+    hide(id) {
+        const notification = this.notifications.get(id);
+        if (!notification) return;
+        
+        notification.classList.add('hide');
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+            this.notifications.delete(id);
+        }, 300);
+    }
+    
+    hideAll() {
+        this.notifications.forEach((notification, id) => {
+            this.hide(id);
+        });
+    }
+    
+    update(id, message, type) {
+        const notification = this.notifications.get(id);
+        if (!notification) return;
+        
+        const messageEl = notification.querySelector('.notification-message');
+        const iconEl = notification.querySelector('.notification-icon i');
+        
+        if (messageEl) messageEl.textContent = message;
+        if (iconEl && type) {
+            const iconMap = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            iconEl.className = `fas ${iconMap[type]}`;
+        }
+        
+        if (type) {
+            notification.className = `notification notification-${type} show`;
+        }
+    }
+}
+
+// Initialize all components
+PegeArts.init = function() {
+    console.log('🎨 Initializing Pegearts Portfolio with Full Features...');
+    
+    try {
+        // Core managers
+        PegeArts.starField = new StarFieldManager();
+        PegeArts.navigation = new NavigationManager();
+        PegeArts.typing = new TypingAnimationManager();
+        PegeArts.counters = new CounterAnimationManager();
+        PegeArts.fab = new FABManager();
+        PegeArts.backToTop = new BackToTopManager();
+        PegeArts.cookieManager = new CookieManager();
+        PegeArts.themeManager = new ThemeManager();
+        PegeArts.performanceMonitor = new PerformanceMonitor();
+        PegeArts.errorHandler = new ErrorHandler();
+        PegeArts.accessibility = new AccessibilityHelper();
+        PegeArts.autoSave = new AutoSaveManager();
+        PegeArts.notifications = new NotificationManager();
+        
+        // Feature-specific managers
+        PegeArts.audioPlayer = new AudioPlayerManager();
+        PegeArts.portfolio = new PortfolioManager();
+        PegeArts.contact = new ContactFormManager();
+        PegeArts.animations = new AdvancedAnimationsManager();
+        
+        // Initialize external libraries
+        if (typeof AOS !== 'undefined' && !PegeArts.state.reducedMotion) {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 100,
+                delay: 0,
+                disable: PegeArts.state.isMobile
+            });
+        }
+        
+        // Mark as loaded
+        PegeArts.state.isLoaded = true;
+        document.body.classList.add('pegearts-loaded');
+        
+        // Show welcome notification
+        setTimeout(() => {
+            PegeArts.notifications.show(
+                'Welcome to Pegearts Portfolio! Experience interactive AI and voice technology.',
+                'success',
+                4000
+            );
+        }, 1000);
+        
+        console.log('✅ Pegearts Portfolio initialized successfully!');
+        
+    } catch (error) {
+        console.error('❌ Error initializing Pegearts Portfolio:', error);
+        PegeArts.errorHandler?.handleError({
+            type: 'initialization',
+            message: error.message,
+            stack: error.stack,
+            timestamp: Date.now()
+        });
+    }
+};
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', PegeArts.init);
+} else {
+    PegeArts.init();
+}
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { PegeartsApp, Utils, AppState };
+    module.exports = PegeArts;
 }
+
+// Global error handling
+window.addEventListener('error', (e) => {
+    console.error('Global error:', e.error);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('Unhandled promise rejection:', e.reason);
+});
+
 
 
