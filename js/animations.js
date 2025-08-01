@@ -1,658 +1,1066 @@
 /**
  * ANIMATIONS.JS - Thanatsitt Professional Website
- * Complete JavaScript animation system with celestial effects
- * Handles dynamic movements, particles, interactions, and performance optimization
- * Version: 2.0 - Enhanced with full celestial system
+ * Enhanced Animation System with Celestial Effects & Performance Optimization
+ * Version: 2.1 - Complete Integration System
+ * Author: Thanatsitt Santisamranwilai
  */
 
-class ThanaAnimations {
+class ThanatsittAnimations {
     constructor() {
-        this.version = '2.0';
-        this.init();
-        this.setupEventListeners();
-        this.initializeAnimations();
+        this.version = '2.1';
+        this.isInitialized = false;
+        this.performanceMode = 'auto';
+        this.deviceCapabilities = this.detectDeviceCapabilities();
         
-        // Performance monitoring
-        this.performanceMode = this.detectPerformanceMode();
+        // Core systems
+        this.particleSystem = null;
+        this.audioSystem = null;
+        this.scrollSystem = null;
+        this.interactionSystem = null;
+        this.celestialSystem = null;
+        
+        // Animation states
+        this.activeAnimations = new Set();
+        this.animationFrame = null;
+        this.isVisible = !document.hidden;
+        
+        // Performance tracking
         this.frameCount = 0;
-        this.lastFPSCheck = 0;
-        this.currentFPS = 60;
+        this.lastFrameTime = 0;
+        this.averageFPS = 60;
+        this.performanceHistory = [];
         
-        console.log(`🎬 Thanatsitt Animations v${this.version} initialized`);
+        console.log(`🎬 Thanatsitt Animations v${this.version} initializing...`);
+        this.init();
     }
 
     init() {
-        // Motion preferences
-        this.isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        this.prefersReducedData = window.matchMedia('(prefers-reduced-data: reduce)').matches;
-        this.isLowPowerMode = this.detectLowPowerMode();
+        if (this.isInitialized) return;
         
-        // Canvas setup
-        this.particleCanvas = document.getElementById('particlesCanvas');
-        this.ctx = this.particleCanvas?.getContext('2d');
+        // Check for reduced motion preference
+        this.respectsReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         
-        // Animation arrays
-        this.particles = [];
-        this.stars = [];
-        this.shootingStars = [];
-        this.cosmicParticles = [];
-        this.mouseTrail = [];
-        
-        // Animation IDs
-        this.animationId = null;
-        this.typewriterTimeout = null;
-        this.counterAnimations = new Map();
-        
-        // Mouse and interaction
-        this.mousePos = { x: 0, y: 0 };
-        this.lastMousePos = { x: 0, y: 0 };
-        this.mouseVelocity = { x: 0, y: 0 };
-        this.isMouseMoving = false;
-        
-        // Scroll tracking
-        this.scrollPos = 0;
-        this.lastScrollPos = 0;
-        this.scrollVelocity = 0;
-        this.isScrolling = false;
-        
-        // Performance tracking
-        this.lastFrameTime = 0;
-        this.deltaTime = 0;
-        this.averageFPS = 60;
-        this.frameHistory = [];
-        
-        // Animation states
-        this.animations = {
-            hero: false,
-            particles: false,
-            stars: false,
-            moon: false,
-            typewriter: false,
-            counters: false,
-            celestial: false
-        };
-        
-        // Celestial system
-        this.celestialSystem = {
-            moon: null,
-            moonGlow: null,
-            constellations: [],
-            auroras: []
-        };
-        
-        // Audio context for sound-reactive animations
-        this.audioContext = null;
-        this.audioAnalyser = null;
-        this.audioData = null;
-    }
-
-    detectPerformanceMode() {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        const memory = navigator.deviceMemory || 4;
-        const cores = navigator.hardwareConcurrency || 4;
-        
-        // Low performance indicators
-        if (connection && connection.effectiveType === '2g') return 'low';
-        if (memory < 2) return 'low';
-        if (cores < 2) return 'low';
-        
-        // High performance indicators
-        if (memory >= 8 && cores >= 8) return 'high';
-        if (connection && (connection.effectiveType === '4g' || connection.effectiveType === '5g')) {
-            return memory >= 4 ? 'high' : 'medium';
-        }
-        
-        return 'medium';
-    }
-
-    detectLowPowerMode() {
-        return navigator.getBattery ? navigator.getBattery().then(battery => battery.charging === false && battery.level < 0.2) : false;
-    }
-
-    setupEventListeners() {
-        // Mouse movement with throttling
-        let mouseThrottle = null;
-        document.addEventListener('mousemove', (e) => {
-            if (mouseThrottle) return;
-            
-            mouseThrottle = setTimeout(() => {
-                this.lastMousePos = { ...this.mousePos };
-                this.mousePos.x = e.clientX;
-                this.mousePos.y = e.clientY;
-                
-                // Calculate mouse velocity
-                this.mouseVelocity.x = this.mousePos.x - this.lastMousePos.x;
-                this.mouseVelocity.y = this.mousePos.y - this.lastMousePos.y;
-                this.isMouseMoving = true;
-                
-                // Add to mouse trail
-                this.addMouseTrail(e.clientX, e.clientY);
-                
-                clearTimeout(this.mouseStopTimeout);
-                this.mouseStopTimeout = setTimeout(() => {
-                    this.isMouseMoving = false;
-                }, 100);
-                
-                mouseThrottle = null;
-            }, 16); // ~60fps
-        });
-
-        // Touch events for mobile
-        document.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                const touch = e.touches[0];
-                this.mousePos.x = touch.clientX;
-                this.mousePos.y = touch.clientY;
-            }
-        }, { passive: true });
-
-        // Scroll handling with throttling
-        let scrollThrottle = null;
-        window.addEventListener('scroll', () => {
-            if (scrollThrottle) return;
-            
-            scrollThrottle = setTimeout(() => {
-                this.lastScrollPos = this.scrollPos;
-                this.scrollPos = window.pageYOffset;
-                this.scrollVelocity = this.scrollPos - this.lastScrollPos;
-                this.isScrolling = true;
-                
-                this.handleScroll();
-                
-                clearTimeout(this.scrollStopTimeout);
-                this.scrollStopTimeout = setTimeout(() => {
-                    this.isScrolling = false;
-                }, 150);
-                
-                scrollThrottle = null;
-            }, 16);
-        }, { passive: true });
-
-        // Resize handler with debouncing
-        let resizeTimeout = null;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                this.resizeCanvas();
-                this.repositionCelestialElements();
-                this.recalculateParticles();
-            }, 250);
-        });
-
-        // Visibility change (page focus/blur)
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this.pauseAnimations();
-            } else {
-                this.resumeAnimations();
-            }
-        });
-
-        // Intersection observers
-        this.setupIntersectionObservers();
-
-        // Reduced motion preference change
-        window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
-            this.isReducedMotion = e.matches;
-            if (this.isReducedMotion) {
-                this.stopAllAnimations();
-            } else {
-                this.initializeAnimations();
-            }
-        });
-
-        // Battery API
-        if (navigator.getBattery) {
-            navigator.getBattery().then(battery => {
-                battery.addEventListener('levelchange', () => {
-                    if (battery.level < 0.15 && !battery.charging) {
-                        this.enablePowerSaveMode();
-                    }
-                });
-            });
-        }
-
-        // Network change
-        if (navigator.connection) {
-            navigator.connection.addEventListener('change', () => {
-                const connection = navigator.connection;
-                if (connection.effectiveType === '2g' || connection.saveData) {
-                    this.enableDataSaveMode();
-                }
-            });
-        }
-    }
-
-    setupIntersectionObservers() {
-        const options = {
-            threshold: [0.1, 0.3, 0.5, 0.7],
-            rootMargin: '50px'
-        };
-
-        // Hero section observer
-        const heroObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-                    if (!this.animations.hero) {
-                        this.startHeroAnimations();
-                        this.animations.hero = true;
-                    }
-                }
-            });
-        }, options);
-
-        const heroSection = document.getElementById('home');
-        if (heroSection) {
-            heroObserver.observe(heroSection);
-        }
-
-        // Section reveal observer
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && entry.intersectionRatio > 0.2) {
-                    entry.target.classList.add('reveal-animate');
-                    
-                    // Trigger section-specific animations
-                    this.triggerSectionAnimations(entry.target);
-                }
-            });
-        }, { threshold: 0.2, rootMargin: '100px' });
-
-        // Observe all sections and animated elements
-        document.querySelectorAll('section, .animate-on-scroll').forEach(element => {
-            revealObserver.observe(element);
-        });
-
-        // Skill bars observer
-        const skillObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    this.animateSkillBars(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.skill-bar, .progress-bar').forEach(bar => {
-            skillObserver.observe(bar);
-        });
-    }
-
-    initializeAnimations() {
-        if (this.isReducedMotion) {
-            console.log('🚫 Animations disabled: Reduced motion preference');
+        if (this.respectsReducedMotion) {
+            this.initializeAccessibleAnimations();
             return;
         }
-
-        this.setupCanvas();
-        this.createParticleSystem();
-        this.createCelestialSystem();
-        this.initializeAudioContext();
-        this.startAnimationLoop();
         
-        console.log('✨ Animation systems initialized');
-    }
-
-    setupCanvas() {
-        if (!this.particleCanvas || !this.ctx) return;
-
-        this.resizeCanvas();
-        
-        // Set canvas styles for better performance
-        this.ctx.imageSmoothingEnabled = true;
-        this.ctx.imageSmoothingQuality = 'high';
-        
-        // Set initial canvas properties
-        this.ctx.globalCompositeOperation = 'source-over';
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
-    }
-
-    resizeCanvas() {
-        if (!this.particleCanvas || !this.ctx) return;
-
-        const rect = this.particleCanvas.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        
-        this.particleCanvas.width = rect.width * dpr;
-        this.particleCanvas.height = rect.height * dpr;
-        
-        this.ctx.scale(dpr, dpr);
-        this.particleCanvas.style.width = rect.width + 'px';
-        this.particleCanvas.style.height = rect.height + 'px';
-    }
-
-    createParticleSystem() {
-        if (!this.ctx) return;
-
-        const particleCount = this.getOptimalParticleCount();
-        this.particles = [];
-
-        for (let i = 0; i < particleCount; i++) {
-            this.particles.push(this.createParticle());
-        }
-
-        console.log(`🌟 Created ${particleCount} particles`);
-    }
-
-    getOptimalParticleCount() {
-        const baseCount = window.innerWidth < 768 ? 20 : 40;
-        
-        switch (this.performanceMode) {
-            case 'low': return Math.floor(baseCount * 0.5);
-            case 'high': return Math.floor(baseCount * 1.5);
-            default: return baseCount;
+        // Wait for DOM content to be loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initializeFullSystem());
+        } else {
+            this.initializeFullSystem();
         }
     }
-
-    createParticle() {
-        return {
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5,
-            size: Math.random() * 3 + 1,
-            opacity: Math.random() * 0.8 + 0.2,
-            baseOpacity: Math.random() * 0.8 + 0.2,
-            pulseSpeed: Math.random() * 0.02 + 0.01,
-            pulsePhase: Math.random() * Math.PI * 2,
-            color: this.getRandomParticleColor(),
-            life: 1,
-            maxLife: Math.random() * 1000 + 500,
-            trail: [],
-            connections: 0
+    
+    detectDeviceCapabilities() {
+        const capabilities = {
+            isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+            isLowPower: false,
+            memory: navigator.deviceMemory || 4,
+            cores: navigator.hardwareConcurrency || 4,
+            connection: (navigator.connection || {}).effectiveType || '4g',
+            hasWebGL: this.detectWebGL(),
+            hasAudioContext: !!(window.AudioContext || window.webkitAudioContext),
+            supportsIntersectionObserver: 'IntersectionObserver' in window,
+            supportsResizeObserver: 'ResizeObserver' in window
         };
-    }
-
-    getRandomParticleColor() {
-        const colors = [
-            { r: 167, g: 139, b: 250, a: 0.8 }, // Primary purple
-            { r: 249, g: 168, b: 212, a: 0.6 }, // Secondary pink
-            { r: 110, g: 231, b: 183, a: 0.7 }, // Accent green
-            { r: 252, g: 211, b: 77, a: 0.5 },  // Gold accent
-            { r: 99, g: 179, b: 237, a: 0.6 }   // Blue accent
-        ];
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    createCelestialSystem() {
-        this.createDynamicStars();
-        this.createShootingStars();
-        this.createCosmicParticles();
-        this.createConstellations();
-        this.setupMoonSystem();
         
-        console.log('🌙 Celestial system created');
+        // Determine performance mode
+        if (capabilities.memory < 2 || capabilities.connection === '2g') {
+            this.performanceMode = 'low';
+        } else if (capabilities.memory >= 8 && capabilities.cores >= 8 && !capabilities.isMobile) {
+            this.performanceMode = 'high';
+        } else {
+            this.performanceMode = 'medium';
+        }
+        
+        console.log('📱 Device capabilities:', capabilities);
+        console.log('⚡ Performance mode:', this.performanceMode);
+        
+        return capabilities;
     }
+    
+    detectWebGL() {
+        try {
+            const canvas = document.createElement('canvas');
+            return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    initializeFullSystem() {
+        try {
+            this.setupEventListeners();
+            this.initializeParticleSystem();
+            this.initializeCelestialSystem();
+            this.initializeScrollAnimations();
+            this.initializeInteractionSystem();
+            this.initializeAudioSystem();
+            this.initializeTypewriterEffect();
+            this.initializeCounterAnimations();
+            this.initializePortfolioAnimations();
+            this.initializeVoiceDemoAnimations();
+            this.initializeFormAnimations();
+            this.startAnimationLoop();
+            
+            this.isInitialized = true;
+            console.log('✨ Full animation system initialized successfully');
+            
+        } catch (error) {
+            console.error('❌ Animation system initialization failed:', error);
+            this.initializeAccessibleAnimations();
+        }
+    }
+    
+    initializeAccessibleAnimations() {
+        console.log('♿ Initializing accessible animations only');
+        
+        // Simple fade-in animations that respect reduced motion
+        document.querySelectorAll('[data-aos]').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            observer.observe(element);
+        });
+        
+        this.isInitialized = true;
+    }
+    
+    setupEventListeners() {
+        // Throttled mouse movement
+        let mouseThrottle = false;
+        document.addEventListener('mousemove', (e) => {
+            if (mouseThrottle) return;
+            mouseThrottle = true;
+            
+            requestAnimationFrame(() => {
+                this.handleMouseMove(e);
+                mouseThrottle = false;
+            });
+        });
+        
+        // Throttled scroll events
+        let scrollThrottle = false;
+        window.addEventListener('scroll', () => {
+            if (scrollThrottle) return;
+            scrollThrottle = true;
+            
+            requestAnimationFrame(() => {
+                this.handleScroll();
+                scrollThrottle = false;
+            });
+        }, { passive: true });
+        
+        // Resize with debouncing
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);  
+            resizeTimeout = setTimeout(() => this.handleResize(), 250);
+        });
+        
+        // Page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            this.isVisible = !document.hidden;
+            if (this.isVisible) {
+                this.resumeAnimations();
+            } else {
+                this.pauseAnimations();
+            }
+        });
+        
+        // Reduced motion preference changes
+        window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
+            this.respectsReducedMotion = e.matches;
+            if (e.matches) {
+                this.pauseComplexAnimations();
+            } else {
+                this.resumeComplexAnimations();
+            }
+        });
 
+        // Battery status (if available)
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                this.monitorBatteryStatus(battery);
+            });
+        }
+        
+        // Network status changes
+        if (navigator.connection) {
+            navigator.connection.addEventListener('change', () => {
+                this.adaptToNetworkConditions();
+            });
+        }
+    }
+    
+    initializeParticleSystem() {
+        console.log('🌟 Initializing particle system...');
+        
+        const canvas = document.getElementById('particlesCanvas') || this.createParticleCanvas();
+        if (!canvas) {
+            console.warn('⚠️ Particle canvas not found, skipping particle system');
+            return;
+        }
+        
+        this.particleSystem = new ParticleSystem(canvas, {
+            particleCount: this.getOptimalParticleCount(),
+            performanceMode: this.performanceMode,
+            deviceCapabilities: this.deviceCapabilities
+        });
+        
+        this.activeAnimations.add('particles');
+    }
+    
+    createParticleCanvas() {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'particlesCanvas';
+        canvas.className = 'particle-canvas';
+        canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        `;
+        document.body.appendChild(canvas);
+        return canvas;
+    }
+    
+    getOptimalParticleCount() {
+        const base = this.deviceCapabilities.isMobile ? 30 : 50;
+        const multipliers = {
+            low: 0.3,
+            medium: 0.7,
+            high: 1.2
+        };
+        return Math.floor(base * multipliers[this.performanceMode]);
+    }
+    
+    initializeCelestialSystem() {
+        console.log('🌙 Initializing celestial system...');
+        
+        this.celestialSystem = {
+            stars: this.createDynamicStars(),
+            shootingStars: this.createShootingStars(),
+            moon: this.createMoonSystem(),
+            auroras: this.createAuroraEffects(),
+            nebulas: this.createNebulaEffects()
+        };
+        
+        this.activeAnimations.add('celestial');
+    }
+    
     createDynamicStars() {
-        const container = document.querySelector('.floating-elements') || document.body;
-        const starCount = this.performanceMode === 'low' ? 15 : 
-                         this.performanceMode === 'high' ? 35 : 25;
+        const starContainer = document.querySelector('.starfield') || document.querySelector('.cosmic-background');
+        if (!starContainer) return [];
         
-        // Clear existing stars
-        container.querySelectorAll('.dynamic-star').forEach(star => star.remove());
+        const stars = [];
+        const starCount = this.performanceMode === 'low' ? 50 : 
+                         this.performanceMode === 'high' ? 150 : 100;
         
         for (let i = 0; i < starCount; i++) {
             const star = document.createElement('div');
-            star.className = `star dynamic-star ${this.getRandomStarSize()}`;
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            star.className = 'dynamic-star';
+            star.style.cssText = `
+                position: absolute;
+                background: white;
+                border-radius: 50%;
+                width: ${Math.random() * 3 + 1}px;
+                height: ${Math.random() * 3 + 1}px;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: starTwinkle ${Math.random() * 3 + 2}s ease-in-out infinite;
+                opacity: ${Math.random() * 0.8 + 0.2};
+            `;
             
-            // Add random movement
-            star.style.setProperty('--float-x', (Math.random() - 0.5) * 20 + 'px');
-            star.style.setProperty('--float-y', (Math.random() - 0.5) * 20 + 'px');
-            
-            container.appendChild(star);
-            this.stars.push({
+            starContainer.appendChild(star);
+            stars.push({
                 element: star,
-                baseX: parseFloat(star.style.left),
-                baseY: parseFloat(star.style.top),
-                parallaxFactor: Math.random() * 0.5 + 0.1
+                baseOpacity: parseFloat(star.style.opacity),
+                twinkleSpeed: Math.random() * 0.02 + 0.01,
+                phase: Math.random() * Math.PI * 2
             });
         }
-    }
-
-    getRandomStarSize() {
-        const sizes = ['star-small', 'star-medium', 'star-large'];
-        const weights = [0.6, 0.3, 0.1];
         
-        const random = Math.random();
-        let cumulativeWeight = 0;
-        
-        for (let i = 0; i < sizes.length; i++) {
-            cumulativeWeight += weights[i];
-            if (random <= cumulativeWeight) {
-                return sizes[i];
-            }
-        }
-        return sizes[0];
+        return stars;
     }
-
+    
     createShootingStars() {
-        const container = document.querySelector('.floating-elements') || document.body;
-        
-        // Create shooting stars with random timing
-        for (let i = 0; i < 3; i++) {
+        const createShootingStar = () => {
+            if (this.performanceMode === 'low') return;
+            
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star-dynamic';
+            shootingStar.style.cssText = `
+                position: fixed;
+                width: 2px;
+                height: 2px;
+                background: linear-gradient(45deg, #fff, transparent);
+                border-radius: 50%;
+                box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+                animation: shootingStarMove 3s linear forwards;
+                z-index: 10;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 30}%;
+            `;
+            
+            document.body.appendChild(shootingStar);
+            
             setTimeout(() => {
-                this.createShootingStar(container);
-            }, Math.random() * 10000 + 5000); // Random delay between 5-15 seconds
-        }
-    }
-
-    createShootingStar(container) {
-        const shootingStar = document.createElement('div');
-        shootingStar.className = 'shooting-star';
-        shootingStar.style.left = Math.random() * 100 + '%';
-        shootingStar.style.top = Math.random() * 50 + '%'; // Keep in upper half
-        
-        container.appendChild(shootingStar);
-        
-        // Remove after animation
-        setTimeout(() => {
-            if (shootingStar.parentNode) {
-                shootingStar.parentNode.removeChild(shootingStar);
-            }
+                if (shootingStar.parentNode) {
+                    shootingStar.parentNode.removeChild(shootingStar);
+                }
+            }, 3000);
             
-            // Create new shooting star after delay
-            setTimeout(() => {
-                this.createShootingStar(container);
-            }, Math.random() * 20000 + 10000); // Random delay between 10-30 seconds
-        }, 3000);
+            // Schedule next shooting star
+            setTimeout(createShootingStar, Math.random() * 15000 + 10000);
+        };
+        
+        // Create first shooting star
+        setTimeout(createShootingStar, Math.random() * 5000 + 2000);
+        
+        return { createShootingStar };
     }
-
-    createCosmicParticles() {
-        const container = document.querySelector('.floating-elements') || document.body;
-        const particleCount = this.performanceMode === 'low' ? 10 : 20;
+    
+    createMoonSystem() {
+        const moonContainer = document.querySelector('.cosmic-background') || document.body;
         
-        // Clear existing cosmic particles
-        container.querySelectorAll('.dynamic-cosmic-particle').forEach(p => p.remove());
+        // Remove any existing moon
+        const existingMoon = moonContainer.querySelector('.dynamic-moon');
+        if (existingMoon) existingMoon.remove();
         
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'cosmic-particle dynamic-cosmic-particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 8 + 's';
-            particle.style.animationDuration = (Math.random() * 4 + 8) + 's';
-            
-            // Add color variation
-            const colors = [
-                'rgba(167, 139, 250, 0.8)',
-                'rgba(249, 168, 212, 0.6)',
-                'rgba(110, 231, 183, 0.7)',
-                'rgba(252, 211, 77, 0.5)'
-            ];
-            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-            
-            container.appendChild(particle);
-            this.cosmicParticles.push({
-                element: particle,
-                baseX: parseFloat(particle.style.left),
-                baseY: parseFloat(particle.style.top),
-                parallaxFactor: Math.random() * 0.3 + 0.1
-            });
-        }
-    }
-
-    createConstellations() {
-        if (this.performanceMode === 'low') return;
-        
-        const container = document.querySelector('.floating-elements') || document.body;
-        
-        // Create SVG for constellation lines
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('class', 'constellation-svg');
-        svg.style.position = 'absolute';
-        svg.style.top = '0';
-        svg.style.left = '0';
-        svg.style.width = '100%';
-        svg.style.height = '100%';
-        svg.style.pointerEvents = 'none';
-        svg.style.zIndex = '1';
-        
-        container.appendChild(svg);
-        
-        // Create constellation patterns
-        this.drawConstellation(svg, [
-            { x: 20, y: 30 }, { x: 35, y: 25 }, { x: 50, y: 40 }, { x: 30, y: 50 }
-        ]);
-        
-        this.drawConstellation(svg, [
-            { x: 70, y: 20 }, { x: 85, y: 35 }, { x: 75, y: 50 }, { x: 90, y: 45 }
-        ]);
-    }
-
-    drawConstellation(svg, points) {
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        let pathData = `M ${points[0].x}% ${points[0].y}%`;
-        
-        for (let i = 1; i < points.length; i++) {
-            pathData += ` L ${points[i].x}% ${points[i].y}%`;
-        }
-        
-        path.setAttribute('d', pathData);
-        path.setAttribute('stroke', 'rgba(255, 255, 255, 0.3)');
-        path.setAttribute('stroke-width', '1');
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke-dasharray', '100');
-        path.setAttribute('stroke-dashoffset', '100');
-        path.style.animation = 'constellation 8s ease-in-out infinite';
-        
-        svg.appendChild(path);
-    }
-
-    setupMoonSystem() {
-        const container = document.querySelector('.floating-elements') || document.body;
-        
-        // Remove existing moon elements
-        container.querySelectorAll('.moon, .moon-glow').forEach(el => el.remove());
-        
-        // Create moon
         const moon = document.createElement('div');
-        moon.className = 'moon';
-        container.appendChild(moon);
+        moon.className = 'dynamic-moon';
+        moon.style.cssText = `
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+            border-radius: 50%;
+            top: 10%;
+            right: 10%;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            animation: moonFloat 20s ease-in-out infinite;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        `;
         
-        // Create moon glow
-        const moonGlow = document.createElement('div');
-        moonGlow.className = 'moon-glow';
-        container.appendChild(moonGlow);
+        // Add moon phases effect
+        const moonPhase = document.createElement('div');
+        moonPhase.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.1) 50%);
+            border-radius: 50%;
+            animation: moonPhases 30s linear infinite;
+        `;
+        moon.appendChild(moonPhase);
         
-        this.celestialSystem.moon = moon;
-        this.celestialSystem.moonGlow = moonGlow;
-        
-        // Add interactive moon effects
+        // Interactive effects
         moon.addEventListener('mouseenter', () => {
-            moon.style.animationPlayState = 'paused';
             moon.style.transform = 'scale(1.1)';
-            moon.style.transition = 'transform 0.3s ease';
+            moon.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.6)';
         });
         
         moon.addEventListener('mouseleave', () => {
-            moon.style.animationPlayState = 'running';
             moon.style.transform = 'scale(1)';
+            moon.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.3)';
         });
-    }
-
-    initializeAudioContext() {
-        if (!window.AudioContext && !window.webkitAudioContext) return;
         
-        try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.audioAnalyser = this.audioContext.createAnalyser();
-            this.audioAnalyser.fftSize = 256;
-            this.audioData = new Uint8Array(this.audioAnalyser.frequencyBinCount);
+        moonContainer.appendChild(moon);
+        return { element: moon, phase: moonPhase };
+    }
+    
+    createAuroraEffects() {
+        if (this.performanceMode === 'low') return [];
+        
+        const auroraContainer = document.querySelector('.cosmic-background') || document.body;
+        const auroras = [];
+        
+        for (let i = 0; i < 3; i++) {
+            const aurora = document.createElement('div');
+            aurora.className = 'dynamic-aurora';
+            aurora.style.cssText = `
+                position: absolute;
+                width: 100%;
+                height: 200px;
+                background: linear-gradient(90deg, 
+                    transparent,
+                    rgba(167, 139, 250, 0.1),
+                    rgba(110, 231, 183, 0.1),
+                    rgba(249, 168, 212, 0.1),
+                    transparent
+                );
+                top: ${20 + i * 15}%;
+                left: 0;
+                animation: auroraWave ${15 + i * 3}s ease-in-out infinite;
+                animation-delay: ${i * 2}s;
+                pointer-events: none;
+            `;
             
-            console.log('🎵 Audio context initialized for reactive animations');
-        } catch (error) {
-            console.warn('Audio context initialization failed:', error);
+            auroraContainer.appendChild(aurora);
+            auroras.push(aurora);
         }
-    }
-
-    connectAudioSource(audioElement) {
-        if (!this.audioContext || !this.audioAnalyser) return;
         
-        try {
-            const source = this.audioContext.createMediaElementSource(audioElement);
-            source.connect(this.audioAnalyser);
-            this.audioAnalyser.connect(this.audioContext.destination);
+        return auroras;
+    }
+    
+    createNebulaEffects() {
+        if (this.performanceMode === 'low') return [];
+        
+        const nebulaContainer = document.querySelector('.cosmic-background') || document.body;
+        const nebulas = [];
+        
+        const colors = [
+            'rgba(167, 139, 250, 0.1)',
+            'rgba(249, 168, 212, 0.1)',
+            'rgba(110, 231, 183, 0.1)'
+        ];
+        
+        colors.forEach((color, index) => {
+            const nebula = document.createElement('div');
+            nebula.className = 'dynamic-nebula';
+            nebula.style.cssText = `
+                position: absolute;
+                width: 300px;
+                height: 300px;
+                background: radial-gradient(circle, ${color} 0%, transparent 70%);
+                border-radius: 50%;
+                top: ${Math.random() * 70}%;
+                left: ${Math.random() * 70}%;
+                animation: nebulaFloat ${20 + index * 5}s ease-in-out infinite;
+                animation-delay: ${index * 3}s;
+                pointer-events: none;
+            `;
             
-            console.log('🎵 Audio source connected for reactive animations');
-        } catch (error) {
-            console.warn('Audio source connection failed:', error);
-        }
-    }
-
-    startAnimationLoop() {
-        if (this.isReducedMotion || this.animationId) return;
-
-        this.animationId = requestAnimationFrame(this.animate.bind(this));
-        console.log('🎬 Animation loop started');
-    }
-
-    animate(currentTime) {
-        if (!this.ctx || this.isReducedMotion) return;
-
-        // Calculate delta time and FPS
-        this.deltaTime = currentTime - this.lastFrameTime;
-        this.lastFrameTime = currentTime;
+            nebulaContainer.appendChild(nebula);
+            nebulas.push(nebula);
+        });
         
-        // Update FPS tracking
-        this.updateFPSTracking(currentTime);
+        return nebulas;
+    }
+    
+    initializeScrollAnimations() {
+        console.log('📜 Initializing scroll animations...');
         
-        // Skip frame if performance is poor
-        if (this.shouldSkipFrame()) {
-            this.animationId = requestAnimationFrame(this.animate.bind(this));
+        if (!this.deviceCapabilities.supportsIntersectionObserver) {
+            console.warn('⚠️ IntersectionObserver not supported, using fallback');
+            this.initializeFallbackScrollAnimations();
             return;
         }
-
-        // Clear canvas
-        this.ctx.clearRect(0, 0, this.particleCanvas.width, this.particleCanvas.height);
         
-        // Update and render systems
-        this.updateParticles();
-        this.drawParticles();
-        this.drawConnections();
-        this.drawMouseTrail();
-        this.updateAudioReactiveElements();
+        // Main scroll observer
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this.animateElement(entry.target);
+                }
+            });
+        }, {
+            threshold: [0.1, 0.3, 0.5],
+            rootMargin: '50px'
+        });
         
-        // Continue animation loop
-        this.animationId = requestAnimationFrame(this.animate.bind(this));
+        // Observe elements for scroll animations
+        document.querySelectorAll('.scroll-reveal, [data-aos]').forEach(element => {
+            scrollObserver.observe(element);
+        });
+        
+        // Counter animations observer
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this.animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        document.querySelectorAll('.counter').forEach(counter => {
+            counterObserver.observe(counter);
+        });
+        
+        // Progress bars observer
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this.animateProgressBar(entry.target);
+                    progressObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.7 });
+        
+        document.querySelectorAll('.progress-bar, .skill-bar').forEach(bar => {
+            progressObserver.observe(bar);
+        });
+        
+        this.activeAnimations.add('scroll');
     }
-
-    updateFPSTracking(currentTime) {
-        this.frameCount++;
+    
+    initializeFallbackScrollAnimations() {
+        // Fallback for browsers without IntersectionObserver
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                this.checkScrollElements();
+            }, 100);
+        }, { passive: true });
+    }
+    
+    checkScrollElements() {
+        const windowHeight = window.innerHeight;
+        const scrollTop = window.pageYOffset;
         
-        if (currentTime - this.lastFPSCheck >= 1000) {
-            this.currentFPS = Math.round((this.frameCount * 1000) / (currentTime - this.lastFPSCheck));
-            this.frameHistory.push(this.currentFPS);
+        document.querySelectorAll('.scroll-reveal:not(.animated)').forEach(element => {
+            const elementTop = element.offsetTop;
+            const elementHeight = element.offsetHeight;
             
-            if (this.frameHistory.length > 10) {
-                this.frameHistory.shift();
+            if (elementTop < scrollTop + windowHeight - 100) {
+                this.animateElement(element);
+            }
+        });
+    }
+    
+    animateElement(element) {
+        if (element.classList.contains('animated')) return;
+        
+        element.classList.add('animated');
+        
+        const animationType = element.dataset.animation || 'fadeInUp';
+        const delay = element.dataset.delay || 0;
+        
+        setTimeout(() => {
+            element.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            element.classList.add(`animate-${animationType}`);
+        }, delay);
+    }
+    
+    initializeInteractionSystem() {
+        console.log('🎯 Initializing interaction system...');
+        
+        this.setupMouseFollower();
+        this.setupHoverEffects();
+        this.setupClickEffects();
+        this.setupParallaxEffects();
+        
+        this.activeAnimations.add('interactions');
+    }
+    
+    setupMouseFollower() {
+        const mouseFollower = document.getElementById('mouseFollower');
+        if (!mouseFollower) return;
+        
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        const animateFollower = () => {
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            
+            mouseFollower.style.transform = `translate(${followerX - 10}px, ${followerY - 10}px)`;
+            
+            if (this.isVisible) {
+                requestAnimationFrame(animateFollower);
+            }
+        };
+        
+        animateFollower();
+        
+        // Interactive elements
+        document.querySelectorAll('a, button, .interactive').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                mouseFollower.style.transform += ' scale(2)';
+                mouseFollower.style.mixBlendMode = 'difference';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                mouseFollower.style.transform = mouseFollower.style.transform.replace(' scale(2)', '');
+                mouseFollower.style.mixBlendMode = 'normal';
+            });
+        });
+    }
+    
+    setupHoverEffects() {
+        // Card hover effects
+        document.querySelectorAll('.service-card, .portfolio-card, .voice-demo-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) scale(1.02)';
+                card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+                card.style.boxShadow = '';
+            });
+        });
+        
+        // Button hover effects
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                if (!button.classList.contains('no-hover')) {
+                    button.style.transform = 'translateY(-2px)';
+                    button.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)';
+                }
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = '';
+                button.style.boxShadow = '';
+            });
+        });
+    }
+    
+    setupClickEffects() {
+        // Ripple effect
+        document.querySelectorAll('.btn, .card').forEach(element => {
+            element.addEventListener('click', (e) => {
+                const ripple = document.createElement('div');
+                const rect = element.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.3);
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                    z-index: 1000;
+                `;
+                
+                element.style.position = 'relative';
+                element.style.overflow = 'hidden';
+                element.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    }
+    
+    setupParallaxEffects() {
+        if (this.deviceCapabilities.isMobile || this.performanceMode === 'low') return;
+        
+        const parallaxElements = document.querySelectorAll('.parallax');
+        
+        if (parallaxElements.length === 0) return;
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            
+            parallaxElements.forEach(element => {
+                const speed = element.dataset.speed || 0.5;
+                const yPos = -(scrolled * speed);
+                element.style.transform = `translateY(${yPos}px)`;
+            });
+        }, { passive: true });
+    }
+    
+    initializeAudioSystem() {
+        console.log('🎵 Initializing audio system...');
+        
+        if (!this.deviceCapabilities.hasAudioContext) {
+            console.warn('⚠️ Web Audio API not supported');
+            return;
+        }
+        
+        this.audioSystem = {
+            context: null,
+            analyser: null,
+            audioData: null,
+            connectedSources: new Set()
+        };
+        
+        this.setupAudioVisualizers();
+        this.setupVoiceDemoPlayers();
+        
+        this.activeAnimations.add('audio');
+    }
+    
+    setupAudioVisualizers() {
+        document.querySelectorAll('.voice-waveform').forEach(waveform => {
+            const bars = waveform.querySelectorAll('.waveform-bar');
+            
+            // Create animated waveform
+            bars.forEach((bar, index) => {
+                const animationDelay = index * 100;
+                const animationDuration = 1000 + Math.random() * 500;
+                
+                bar.style.animation = `waveformPulse ${animationDuration}ms ease-in-out infinite`;
+                bar.style.animationDelay = `${animationDelay}ms`;
+            });
+        });
+        
+        // Audio spectrum visualizer
+        const spectrumContainer = document.getElementById('audioSpectrum');
+        if (spectrumContainer) {
+            const bars = spectrumContainer.querySelectorAll('.spectrum-bar');
+            this.animateSpectrumBars(bars);
+        }
+    }
+    
+    animateSpectrumBars(bars) {
+        const animate = () => {
+            bars.forEach((bar, index) => {
+                const height = Math.random() * 100 + 10;
+                bar.style.height = `${height}%`;
+                bar.style.opacity = 0.3 + (height / 100) * 0.7;
+            });
+        };
+        
+        setInterval(animate, 100);
+    }
+    
+    setupVoiceDemoPlayers() {
+        document.querySelectorAll('.voice-demo-card').forEach(card => {
+            const playBtn = card.querySelector('.play-pause-btn');
+            const audio = card.querySelector('audio');
+            const progressBar = card.querySelector('.progress-fill');
+            const currentTimeEl = card.querySelector('.current-time');
+            const waveform = card.querySelector('.voice-waveform');
+            
+            if (!playBtn || !audio) return;
+            
+            let isPlaying = false;
+            
+            playBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    waveform?.classList.remove('active');
+                    isPlaying = false;
+                } else {
+                    // Pause other audio players
+                    document.querySelectorAll('audio').forEach(otherAudio => {
+                        if (otherAudio !== audio) {
+                            otherAudio.pause();
+                        }
+                    });
+                    
+                    audio.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    waveform?.classList.add('active');
+                    isPlaying = true;
+                }
+            });
+            
+            // Update progress
+            audio.addEventListener('timeupdate', () => {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                
+                if (currentTimeEl) {
+                    const minutes = Math.floor(audio.currentTime / 60);
+                    const seconds = Math.floor(audio.currentTime % 60);
+                    currentTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            });
+            
+            // Reset when audio ends
+            audio.addEventListener('ended', () => {
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                waveform?.classList.remove('active');
+                if (progressBar) progressBar.style.width = '0%';
+                if (currentTimeEl) currentTimeEl.textContent = '0:00';
+                isPlaying = false;
+            });
+        });
+    }
+    
+    initializeTypewriterEffect() {
+        console.log('⌨️ Initializing typewriter effect...');
+        
+        const typedElement = document.getElementById('typed-text');
+        if (!typedElement) return;
+        
+        const strings = [
+            "AI Creative Designer",
+            "Voice Actor Extraordinaire", 
+            "Full-Stack Developer",
+            "Digital Innovation Expert",
+            "Multilingual Content Creator"
+        ];
+        
+        let stringIndex = 0;
+        let characterIndex = 0;
+        let isDeleting = false;
+        
+        const typeSpeed = 50;
+        const deleteSpeed = 25;
+        const delayBetweenStrings = 2000;
+        
+        const typeWriter = () => {
+            const currentString = strings[stringIndex];
+            
+            if (isDeleting) {
+                typedElement.textContent = currentString.substring(0, characterIndex - 1);
+                characterIndex--;
+                
+                if (characterIndex === 0) {
+                    isDeleting = false;
+                    stringIndex = (stringIndex + 1) % strings.length;
+                    setTimeout(typeWriter, 500);
+                    return;
+                }
+            } else {
+                typedElement.textContent = currentString.substring(0, characterIndex + 1);
+                characterIndex++;
+                
+                if (characterIndex === currentString.length) {
+                    isDeleting = true;
+                    setTimeout(typeWriter, delayBetweenStrings);
+                    return;
+                }
             }
             
-            this.averageFPS = this.frameHistory.reduce((a, b) => a + b, 0) / this.frameHistory.length;
+            setTimeout(typeWriter, isDeleting ? deleteSpeed : typeSpeed);
+        };
+        
+        // Start the typewriter effect
+        setTimeout(typeWriter, 1000);
+        
+        this.activeAnimations.add('typewriter');
+    }
+    
+    initializeCounterAnimations() {
+        console.log('🔢 Initializing counter animations...');
+        
+        this.counters = document.querySelectorAll('.counter');
+        
+        // Will be triggered by scroll observer
+        this.activeAnimations.add('counters');
+    }
+    
+    animateCounter(counterElement) {
+        if (counterElement.classList.contains('animated')) return;
+        
+        const target = parseInt(counterElement.dataset.target) || 0;
+        const duration = 2000;
+        const startTime = performance.now();
+        
+        const updateCounter = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const currentValue = Math.floor(target * easeOut);
+            
+            counterElement.textContent = currentValue;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                counterElement.textContent = target;
+                counterElement.classList.add('animated');
+            }
+        };
+        
+        requestAnimationFrame(updateCounter);
+    }
+    
+    animateProgressBar(progressElement) {
+        if (progressElement.classList.contains('animated')) return;
+        
+        const targetWidth = progressElement.dataset.width || '0%';
+        
+        progressElement.style.width = '0%';
+        progressElement.style.transition = 'width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        
+        setTimeout(() => {
+            progressElement.style.width = targetWidth;
+            progressElement.classList.add('animated');
+        }, 100);
+    }
+    
+    initializePortfolioAnimations() {
+        console.log('💼 Initializing portfolio animations...');
+        
+        // Filter animations
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.dataset.filter;
+                
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Filter items
+                this.filterPortfolioItems(portfolioItems, filter);
+            });
+        });
+        
+        // Portfolio modal animations
+        this.setupPortfolioModals();
+        
+        this.activeAnimations.add('portfolio');
+    }
+    
+    filterPortfolioItems(items, filter) {
+        items.forEach((item, index) => {
+            const categories = item.dataset.category?.split(' ') || [];
+            const shouldShow = filter === 'all' || categories.includes(filter);
+            
+            if (shouldShow) {
+                item.style.display = 'block';
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            } else {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    item.style.display = 'none';
+                }, 300);
+            }
+        });
+    }
+    
+    setupPortfolioModals() {
+        // Modal opening animations
+        const portfolioModal = document.getElementById('portfolioModal');
+        if (portfolioModal) {
+            portfolioModal.addEventListener('show.bs.modal', () => {
+                portfolioModal.style.opacity = '0';
+                portfolioModal.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    portfolioModal.style.transition = 'all 0.3s ease';
+                    portfolioModal.style.opacity = '1';
+                    portfolioModal.style.transform = 'scale(1)';
+                }, 50);
+            });
+            
+            portfolioModal.addEventListener('hide.bs.modal', () => {
+                portfolioModal.style.opacity = '0';
+                portfolioModal.style.transform = 'scale(0.8)';
+            });
+        }
+    }
+    
+    initializeVoiceDemoAnimations() {
+        console.log('🎤 Initializing voice demo animations...');
+        
+        // Already handled in setupVoiceDemoPlayers
+        this.activeAnimations.add('voiceDemos');
+    }
+    
+    initializeFormAnimations() {
+        console.log('📝 Initializing form animations...');
+        
+        const contactForm = document.getElementById('contactForm');
+        if (!contactForm) return;
+        
+        // Form field focus animations
+        const formFields = contactForm.querySelectorAll('input, textarea, select');
+        formFields.forEach(field => {
+            field.addEventListener('focus', () => {
+                field.parentElement.classList.add('focused');
+            });
+            
+            field.addEventListener('blur', () => {
+                if (!field.value) {
+                    field.parentElement.classList.remove('focused');
+                }
+            });
+            
+            // Check if field has value on load
+            if (field.value) {
+                field.parentElement.classList.add('focused');
+            }
+        });
+        
+        // Form submission animation
+        contactForm.addEventListener('submit', (e) => {
+            const submitBtn = contactForm.querySelector('[type="submit"]');
+            if (submitBtn) {
+                submitBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    submitBtn.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+        
+        this.activeAnimations.add('forms');
+    }
+    
+    startAnimationLoop() {
+        if (this.respectsReducedMotion) return;
+        
+        const animate = (currentTime) => {
+            if (!this.isVisible) {
+                this.animationFrame = requestAnimationFrame(animate);
+                return;
+            }
+            
+            // Update performance tracking
+            this.updatePerformanceTracking(currentTime);
+            
+            // Update particle system
+            if (this.particleSystem && this.activeAnimations.has('particles')) {
+                this.particleSystem.update(currentTime);
+            }
+            
+            // Update celestial animations
+            if (this.activeAnimations.has('celestial')) {
+                this.updateCelestialSystem(currentTime);
+            }
+            
+            this.animationFrame = requestAnimationFrame(animate);
+        };
+        
+        this.animationFrame = requestAnimationFrame(animate);
+        console.log('🎬 Animation loop started');
+    }
+    
+    updatePerformanceTracking(currentTime) {
+        this.frameCount++;
+        const deltaTime = currentTime - this.lastFrameTime;
+        
+        if (deltaTime >= 1000) {
+            const fps = Math.round((this.frameCount * 1000) / deltaTime);
+            this.performanceHistory.push(fps);
+            
+            if (this.performanceHistory.length > 10) {
+                this.performanceHistory.shift();
+            }
+            
+            this.averageFPS = this.performanceHistory.reduce((a, b) => a + b, 0) / this.performanceHistory.length;
             
             // Adjust performance if needed
             if (this.averageFPS < 30) {
@@ -660,118 +1068,682 @@ class ThanaAnimations {
             }
             
             this.frameCount = 0;
-            this.lastFPSCheck = currentTime;
+            this.lastFrameTime = currentTime;
         }
     }
-
-    shouldSkipFrame() {
-        return this.averageFPS < 20 || this.deltaTime > 50;
-    }
-
-    optimizePerformance() {
-        if (this.particles.length > 10) {
-            this.particles.splice(0, Math.floor(this.particles.length * 0.2));
-            console.log('🔧 Reduced particle count for performance');
+    
+    updateCelestialSystem(currentTime) {
+                // Update star twinkling
+        if (this.celestialSystem.stars) {
+            this.celestialSystem.stars.forEach(star => {
+                star.phase += star.twinkleSpeed;
+                const opacity = star.baseOpacity + Math.sin(star.phase) * 0.3;
+                star.element.style.opacity = Math.max(0.1, Math.min(1, opacity));
+            });
         }
         
-        // Reduce cosmic particles
-        const cosmicElements = document.querySelectorAll('.dynamic-cosmic-particle');
-        for (let i = cosmicElements.length - 1; i >= Math.floor(cosmicElements.length / 2); i--) {
-            cosmicElements[i].remove();
+        // Update aurora effects
+        if (this.celestialSystem.auroras && this.performanceMode !== 'low') {
+            this.celestialSystem.auroras.forEach((aurora, index) => {
+                const wave = Math.sin(currentTime * 0.001 + index) * 10;
+                aurora.style.transform = `translateX(${wave}px)`;
+            });
+        }
+        
+        // Update nebula movement
+        if (this.celestialSystem.nebulas && this.performanceMode === 'high') {
+            this.celestialSystem.nebulas.forEach((nebula, index) => {
+                const x = Math.sin(currentTime * 0.0005 + index) * 20;
+                const y = Math.cos(currentTime * 0.0003 + index) * 15;
+                nebula.style.transform = `translate(${x}px, ${y}px)`;
+            });
         }
     }
+    
+    handleMouseMove(event) {
+        if (!this.isVisible) return;
+        
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        
+        // Update particle system
+        if (this.particleSystem) {
+            this.particleSystem.updateMousePosition(mouseX, mouseY);
+        }
+        
+        // Parallax effect for celestial elements
+        if (this.activeAnimations.has('celestial') && this.performanceMode !== 'low') {
+            const moveX = (mouseX - window.innerWidth / 2) * 0.01;
+            const moveY = (mouseY - window.innerHeight / 2) * 0.01;
+            
+            if (this.celestialSystem.moon?.element) {
+                this.celestialSystem.moon.element.style.transform += ` translate(${moveX}px, ${moveY}px)`;
+            }
+        }
+        
+        // Update cosmic background parallax
+        const cosmicBg = document.querySelector('.cosmic-background');
+        if (cosmicBg && this.performanceMode === 'high') {
+            const moveX = (mouseX - window.innerWidth / 2) * 0.005;
+            const moveY = (mouseY - window.innerHeight / 2) * 0.005;
+            cosmicBg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        }
+    }
+    
+    handleScroll() {
+        if (!this.isVisible) return;
+        
+        const scrollY = window.pageYOffset;
+        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollProgress = scrollY / documentHeight;
+        
+        // Update navbar transparency
+        const navbar = document.getElementById('mainNavbar');
+        if (navbar) {
+            const opacity = Math.min(0.95, scrollY / 100);
+            navbar.style.backgroundColor = `rgba(13, 13, 18, ${opacity})`;
+        }
+        
+        // Parallax scrolling for background elements
+        if (this.performanceMode !== 'low') {
+            const parallaxElements = document.querySelectorAll('.parallax-bg');
+            parallaxElements.forEach(element => {
+                const speed = element.dataset.speed || 0.5;
+                const yPos = -(scrollY * speed);
+                element.style.transform = `translateY(${yPos}px)`;
+            });
+        }
+        
+        // Update scroll progress indicator
+        const scrollIndicator = document.querySelector('.scroll-progress');
+        if (scrollIndicator) {
+            scrollIndicator.style.width = `${scrollProgress * 100}%`;
+        }
+        
+        // Hide/show scroll-to-top button
+        const scrollTopBtn = document.querySelector('.scroll-to-top');
+        if (scrollTopBtn) {
+            if (scrollY > 500) {
+                scrollTopBtn.style.opacity = '1';
+                scrollTopBtn.style.pointerEvents = 'auto';
+            } else {
+                scrollTopBtn.style.opacity = '0';
+                scrollTopBtn.style.pointerEvents = 'none';
+            }
+        }
+    }
+    
+    handleResize() {
+        console.log('📏 Handling window resize...');
+        
+        // Resize particle canvas
+        if (this.particleSystem) {
+            this.particleSystem.handleResize();
+        }
+        
+        // Recalculate parallax elements
+        const parallaxElements = document.querySelectorAll('.parallax');
+        parallaxElements.forEach(element => {
+            element.style.transform = 'translateY(0)';
+        });
+        
+        // Update mobile detection
+        this.deviceCapabilities.isMobile = window.innerWidth <= 768;
+        
+        // Adjust performance mode based on new viewport
+        if (this.deviceCapabilities.isMobile && this.performanceMode === 'high') {
+            this.performanceMode = 'medium';
+            this.optimizeForMobile();
+        }
+    }
+    
+    optimizeForMobile() {
+        console.log('📱 Optimizing for mobile...');
+        
+        // Reduce particle count
+        if (this.particleSystem) {
+            this.particleSystem.reduceParticleCount(0.5);
+        }
+        
+        // Disable complex animations
+        document.querySelectorAll('.dynamic-nebula, .dynamic-aurora').forEach(element => {
+            element.style.animation = 'none';
+        });
+        
+        // Simplify scroll animations
+        document.querySelectorAll('.parallax').forEach(element => {
+            element.style.transform = 'none';
+        });
+    }
+    
+    optimizePerformance() {
+        console.log('⚡ Optimizing performance due to low FPS...');
+        
+        // Reduce particle count
+        if (this.particleSystem) {
+            this.particleSystem.reduceParticleCount(0.7);
+        }
+        
+        // Disable expensive animations
+        if (this.performanceMode !== 'low') {
+            this.performanceMode = 'medium';
+            
+            // Remove complex celestial effects
+            document.querySelectorAll('.dynamic-nebula, .dynamic-aurora').forEach(element => {
+                element.remove();
+            });
+            
+            // Reduce star count
+            const stars = document.querySelectorAll('.dynamic-star');
+            for (let i = stars.length - 1; i >= Math.floor(stars.length / 2); i--) {
+                stars[i].remove();
+            }
+        }
+    }
+    
+    monitorBatteryStatus(battery) {
+        const checkBattery = () => {
+            if (battery.level < 0.2 && !battery.charging) {
+                console.log('🔋 Low battery detected, enabling power save mode');
+                this.enablePowerSaveMode();
+            } else if (battery.level > 0.8 && battery.charging) {
+                console.log('🔋 Battery restored, resuming normal mode');
+                this.disablePowerSaveMode();
+            }
+        };
+        
+        battery.addEventListener('levelchange', checkBattery);
+        battery.addEventListener('chargingchange', checkBattery);
+        checkBattery(); // Initial check
+    }
+    
+    enablePowerSaveMode() {
+        console.log('🔋 Enabling power save mode...');
+        
+        this.powerSaveMode = true;
+        
+        // Pause non-essential animations
+        this.pauseAnimation('particles');
+        this.pauseAnimation('celestial');
+        
+        // Reduce animation frequency
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.startReducedAnimationLoop();
+        }
+        
+        // Show user notification
+        this.showNotification('Power save mode enabled', 'info');
+    }
+    
+    disablePowerSaveMode() {
+        if (!this.powerSaveMode) return;
+        
+        console.log('🔋 Disabling power save mode...');
+        
+        this.powerSaveMode = false;
+        
+        // Resume animations
+        this.resumeAnimation('particles');
+        this.resumeAnimation('celestial');
+        
+        // Restore normal animation loop
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.startAnimationLoop();
+        }
+        
+        this.showNotification('Power save mode disabled', 'success');
+    }
+    
+    startReducedAnimationLoop() {
+        const animate = (currentTime) => {
+            if (!this.isVisible) {
+                this.animationFrame = requestAnimationFrame(animate);
+                return;
+            }
+            
+            // Only update essential systems at reduced frequency
+            if (currentTime % 3 === 0) { // Every 3rd frame
+                if (this.particleSystem && this.activeAnimations.has('particles')) {
+                    this.particleSystem.updateReduced(currentTime);
+                }
+            }
+            
+            this.animationFrame = requestAnimationFrame(animate);
+        };
+        
+        this.animationFrame = requestAnimationFrame(animate);
+    }
+    
+    adaptToNetworkConditions() {
+        const connection = navigator.connection;
+        if (!connection) return;
+        
+        console.log(`🌐 Network changed: ${connection.effectiveType}`);
+        
+        if (connection.effectiveType === '2g' || connection.saveData) {
+            this.enableDataSaveMode();
+        } else if (connection.effectiveType === '4g' && !this.powerSaveMode) {
+            this.disableDataSaveMode();
+        }
+    }
+    
+    enableDataSaveMode() {
+        console.log('📶 Enabling data save mode...');
+        
+        // Disable background videos/animations
+        document.querySelectorAll('video').forEach(video => {
+            video.pause();
+        });
+        
+        // Reduce image quality
+        document.querySelectorAll('img[data-src-low]').forEach(img => {
+            img.src = img.dataset.srcLow;
+        });
+        
+        // Disable autoplay audio
+        document.querySelectorAll('audio[autoplay]').forEach(audio => {
+            audio.removeAttribute('autoplay');
+        });
+        
+        this.showNotification('Data save mode enabled', 'info');
+    }
+    
+    disableDataSaveMode() {
+        console.log('📶 Disabling data save mode...');
+        
+        // Restore high quality images
+        document.querySelectorAll('img[data-src-high]').forEach(img => {
+            img.src = img.dataset.srcHigh;
+        });
+        
+        this.showNotification('Data save mode disabled', 'success');
+    }
+    
+    pauseAnimations() {
+        console.log('⏸️ Pausing animations...');
+        
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
+        
+        // Pause CSS animations
+        document.querySelectorAll('.animated').forEach(element => {
+            element.style.animationPlayState = 'paused';
+        });
+        
+        // Pause audio
+        document.querySelectorAll('audio').forEach(audio => {
+            if (!audio.paused) {
+                audio.pause();
+                audio.dataset.wasPlaying = 'true';
+            }
+        });
+    }
+    
+    resumeAnimations() {
+        console.log('▶️ Resuming animations...');
+        
+        if (!this.animationFrame && !this.respectsReducedMotion) {
+            if (this.powerSaveMode) {
+                this.startReducedAnimationLoop();
+            } else {
+                this.startAnimationLoop();
+            }
+        }
+        
+        // Resume CSS animations
+        document.querySelectorAll('.animated').forEach(element => {
+            element.style.animationPlayState = 'running';
+        });
+        
+        // Resume audio that was playing
+        document.querySelectorAll('audio[data-was-playing="true"]').forEach(audio => {
+            audio.play();
+            audio.removeAttribute('data-was-playing');
+        });
+    }
+    
+    pauseAnimation(animationType) {
+        this.activeAnimations.delete(animationType);
+        console.log(`⏸️ Paused ${animationType} animations`);
+    }
+    
+    resumeAnimation(animationType) {
+        this.activeAnimations.add(animationType);
+        console.log(`▶️ Resumed ${animationType} animations`);
+    }
+    
+    pauseComplexAnimations() {
+        console.log('⏸️ Pausing complex animations for accessibility...');
+        
+        this.pauseAnimation('particles');
+        this.pauseAnimation('celestial');
+        
+        // Stop CSS animations that might cause motion sickness
+        document.querySelectorAll('[class*="bounce"], [class*="shake"], [class*="rotate"]').forEach(element => {
+            element.style.animation = 'none';
+        });
+    }
+    
+    resumeComplexAnimations() {
+        console.log('▶️ Resuming complex animations...');
+        
+        this.resumeAnimation('particles');
+        this.resumeAnimation('celestial');
+        
+        // Restore CSS animations
+        document.querySelectorAll('[data-original-animation]').forEach(element => {
+            element.style.animation = element.dataset.originalAnimation;
+        });
+    }
+    
+    showNotification(message, type = 'info') {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+        
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${this.getNotificationIcon(type)}" aria-hidden="true"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close" aria-label="Close notification">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        `;
+        
+        // Add click handler for close button
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            this.removeNotification(notification);
+        });
+        
+        // Add to container
+        container.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            this.removeNotification(notification);
+        }, 5000);
+    }
+    
+    removeNotification(notification) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }
+    
+    getNotificationIcon(type) {
+        const icons = {
+            info: 'info-circle',
+            success: 'check-circle',
+            warning: 'exclamation-triangle',
+            error: 'times-circle'
+        };
+        return icons[type] || 'info-circle';
+    }
+    
+    // Public API methods
+    getPerformanceStats() {
+        return {
+            averageFPS: this.averageFPS,
+            performanceMode: this.performanceMode,
+            activeAnimations: Array.from(this.activeAnimations),
+            deviceCapabilities: this.deviceCapabilities,
+            powerSaveMode: this.powerSaveMode || false
+        };
+    }
+    
+    setPerformanceMode(mode) {
+        if (!['low', 'medium', 'high'].includes(mode)) {
+            console.warn(`Invalid performance mode: ${mode}`);
+            return;
+        }
+        
+        const oldMode = this.performanceMode;
+        this.performanceMode = mode;
+        
+        console.log(`🎯 Performance mode changed: ${oldMode} → ${mode}`);
+        
+        // Reinitialize systems with new performance mode
+        if (this.particleSystem) {
+            this.particleSystem.updatePerformanceMode(mode);
+        }
+        
+        // Adjust celestial system
+        if (mode === 'low') {
+            this.pauseAnimation('celestial');
+        } else if (oldMode === 'low' && mode !== 'low') {
+            this.resumeAnimation('celestial');
+        }
+    }
+    
+    destroy() {
+        console.log('🧹 Destroying animation system...');
+        
+        // Cancel animation frame
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+        }
+        
+        // Destroy particle system
+        if (this.particleSystem) {
+            this.particleSystem.destroy();
+        }
+        
+        // Remove event listeners
+        // (Would need to store references to remove them properly)
+        
+        // Clear intervals and timeouts
+        // (Would need to store references to clear them properly)
+        
+        // Clean up audio context
+        if (this.audioSystem?.context) {
+            this.audioSystem.context.close();
+        }
+        
+        this.isInitialized = false;
+        console.log('✅ Animation system destroyed');
+    }
+}
 
-    updateParticles() {
+// Particle System Class
+class ParticleSystem {
+    constructor(canvas, options = {}) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.options = {
+            particleCount: options.particleCount || 50,
+            performanceMode: options.performanceMode || 'medium',
+            deviceCapabilities: options.deviceCapabilities || {}
+        };
+        
+        this.particles = [];
+        this.mousePos = { x: 0, y: 0 };
+        this.connections = [];
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupCanvas();
+        this.createParticles();
+        console.log(`✨ Particle system initialized with ${this.particles.length} particles`);
+    }
+    
+    setupCanvas() {
+        const updateCanvasSize = () => {
+            const rect = this.canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            
+            this.canvas.width = rect.width * dpr;
+            this.canvas.height = rect.height * dpr;
+            
+            this.ctx.scale(dpr, dpr);
+            this.canvas.style.width = rect.width + 'px';
+            this.canvas.style.height = rect.height + 'px';
+        };
+        
+        updateCanvasSize();
+        this.handleResize = updateCanvasSize;
+    }
+    
+    createParticles() {
+        this.particles = [];
+        
+        for (let i = 0; i < this.options.particleCount; i++) {
+            this.particles.push(this.createParticle());
+        }
+    }
+    
+    createParticle() {
+        return {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 3 + 1,
+            opacity: Math.random() * 0.8 + 0.2,
+            baseOpacity: Math.random() * 0.8 + 0.2,
+            color: this.getRandomColor(),
+            life: Math.random() * 1000 + 500,
+            maxLife: Math.random() * 1000 + 500,
+            trail: []
+        };
+    }
+    
+    getRandomColor() {
+        const colors = [
+            { r: 167, g: 139, b: 250 }, // Purple
+            { r: 249, g: 168, b: 212 }, // Pink
+            { r: 110, g: 231, b: 183 }, // Green
+            { r: 252, g: 211, b: 77 },  // Yellow
+            { r: 99, g: 179, b: 237 }   // Blue
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+    
+    update(currentTime) {
+        this.updateParticles();
+        this.render();
+    }
+    
+    updateReduced(currentTime) {
+        // Simplified update for power save mode
+        this.updateParticles(true);
+        this.renderSimple();
+    }
+    
+    updateParticles(simplified = false) {
         this.particles.forEach((particle, index) => {
             // Update position
             particle.x += particle.vx;
             particle.y += particle.vy;
-
-            // Boundary collision with energy loss
-            if (particle.x <= 0 || particle.x >= window.innerWidth) {
-                particle.vx *= -0.8;
-                particle.x = Math.max(0, Math.min(window.innerWidth, particle.x));
-            }
-            if (particle.y <= 0 || particle.y >= window.innerHeight) {
-                particle.vy *= -0.8;
-                particle.y = Math.max(0, Math.min(window.innerHeight, particle.y));
-            }
-
-            // Mouse interaction
-            if (this.isMouseMoving) {
+            
+            // Boundary wrapping
+            if (particle.x < 0) particle.x = this.canvas.width;
+            if (particle.x > this.canvas.width) particle.x = 0;
+            if (particle.y < 0) particle.y = this.canvas.height;
+            if (particle.y > this.canvas.height) particle.y = 0;
+            
+            if (!simplified) {
+                // Mouse interaction
                 const dx = this.mousePos.x - particle.x;
                 const dy = this.mousePos.y - particle.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 120) {
-                    const force = (120 - distance) / 120;
-                    const angle = Math.atan2(dy, dx);
-                    
-                    particle.vx += Math.cos(angle) * force * 0.02;
-                    particle.vy += Math.sin(angle) * force * 0.02;
-                    
-                    // Increase opacity near mouse
-                    particle.opacity = Math.min(1, particle.baseOpacity + force * 0.5);
+                
+                if (distance < 100) {
+                    const force = (100 - distance) / 100;
+                    particle.vx += dx * force * 0.01;
+                    particle.vy += dy * force * 0.01;
+                    particle.opacity = Math.min(1, particle.baseOpacity + force);
                 } else {
                     particle.opacity = particle.baseOpacity;
                 }
+                
+                // Add to trail
+                particle.trail.push({ x: particle.x, y: particle.y });
+                if (particle.trail.length > 5) {
+                    particle.trail.shift();
+                }
             }
-
-            // Pulse effect
-            particle.pulsePhase += particle.pulseSpeed;
-            particle.opacity += Math.sin(particle.pulsePhase) * 0.2;
-
+            
             // Velocity dampening
-            particle.vx *= 0.995;
-            particle.vy *= 0.995;
-
+            particle.vx *= 0.99;
+            particle.vy *= 0.99;
+            
             // Life cycle
             particle.life--;
             if (particle.life <= 0) {
                 this.particles[index] = this.createParticle();
             }
-
-            // Trail effect
-            particle.trail.push({ x: particle.x, y: particle.y, opacity: particle.opacity });
-            if (particle.trail.length > 5) {
-                particle.trail.shift();
-            }
         });
     }
-
+    
+    render() {
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw connections
+        if (this.options.performanceMode !== 'low') {
+            this.drawConnections();
+        }
+        
+        // Draw particles
+        this.drawParticles();
+    }
+    
+    renderSimple() {
+        // Simplified rendering for power save mode
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawParticlesSimple();
+    }
+    
     drawParticles() {
         this.particles.forEach(particle => {
             // Draw trail
-            if (particle.trail.length > 1) {
+            if (particle.trail.length > 1 && this.options.performanceMode === 'high') {
                 this.ctx.save();
                 this.ctx.globalCompositeOperation = 'lighter';
                 
                 for (let i = 1; i < particle.trail.length; i++) {
                     const point = particle.trail[i];
-                    const prevPoint = particle.trail[i - 1];
                     const alpha = (i / particle.trail.length) * particle.opacity * 0.3;
                     
-                    this.ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+                    this.ctx.globalAlpha = alpha;
                     this.ctx.strokeStyle = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${alpha})`;
                     this.ctx.lineWidth = particle.size * 0.5;
                     
                     this.ctx.beginPath();
-                    this.ctx.moveTo(prevPoint.x, prevPoint.y);
+                    this.ctx.moveTo(particle.trail[i - 1].x, particle.trail[i - 1].y);
                     this.ctx.lineTo(point.x, point.y);
                     this.ctx.stroke();
                 }
                 
                 this.ctx.restore();
             }
-
+            
             // Draw particle
             this.ctx.save();
-            this.ctx.globalAlpha = Math.max(0, Math.min(1, particle.opacity));
+            this.ctx.globalAlpha = particle.opacity;
             this.ctx.fillStyle = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${particle.opacity})`;
             
             // Add glow effect
-            this.ctx.shadowBlur = particle.size * 2;
-            this.ctx.shadowColor = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.8)`;
+            if (this.options.performanceMode !== 'low') {
+                this.ctx.shadowBlur = particle.size * 2;
+                this.ctx.shadowColor = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.8)`;
+            }
             
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
@@ -780,23 +1752,31 @@ class ThanaAnimations {
             this.ctx.restore();
         });
     }
-
+    
+    drawParticlesSimple() {
+        // Simple particle rendering without effects
+        this.particles.forEach(particle => {
+            this.ctx.fillStyle = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${particle.opacity})`;
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+    }
+    
     drawConnections() {
         const maxDistance = 100;
         const maxConnections = 3;
         
         for (let i = 0; i < this.particles.length; i++) {
             const particleA = this.particles[i];
-            particleA.connections = 0;
+            let connections = 0;
             
-            for (let j = i + 1; j < this.particles.length; j++) {
-                if (particleA.connections >= maxConnections) break;
-                
+            for (let j = i + 1; j < this.particles.length && connections < maxConnections; j++) {
                 const particleB = this.particles[j];
                 const dx = particleA.x - particleB.x;
                 const dy = particleA.y - particleB.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-
+                
                 if (distance < maxDistance) {
                     const opacity = (maxDistance - distance) / maxDistance * 0.5;
                     
@@ -806,1890 +1786,735 @@ class ThanaAnimations {
                     this.ctx.lineWidth = 1;
                     
                     this.ctx.beginPath();
-                                        this.ctx.moveTo(particleA.x, particleA.y);
+                    this.ctx.moveTo(particleA.x, particleA.y);
                     this.ctx.lineTo(particleB.x, particleB.y);
                     this.ctx.stroke();
                     
                     this.ctx.restore();
-                    
-                    particleA.connections++;
+                    connections++;
                 }
             }
         }
     }
-
-    addMouseTrail(x, y) {
-        this.mouseTrail.push({
-            x: x,
-            y: y,
-            life: 20,
-            maxLife: 20,
-            size: Math.random() * 3 + 2
-        });
-
-        // Limit trail length
-        if (this.mouseTrail.length > 15) {
-            this.mouseTrail.shift();
-        }
+    
+    updateMousePosition(x, y) {
+        this.mousePos.x = x;
+        this.mousePos.y = y;
     }
-
-    drawMouseTrail() {
-        if (!this.isMouseMoving || this.mouseTrail.length === 0) return;
-
-        this.ctx.save();
-        this.ctx.globalCompositeOperation = 'lighter';
-
-        this.mouseTrail.forEach((point, index) => {
-            point.life--;
-            const alpha = (point.life / point.maxLife) * 0.6;
-            
-            if (alpha > 0) {
-                this.ctx.globalAlpha = alpha;
-                this.ctx.fillStyle = `rgba(167, 139, 250, ${alpha})`;
-                this.ctx.shadowBlur = point.size * 2;
-                this.ctx.shadowColor = `rgba(167, 139, 250, ${alpha})`;
-                
-                this.ctx.beginPath();
-                this.ctx.arc(point.x, point.y, point.size * (point.life / point.maxLife), 0, Math.PI * 2);
-                this.ctx.fill();
-            }
-        });
-
-        // Remove dead trail points
-        this.mouseTrail = this.mouseTrail.filter(point => point.life > 0);
-        
-        this.ctx.restore();
+    
+    reduceParticleCount(factor) {
+        const newCount = Math.floor(this.particles.length * factor);
+        this.particles = this.particles.slice(0, newCount);
+        console.log(`🔧 Reduced particles to ${this.particles.length}`);
     }
-
-    updateAudioReactiveElements() {
-        if (!this.audioAnalyser || !this.audioData) return;
-
-        this.audioAnalyser.getByteFrequencyData(this.audioData);
+    
+    updatePerformanceMode(mode) {
+        this.options.performanceMode = mode;
         
-        // Calculate average volume
-        const average = this.audioData.reduce((sum, value) => sum + value, 0) / this.audioData.length;
-        const normalizedVolume = average / 255;
-
-        // Affect particle movement based on audio
-        if (normalizedVolume > 0.1) {
-            this.particles.forEach(particle => {
-                const bassResponse = this.audioData.slice(0, 10).reduce((sum, val) => sum + val, 0) / (10 * 255);
-                const trebleResponse = this.audioData.slice(-10).reduce((sum, val) => sum + val, 0) / (10 * 255);
-                
-                particle.vx += (Math.random() - 0.5) * bassResponse * 0.5;
-                particle.vy += (Math.random() - 0.5) * trebleResponse * 0.5;
-                particle.size = particle.baseSize + normalizedVolume * 2;
-            });
-        }
-
-        // Update waveform visualization
-        this.updateWaveformBars(this.audioData);
-    }
-
-    updateWaveformBars(audioData) {
-        const waveformBars = document.querySelectorAll('.waveform-bar');
+        // Adjust particle count based on performance mode
+        const targetCount = this.getTargetParticleCount(mode);
         
-        waveformBars.forEach((bar, index) => {
-            const dataIndex = Math.floor((index / waveformBars.length) * audioData.length);
-            const value = audioData[dataIndex] / 255;
-            const height = Math.max(0.1, value);
-            
-            bar.style.transform = `scaleY(${height * 2})`;
-            bar.style.opacity = 0.3 + (value * 0.7);
-        });
-    }
-
-    startHeroAnimations() {
-        console.log('🎭 Starting hero animations');
-        
-        // Animate hero elements in sequence
-        const elements = [
-            { selector: '.hero-title', delay: 0, animation: 'fadeInUp' },
-            { selector: '.hero-subtitle', delay: 200, animation: 'fadeInUp' },
-            { selector: '.hero-description', delay: 400, animation: 'fadeInUp' },
-            { selector: '.hero-stats', delay: 600, animation: 'fadeInUp' },
-            { selector: '.hero-actions', delay: 800, animation: 'fadeInUp' },
-            { selector: '.social-links', delay: 1000, animation: 'fadeInUp' }
-        ];
-
-        elements.forEach(({ selector, delay, animation }) => {
-            setTimeout(() => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    this.animateElement(element, animation);
-                }
-            }, delay);
-        });
-
-        // Start typewriter effect
-        setTimeout(() => {
-            this.startTypewriterEffect('.hero-subtitle .typewriter-text');
-        }, 300);
-
-        // Start counter animations
-        setTimeout(() => {
-            this.animateCounters();
-        }, 800);
-
-        // Add floating elements
-        setTimeout(() => {
-            this.addFloatingElements();
-        }, 1200);
-    }
-
-    animateElement(element, animationType = 'fadeInUp') {
-        element.style.opacity = '0';
-        element.style.transform = this.getTransformForAnimation(animationType, 'start');
-        element.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-        
-        requestAnimationFrame(() => {
-            element.style.opacity = '1';
-            element.style.transform = this.getTransformForAnimation(animationType, 'end');
-        });
-    }
-
-    getTransformForAnimation(type, state) {
-        const transforms = {
-            fadeInUp: {
-                start: 'translateY(30px)',
-                end: 'translateY(0)'
-            },
-            fadeInDown: {
-                start: 'translateY(-30px)',
-                end: 'translateY(0)'
-            },
-            fadeInLeft: {
-                start: 'translateX(-30px)',
-                end: 'translateX(0)'
-            },
-            fadeInRight: {
-                start: 'translateX(30px)',
-                end: 'translateX(0)'
-            },
-            scaleIn: {
-                start: 'scale(0.8)',
-                end: 'scale(1)'
-            }
-        };
-        
-        return transforms[type]?.[state] || 'none';
-    }
-
-    startTypewriterEffect(selector) {
-        const element = document.querySelector(selector);
-        if (!element) return;
-
-        const text = element.textContent;
-        const speed = 100; // ms per character
-        
-        element.textContent = '';
-        element.style.borderRight = '2px solid var(--primary-color)';
-        
-        let index = 0;
-        const typeInterval = setInterval(() => {
-            element.textContent += text[index];
-            index++;
-            
-            if (index >= text.length) {
-                clearInterval(typeInterval);
-                
-                // Remove cursor after delay
-                setTimeout(() => {
-                    element.style.borderRight = 'none';
-                }, 1000);
-            }
-        }, speed);
-
-        this.typewriterTimeout = typeInterval;
-    }
-
-    animateCounters() {
-        const counters = document.querySelectorAll('[data-counter]');
-        
-        counters.forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-counter'));
-            const duration = parseInt(counter.getAttribute('data-duration')) || 2000;
-            const startValue = parseInt(counter.getAttribute('data-start')) || 0;
-            
-            this.animateCounter(counter, startValue, target, duration);
-        });
-    }
-
-    animateCounter(element, start, end, duration) {
-        const startTime = performance.now();
-        const range = end - start;
-        
-        const updateCounter = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // Easing function (ease-out cubic)
-            const easeOut = 1 - Math.pow(1 - progress, 3);
-            const current = Math.floor(start + (range * easeOut));
-            
-            element.textContent = this.formatNumber(current);
-            
-            if (progress < 1) {
-                requestAnimationFrame(updateCounter);
-            } else {
-                element.textContent = this.formatNumber(end);
-            }
-        };
-        
-        requestAnimationFrame(updateCounter);
-    }
-
-    formatNumber(num) {
-        if (num >= 1000000) {
-            return (num / 1000000).toFixed(1) + 'M';
-        } else if (num >= 1000) {
-            return (num / 1000).toFixed(1) + 'K';
-        }
-        return num.toString();
-    }
-
-    addFloatingElements() {
-        const container = document.querySelector('.hero') || document.body;
-        const elementCount = this.performanceMode === 'low' ? 3 : 6;
-        
-        for (let i = 0; i < elementCount; i++) {
-            const element = document.createElement('div');
-            element.className = 'floating-decoration';
-            element.style.position = 'absolute';
-            element.style.width = Math.random() * 20 + 10 + 'px';
-            element.style.height = element.style.width;
-            element.style.background = `rgba(167, 139, 250, ${Math.random() * 0.3 + 0.1})`;
-            element.style.borderRadius = Math.random() > 0.5 ? '50%' : '20%';
-            element.style.left = Math.random() * 100 + '%';
-            element.style.top = Math.random() * 100 + '%';
-            element.style.animation = `float ${Math.random() * 3 + 3}s ease-in-out infinite`;
-            element.style.animationDelay = Math.random() * 2 + 's';
-            element.style.pointerEvents = 'none';
-            element.style.zIndex = '1';
-            
-            container.appendChild(element);
-            
-            // Remove after 30 seconds to prevent DOM bloat
-            setTimeout(() => {
-                if (element.parentNode) {
-                    element.parentNode.removeChild(element);
-                }
-            }, 30000);
-        }
-    }
-
-    triggerSectionAnimations(section) {
-        const sectionId = section.id;
-        
-        switch (sectionId) {
-            case 'about':
-                this.animateAboutSection(section);
-                break;
-            case 'services':
-                this.animateServicesSection(section);
-                break;
-            case 'portfolio':
-                this.animatePortfolioSection(section);
-                break;
-            case 'voice-demos':
-                this.animateVoiceDemosSection(section);
-                break;
-            case 'contact':
-                this.animateContactSection(section);
-                break;
-        }
-    }
-
-    animateAboutSection(section) {
-        const elements = section.querySelectorAll('.skill-item, .about-text, .profile-image');
-        
-        elements.forEach((element, index) => {
-            setTimeout(() => {
-                this.animateElement(element, 'fadeInUp');
-            }, index * 100);
-        });
-    }
-
-    animateServicesSection(section) {
-        const serviceCards = section.querySelectorAll('.service-card');
-        
-        serviceCards.forEach((card, index) => {
-            setTimeout(() => {
-                this.animateElement(card, 'scaleIn');
-                
-                // Add hover enhancement
-                this.enhanceCardHover(card);
-            }, index * 150);
-        });
-    }
-
-    animatePortfolioSection(section) {
-        const portfolioItems = section.querySelectorAll('.portfolio-card');
-        
-        portfolioItems.forEach((item, index) => {
-            setTimeout(() => {
-                this.animateElement(item, 'fadeInUp');
-                this.setupPortfolioCardEffects(item);
-            }, index * 100);
-        });
-    }
-
-    animateVoiceDemosSection(section) {
-        const voiceCards = section.querySelectorAll('.voice-demo-card');
-        
-        voiceCards.forEach((card, index) => {
-            setTimeout(() => {
-                this.animateElement(card, 'fadeInLeft');
-                this.setupVoiceCardEffects(card);
-            }, index * 120);
-        });
-    }
-
-    animateContactSection(section) {
-        const formGroups = section.querySelectorAll('.form-group');
-        const contactInfo = section.querySelectorAll('.contact-info-item');
-        
-        formGroups.forEach((group, index) => {
-            setTimeout(() => {
-                this.animateElement(group, 'fadeInUp');
-            }, index * 100);
-        });
-        
-        contactInfo.forEach((info, index) => {
-            setTimeout(() => {
-                this.animateElement(info, 'fadeInRight');
-            }, index * 80);
-        });
-    }
-
-    enhanceCardHover(card) {
-        let isHovering = false;
-        
-        card.addEventListener('mouseenter', () => {
-            isHovering = true;
-            this.createCardParticles(card);
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            isHovering = false;
-        });
-        
-        card.addEventListener('mousemove', (e) => {
-            if (!isHovering) return;
-            
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Create subtle parallax effect
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const deltaX = (x - centerX) / centerX;
-            const deltaY = (y - centerY) / centerY;
-            
-            card.style.transform = `
-                translateY(-5px) 
-                scale(1.02) 
-                rotateX(${deltaY * 5}deg) 
-                rotateY(${deltaX * 5}deg)
-            `;
-        });
-    }
-
-    createCardParticles(card) {
-        if (this.performanceMode === 'low') return;
-        
-        const rect = card.getBoundingClientRect();
-        const particleCount = 5;
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.style.position = 'absolute';
-            particle.style.width = '4px';
-            particle.style.height = '4px';
-            particle.style.background = 'var(--primary-color)';
-            particle.style.borderRadius = '50%';
-            particle.style.pointerEvents = 'none';
-            particle.style.zIndex = '1000';
-            particle.style.left = rect.left + Math.random() * rect.width + 'px';
-            particle.style.top = rect.top + Math.random() * rect.height + 'px';
-            
-            document.body.appendChild(particle);
-            
-            // Animate particle
-            const animation = particle.animate([
-                { 
-                    transform: 'translate(0, 0) scale(1)', 
-                    opacity: 1 
-                },
-                { 
-                    transform: `translate(${(Math.random() - 0.5) * 100}px, ${-Math.random() * 100}px) scale(0)`, 
-                    opacity: 0 
-                }
-            ], {
-                duration: 1000,
-                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-            });
-            
-            animation.onfinish = () => {
-                if (particle.parentNode) {
-                    particle.parentNode.removeChild(particle);
-                }
-            };
-        }
-    }
-
-    setupPortfolioCardEffects(card) {
-        const overlay = card.querySelector('.portfolio-overlay');
-        const actions = card.querySelector('.portfolio-actions');
-        
-        if (!overlay || !actions) return;
-        
-        card.addEventListener('mouseenter', () => {
-            overlay.style.opacity = '1';
-            
-            const buttons = actions.querySelectorAll('.btn');
-            buttons.forEach((btn, index) => {
-                setTimeout(() => {
-                    btn.style.transform = 'translateY(0)';
-                    btn.style.opacity = '1';
-                }, index * 100);
-            });
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            overlay.style.opacity = '0';
-            
-            const buttons = actions.querySelectorAll('.btn');
-            buttons.forEach(btn => {
-                btn.style.transform = 'translateY(20px)';
-                btn.style.opacity = '0';
-            });
-        });
-    }
-
-    setupVoiceCardEffects(card) {
-        const playBtn = card.querySelector('.play-pause-btn');
-        const waveform = card.querySelector('.waveform');
-        const audio = card.querySelector('audio');
-        
-        if (!playBtn || !audio) return;
-        
-        let isPlaying = false;
-        
-        playBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                audio.pause();
-                this.stopWaveformAnimation(waveform);
-                playBtn.classList.remove('playing');
-            } else {
-                // Pause all other audio
-                document.querySelectorAll('audio').forEach(a => {
-                    if (a !== audio) a.pause();
-                });
-                document.querySelectorAll('.play-pause-btn').forEach(btn => {
-                    btn.classList.remove('playing');
-                });
-                
-                audio.play();
-                this.startWaveformAnimation(waveform);
-                playBtn.classList.add('playing');
-                
-                // Connect to audio analyser if available
-                if (this.audioContext) {
-                    this.connectAudioSource(audio);
-                }
-            }
-            
-            isPlaying = !isPlaying;
-        });
-        
-        audio.addEventListener('ended', () => {
-            this.stopWaveformAnimation(waveform);
-            playBtn.classList.remove('playing');
-            isPlaying = false;
-        });
-    }
-
-    startWaveformAnimation(waveform) {
-        if (!waveform) return;
-        
-        const bars = waveform.querySelectorAll('.waveform-bar');
-        
-        bars.forEach((bar, index) => {
-            bar.style.animation = `waveform ${Math.random() * 0.5 + 0.8}s ease-in-out infinite`;
-            bar.style.animationDelay = `${index * 0.1}s`;
-        });
-    }
-
-    stopWaveformAnimation(waveform) {
-        if (!waveform) return;
-        
-        const bars = waveform.querySelectorAll('.waveform-bar');
-        bars.forEach(bar => {
-            bar.style.animation = 'none';
-            bar.style.transform = 'scaleY(1)';
-        });
-    }
-
-    animateSkillBars(container) {
-        const skillBars = container.querySelectorAll('.skill-progress, .progress-bar');
-        
-        skillBars.forEach(bar => {
-            const percentage = bar.getAttribute('data-percentage') || 
-                             bar.getAttribute('data-progress') || 
-                             bar.style.getPropertyValue('--progress-width') || '0%';
-            
-            bar.style.width = '0%';
-            bar.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            
-            setTimeout(() => {
-                bar.style.width = percentage;
-            }, 200);
-        });
-    }
-
-    handleScroll() {
-        const scrolled = this.scrollPos;
-        const rate = scrolled * -0.5;
-        const velocity = this.scrollVelocity;
-
-        // Parallax effects for celestial elements
-        this.updateParallaxElements(rate, velocity);
-        
-        // Update progress indicators
-        this.updateScrollProgress();
-        
-        // Navbar scroll effects
-        this.updateNavbarOnScroll(scrolled);
-        
-        // Section reveal effects
-        this.checkSectionVisibility();
-    }
-
-    updateParallaxElements(rate, velocity) {
-        // Moon parallax
-        if (this.celestialSystem.moon) {
-            const moonRate = rate * 0.3;
-            this.celestialSystem.moon.style.transform = `translateY(${moonRate}px)`;
-        }
-        
-        if (this.celestialSystem.moonGlow) {
-            const glowRate = rate * 0.25;
-            this.celestialSystem.moonGlow.style.transform = `translateY(${glowRate}px)`;
-        }
-
-        // Stars parallax
-        this.stars.forEach((star, index) => {
-            const speed = star.parallaxFactor;
-            const parallaxY = rate * speed;
-            const velocityEffect = velocity * 0.1;
-            
-            star.element.style.transform = `translateY(${parallaxY + velocityEffect}px)`;
-        });
-
-        // Cosmic particles parallax
-        this.cosmicParticles.forEach((particle, index) => {
-            const speed = particle.parallaxFactor;
-            const parallaxY = rate * speed;
-            
-            particle.element.style.transform = `translateY(${parallaxY}px)`;
-        });
-    }
-
-    updateScrollProgress() {
-        const scrollProgress = document.querySelector('.scroll-progress');
-        if (!scrollProgress) return;
-        
-        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = (this.scrollPos / scrollHeight) * 100;
-        
-        scrollProgress.style.width = `${Math.min(100, Math.max(0, progress))}%`;
-    }
-
-    updateNavbarOnScroll(scrolled) {
-        const navbar = document.getElementById('mainNavbar');
-        if (!navbar) return;
-        
-        if (scrolled > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-        
-        // Hide/show navbar based on scroll direction
-        if (Math.abs(this.scrollVelocity) > 5) {
-            if (this.scrollVelocity > 0 && scrolled > 200) {
-                navbar.style.transform = 'translateY(-100%)';
-            } else {
-                navbar.style.transform = 'translateY(0)';
-            }
-        }
-    }
-
-    checkSectionVisibility() {
-        const sections = document.querySelectorAll('section[id]');
-        
-        sections.forEach(section => {
-            const rect = section.getBoundingClientRect();
-            const isVisible = rect.top < window.innerHeight * 0.8 && rect.bottom > 0;
-            
-            if (isVisible && !section.classList.contains('section-visible')) {
-                section.classList.add('section-visible');
-                this.triggerSectionAnimations(section);
-            }
-        });
-    }
-
-    repositionCelestialElements() {
-        // Reposition stars
-        this.createDynamicStars();
-        
-        // Reposition cosmic particles
-        this.createCosmicParticles();
-        
-        // Recreate particle system
-        this.createParticleSystem();
-        
-        console.log('🔄 Celestial elements repositioned');
-    }
-
-    recalculateParticles() {
-        const newCount = this.getOptimalParticleCount();
-        const currentCount = this.particles.length;
-        
-        if (newCount > currentCount) {
-            // Add particles
-            for (let i = 0; i < newCount - currentCount; i++) {
+        if (targetCount < this.particles.length) {
+            this.particles = this.particles.slice(0, targetCount);
+        } else if (targetCount > this.particles.length) {
+            while (this.particles.length < targetCount) {
                 this.particles.push(this.createParticle());
             }
-        } else if (newCount < currentCount) {
-            // Remove particles
-            this.particles.splice(0, currentCount - newCount);
-        }
-    }
-
-    enablePowerSaveMode() {
-        console.log('🔋 Enabling power save mode');
-        
-        // Reduce particle count
-        this.particles = this.particles.slice(0, Math.floor(this.particles.length * 0.3));
-        
-        // Disable some effects
-        const cosmicElements = document.querySelectorAll('.cosmic-particle, .shooting-star');
-        cosmicElements.forEach(el => {
-            el.style.animationPlayState = 'paused';
-        });
-        
-        // Reduce animation frequency
-        this.targetFPS = 30;
-    }
-
-    enableDataSaveMode() {
-        console.log('📶 Enabling data save mode');
-        
-        // Remove heavy visual effects
-        const heavyElements = document.querySelectorAll('.aurora-bg, .starfield');
-        heavyElements.forEach(el => el.style.display = 'none');
-        
-        // Reduce particle count significantly
-        this.particles = this.particles.slice(0, 5);
-        
-        // Disable audio reactive features
-        this.audioContext = null;
-        this.audioAnalyser = null;
-    }
-
-    pauseAnimations() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
         }
         
-        // Clear timeouts
-        if (this.typewriterTimeout) {
-            clearTimeout(this.typewriterTimeout);
-        }
-        
-        console.log('⏸️ Animations paused');
+        console.log(`⚡ Particle system updated to ${mode} mode with ${this.particles.length} particles`);
     }
-
-    resumeAnimations() {
-        if (!this.isReducedMotion && !this.animationId) {
-            this.startAnimationLoop();
-            console.log('▶️ Animations resumed');
-        }
+    
+    getTargetParticleCount(mode) {
+        const base = this.options.deviceCapabilities.isMobile ? 30 : 50;
+        const multipliers = { low: 0.3, medium: 0.7, high: 1.2 };
+        return Math.floor(base * multipliers[mode]);
     }
-
-    stopAllAnimations() {
-        this.pauseAnimations();
-        
-        // Clear canvas
-        if (this.ctx) {
-            this.ctx.clearRect(0, 0, this.particleCanvas.width, this.particleCanvas.height);
-        }
-        
-        // Stop CSS animations
-        document.body.classList.add('reduce-motion');
-        
-        // Clear all particles
-        this.particles = [];
-        this.mouseTrail = [];
-        
-        console.log('⏹️ All animations stopped');
-    }
-
-    // Public API methods
-    getPerformanceStats() {
-        return {
-            fps: Math.round(this.currentFPS),
-            averageFPS: Math.round(this.averageFPS),
-            particles: this.particles.length,
-            stars: this.stars.length,
-            cosmicParticles: this.cosmicParticles.length,
-            animationActive: !!this.animationId,
-            performanceMode: this.performanceMode,
-            reducedMotion: this.isReducedMotion,
-            version: this.version
-        };
-    }
-
-    setPerformanceMode(mode) {
-        this.performanceMode = mode;
-        this.recalculateParticles();
-        
-        if (mode === 'low') {
-            this.enablePowerSaveMode();
-        }
-        
-        console.log(`🎛️ Performance mode set to: ${mode}`);
-    }
-
-    addCustomAnimation(selector, animationType, options = {}) {
-        const elements = document.querySelectorAll(selector);
-        
-        elements.forEach((element, index) => {
-            setTimeout(() => {
-                this.animateElement(element, animationType);
-            }, (options.delay || 0) + (index * (options.stagger || 100)));
-        });
-    }
-
-    triggerCustomEffect(effectName, options = {}) {
-        switch (effectName) {
-            case 'starburst':
-                this.createStarburstEffect(options);
-                break;
-            case 'particleExplosion':
-                this.createParticleExplosion(options);
-                break;
-            case 'waveRipple':
-                this.createWaveRipple(options);
-                break;
-        }
-    }
-
-    createStarburstEffect(options) {
-        const { x = window.innerWidth / 2, y = window.innerHeight / 2, count = 12 } = options;
-        
-        for (let i = 0; i < count; i++) {
-            const angle = (i / count) * Math.PI * 2;
-            const particle = {
-                x: x,
-                y: y,
-                vx: Math.cos(angle) * 5,
-                vy: Math.sin(angle) * 5,
-                size: Math.random() * 4 + 2,
-                color: this.getRandomParticleColor(),
-                life: 60,
-                opacity: 1
-            };
-            
-            this.particles.push(particle);
-        }
-    }
-
-    createParticleExplosion(options) {
-        const { x = this.mousePos.x, y = this.mousePos.y, intensity = 20 } = options;
-        
-        for (let i = 0; i < intensity; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 8 + 2;
-            
-            const particle = {
-                x: x,
-                y: y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                size: Math.random() * 3 + 1,
-                color: this.getRandomParticleColor(),
-                life: Math.random() * 60 + 30,
-                opacity: 1,
-                gravity: 0.1
-            };
-            
-            this.particles.push(particle);
-        }
-    }
-
-    createWaveRipple(options) {
-        const { x = this.mousePos.x, y = this.mousePos.y } = options;
-        
-        // Create ripple element
-        const ripple = document.createElement('div');
-        ripple.style.position = 'fixed';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.style.width = '10px';
-        ripple.style.height = '10px';
-        ripple.style.borderRadius = '50%';
-        ripple.style.border = '2px solid rgba(167, 139, 250, 0.8)';
-        ripple.style.transform = 'translate(-50%, -50%)';
-        ripple.style.pointerEvents = 'none';
-        ripple.style.zIndex = '9999';
-        
-        document.body.appendChild(ripple);
-        
-        // Animate ripple
-        const animation = ripple.animate([
-            { 
-                transform: 'translate(-50%, -50%) scale(1)', 
-                opacity: 1 
-            },
-            { 
-                transform: 'translate(-50%, -50%) scale(20)', 
-                opacity: 0 
-            }
-        ], {
-            duration: 800,
-            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-        });
-        
-        animation.onfinish = () => {
-            if (ripple.parentNode) {
-                ripple.parentNode.removeChild(ripple);
-            }
-        };
-    }
-
+    
     destroy() {
-        this.stopAllAnimations();
-        
-        // Remove event listeners
-        window.removeEventListener('scroll', this.handleScroll);
-        window.removeEventListener('resize', this.resizeCanvas);
-        document.removeEventListener('mousemove', this.updateMousePosition);
-        
-        // Clear all arrays
         this.particles = [];
-        this.stars = [];
-        this.cosmicParticles = [];
-        this.mouseTrail = [];
-        
-        // Remove created elements
-        document.querySelectorAll('.dynamic-star, .dynamic-cosmic-particle, .floating-decoration').forEach(el => {
-            if (el.parentNode) {
-                el.parentNode.removeChild(el);
-            }
-        });
-        
-                console.log('🗑️ Animation system destroyed and cleaned up');
+        console.log('✅ Particle system destroyed');
     }
 }
 
-// Utility functions for animations
-const AnimationUtils = {
-    // Easing functions
-    easeInOut: (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
-    easeOut: (t) => t * (2 - t),
-    easeIn: (t) => t * t,
-    easeOutBounce: (t) => {
-        if (t < 1 / 2.75) {
-            return 7.5625 * t * t;
-        } else if (t < 2 / 2.75) {
-            return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
-        } else if (t < 2.5 / 2.75) {
-            return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
-        } else {
-            return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
-        }
-    },
+// Global initialization
+let thanatsittAnimations = null;
 
-    // Color utilities
-    hexToRgba: (hex, alpha = 1) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return { r, g, b, a: alpha };
-    },
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAnimations);
+} else {
+    initializeAnimations();
+}
 
-    rgbaToString: (color) => `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-
-    // Random utilities
-    randomBetween: (min, max) => Math.random() * (max - min) + min,
-    randomChoice: (array) => array[Math.floor(Math.random() * array.length)],
-
-    // Animation helpers
-    lerp: (start, end, factor) => start + (end - start) * factor,
-    clamp: (value, min, max) => Math.min(Math.max(value, min), max),
+function initializeAnimations() {
+    if (thanatsittAnimations) return;
     
-    // Performance utilities
-    throttle: (func, limit) => {
-        let inThrottle;
-        return function() {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        }
-    },
-
-    debounce: (func, wait) => {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-};
-
-// Animation presets for common effects
-const AnimationPresets = {
-    heroEntrance: {
-        title: { animation: 'fadeInUp', delay: 0, duration: 800 },
-        subtitle: { animation: 'fadeInUp', delay: 200, duration: 800 },
-        description: { animation: 'fadeInUp', delay: 400, duration: 800 },
-        actions: { animation: 'fadeInUp', delay: 600, duration: 800 },
-        social: { animation: 'fadeInUp', delay: 800, duration: 800 }
-    },
-
-    cardReveal: {
-        animation: 'scaleIn',
-        stagger: 150,
-        duration: 600,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-    },
-
-    slideIn: {
-        from: { transform: 'translateX(-100%)', opacity: 0 },
-        to: { transform: 'translateX(0)', opacity: 1 },
-        duration: 600,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-    },
-
-    bounce: {
-        keyframes: [
-            { transform: 'translateY(0)' },
-            { transform: 'translateY(-20px)' },
-            { transform: 'translateY(0)' }
-        ],
-        duration: 600,
-        easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
-    }
-};
-
-// Advanced particle systems
-class AdvancedParticleSystem {
-    constructor(canvas, options = {}) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.particles = [];
-        this.forces = [];
-        this.emitters = [];
+    try {
+        thanatsittAnimations = new ThanatsittAnimations();
         
-        this.options = {
-            maxParticles: options.maxParticles || 100,
-            gravity: options.gravity || 0,
-            friction: options.friction || 0.99,
-            bounds: options.bounds || true,
-            ...options
-        };
-    }
-
-    addEmitter(x, y, options = {}) {
-        const emitter = {
-            x, y,
-            rate: options.rate || 5,
-            angle: options.angle || 0,
-            spread: options.spread || Math.PI / 4,
-            speed: options.speed || { min: 1, max: 3 },
-            life: options.life || { min: 30, max: 60 },
-            size: options.size || { min: 1, max: 3 },
-            color: options.color || { r: 255, g: 255, b: 255, a: 1 },
-            lastEmit: 0,
-            active: true
-        };
+        // Expose to global scope for debugging
+        window.ThanatsittAnimations = thanatsittAnimations;
         
-        this.emitters.push(emitter);
-        return emitter;
-    }
-
-    addForce(x, y, strength, radius) {
-        this.forces.push({ x, y, strength, radius });
-    }
-
-    update() {
-        // Update emitters
-        this.emitters.forEach(emitter => {
-            if (!emitter.active) return;
-            
-            const now = Date.now();
-            if (now - emitter.lastEmit > 1000 / emitter.rate) {
-                this.emit(emitter);
-                emitter.lastEmit = now;
-            }
-        });
-
-        // Update particles
-        this.particles.forEach((particle, index) => {
-            // Apply forces
-            this.forces.forEach(force => {
-                const dx = force.x - particle.x;
-                const dy = force.y - particle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < force.radius) {
-                    const forceStrength = (force.radius - distance) / force.radius * force.strength;
-                    const angle = Math.atan2(dy, dx);
-                    
-                    particle.vx += Math.cos(angle) * forceStrength;
-                    particle.vy += Math.sin(angle) * forceStrength;
-                }
-            });
-
-            // Apply gravity
-            particle.vy += this.options.gravity;
-
-            // Apply friction
-            particle.vx *= this.options.friction;
-            particle.vy *= this.options.friction;
-
-            // Update position
-            particle.x += particle.vx;
-            particle.y += particle.vy;
-
-            // Update life
-            particle.life--;
-            particle.alpha = particle.life / particle.maxLife;
-
-            // Boundary collision
-            if (this.options.bounds) {
-                if (particle.x <= 0 || particle.x >= this.canvas.width) {
-                    particle.vx *= -0.8;
-                    particle.x = Math.max(0, Math.min(this.canvas.width, particle.x));
-                }
-                if (particle.y <= 0 || particle.y >= this.canvas.height) {
-                    particle.vy *= -0.8;
-                    particle.y = Math.max(0, Math.min(this.canvas.height, particle.y));
-                }
-            }
-
-            // Remove dead particles
-            if (particle.life <= 0) {
-                this.particles.splice(index, 1);
-            }
-        });
-    }
-
-    emit(emitter) {
-        if (this.particles.length >= this.options.maxParticles) return;
-
-        const angle = emitter.angle + (Math.random() - 0.5) * emitter.spread;
-        const speed = AnimationUtils.randomBetween(emitter.speed.min, emitter.speed.max);
-        const life = AnimationUtils.randomBetween(emitter.life.min, emitter.life.max);
-        const size = AnimationUtils.randomBetween(emitter.size.min, emitter.size.max);
-
-        const particle = {
-            x: emitter.x,
-            y: emitter.y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            size: size,
-            life: life,
-            maxLife: life,
-            alpha: 1,
-            color: { ...emitter.color }
-        };
-
-        this.particles.push(particle);
-    }
-
-    render() {
-        this.particles.forEach(particle => {
-            this.ctx.save();
-            this.ctx.globalAlpha = particle.alpha;
-            this.ctx.fillStyle = AnimationUtils.rgbaToString({
-                ...particle.color,
-                a: particle.alpha
-            });
-            
-            this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            this.ctx.restore();
-        });
+        // Add CSS animations dynamically
+        addDynamicStyles();
+        
+        console.log('🎉 Thanatsitt Animations fully initialized!');
+        
+    } catch (error) {
+        console.error('❌ Failed to initialize animations:', error);
     }
 }
 
-// Special effects system
-class SpecialEffectsSystem {
-    constructor(container) {
-        this.container = container;
-        this.effects = [];
-    }
-
-    createFireworks(x, y, colors = null) {
-        const defaultColors = [
-            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'
-        ];
-        
-        const effectColors = colors || defaultColors;
-        const particleCount = 30;
-        
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'firework-particle';
-            particle.style.position = 'absolute';
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
-            particle.style.width = '4px';
-            particle.style.height = '4px';
-            particle.style.borderRadius = '50%';
-            particle.style.backgroundColor = AnimationUtils.randomChoice(effectColors);
-            particle.style.pointerEvents = 'none';
-            particle.style.zIndex = '9999';
-            
-            this.container.appendChild(particle);
-            
-            const angle = (i / particleCount) * Math.PI * 2;
-            const velocity = AnimationUtils.randomBetween(50, 150);
-            const duration = AnimationUtils.randomBetween(1000, 2000);
-            
-            const animation = particle.animate([
-                { 
-                    transform: 'translate(-50%, -50%) scale(1)', 
-                    opacity: 1 
-                },
-                { 
-                    transform: `translate(${Math.cos(angle) * velocity - 2}px, ${Math.sin(angle) * velocity - 2}px) scale(0)`, 
-                    opacity: 0 
-                }
-            ], {
-                duration: duration,
-                easing: 'cubic-bezier(0.4, 0, 0.6, 1)'
-            });
-            
-            animation.onfinish = () => {
-                if (particle.parentNode) {
-                    particle.parentNode.removeChild(particle);
-                }
-            };
+// Add required CSS animations
+function addDynamicStyles() {
+    const styles = `
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
-    }
-
-    createTextReveal(element, options = {}) {
-        const text = element.textContent;
-        const chars = text.split('');
         
-        element.innerHTML = '';
+        @keyframes shootingStarMove {
+            0% {
+                transform: translateX(-100px) translateY(-100px);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateX(100vw) translateY(100vh);
+                opacity: 0;
+            }
+        }
         
-        chars.forEach((char, index) => {
-            const span = document.createElement('span');
-            span.textContent = char === ' ' ? '\u00A0' : char;
-            span.style.display = 'inline-block';
-            span.style.opacity = '0';
-            span.style.transform = 'translateY(20px)';
-            span.style.transition = `all ${options.duration || 0.6}s cubic-bezier(0.4, 0, 0.2, 1)`;
+        @keyframes moonFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes moonPhases {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes auroraWave {
+            0%, 100% { transform: translateX(-20px) scaleY(1); opacity: 0.1; }
+            50% { transform: translateX(20px) scaleY(1.1); opacity: 0.3; }
+        }
+        
+        @keyframes nebulaFloat {
+            0%, 100% { transform: translateX(0) translateY(0) scale(1); }
+            33% { transform: translateX(20px) translateY(-10px) scale(1.05); }
+            66% { transform: translateX(-15px) translateY(15px) scale(0.95); }
+        }
+        
+        @keyframes waveformPulse {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+        
+        @keyframes constellation {
+            0% { stroke-dashoffset: 100; opacity: 0; }
+            50% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0.7; }
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        
+        .notification {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .voice-waveform.active .waveform-bar {
+            animation-play-state: running;
+        }
+        
+        .voice-waveform .waveform-bar {
+            animation-play-state: paused;
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .animate-fadeInLeft {
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+        
+        .animate-fadeInRight {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+        
+        .animate-zoomIn {
+            animation: zoomIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .scroll-reveal.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .stagger-children.animated > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .stagger-children > *:nth-child(1) { transition-delay: 0.1s; }
+        .stagger-children > *:nth-child(2) { transition-delay: 0.2s; }
+        .stagger-children > *:nth-child(3) { transition-delay: 0.3s; }
+        .stagger-children > *:nth-child(4) { transition-delay: 0.4s; }
+        .stagger-children > *:nth-child(5) { transition-delay: 0.5s; }
+        .stagger-children > *:nth-child(6) { transition-delay: 0.6s; }
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .bounce {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        .bounce.delay-1 { animation-delay: 0.2s; }
+        .bounce.delay-2 { animation-delay: 0.4s; }
+        .bounce.delay-3 { animation-delay: 0.6s; }
+        .bounce.delay-4 { animation-delay: 0.8s; }
+        .bounce.delay-5 { animation-delay: 1s; }
+        .bounce.delay-6 { animation-delay: 1.2s; }
+        
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+            40%, 43% { transform: translateY(-15px); }
+            70% { transform: translateY(-8px); }
+            90% { transform: translateY(-3px); }
+        }
+        
+        .text-gradient.animated {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .card-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-shimmer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .loading-dots {
+            display: inline-block;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: loadingDots 1.5s infinite;
+        }
+        
+        @keyframes loadingDots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        /* Performance optimized animations for low-end devices */
+        @media (max-width: 768px) {
+            .particle-canvas {
+                opacity: 0.7;
+            }
             
-            element.appendChild(span);
+            .dynamic-nebula,
+            .dynamic-aurora {
+                display: none;
+            }
             
-            setTimeout(() => {
-                span.style.opacity = '1';
-                span.style.transform = 'translateY(0)';
-            }, index * (options.stagger || 50));
-        });
-    }
+            .cosmic-particle {
+                animation-duration: 8s;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .text-gradient.animated {
+                background: none;
+                -webkit-text-fill-color: currentColor;
+                color: var(--text-primary);
+            }
+            
+            .card-shimmer::before {
+                display: none;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .scroll-reveal {
+                opacity: 1;
+                transform: none;
+            }
+            
+            .particle-canvas {
+                display: none;
+            }
+        }
+        
+        /* Dark mode enhancements */
+        @media (prefers-color-scheme: dark) {
+            .dynamic-star {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            
+            .dynamic-moon {
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .cosmic-background,
+            .particle-canvas,
+            .mouse-follower,
+            .floating-elements {
+                display: none !important;
+            }
+        }
+        
+        /* Focus indicators for accessibility */
+        .nav-link:focus,
+        .btn:focus,
+        .social-link:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+        
+        /* Skip link styles */
+        .skip-nav {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            border-radius: 4px;
+        }
+        
+        .skip-nav:focus {
+            top: 6px;
+        }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = styles;
+    document.head.appendChild(styleSheet);
+}
 
-    createRippleEffect(x, y, color = 'rgba(167, 139, 250, 0.5)') {
-        const ripple = document.createElement('div');
-        ripple.style.position = 'fixed';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.style.width = '0';
-        ripple.style.height = '0';
-        ripple.style.borderRadius = '50%';
-        ripple.style.border = `2px solid ${color}`;
-        ripple.style.transform = 'translate(-50%, -50%)';
-        ripple.style.pointerEvents = 'none';
-        ripple.style.zIndex = '9999';
-        
-        this.container.appendChild(ripple);
-        
-        const maxSize = Math.max(window.innerWidth, window.innerHeight) * 0.5;
-        
-        const animation = ripple.animate([
-            { 
-                width: '0px', 
-                height: '0px', 
-                opacity: 1 
+// Portfolio modal functionality
+function openPortfolioModal(portfolioId) {
+    console.log(`🖼️ Opening portfolio modal: ${portfolioId}`);
+    
+    const modalData = getPortfolioData(portfolioId);
+    if (!modalData) {
+        console.error(`Portfolio data not found for: ${portfolioId}`);
+        return;
+    }
+    
+    updatePortfolioModal(modalData);
+    
+    const modal = new bootstrap.Modal(document.getElementById('portfolioModal'));
+    modal.show();
+}
+
+function getPortfolioData(portfolioId) {
+    const portfolioData = {
+        'ai-chatbot': {
+            title: 'AI Chatbot Development',
+            category: 'AI & Machine Learning',
+            description: 'Advanced conversational AI system with natural language processing capabilities, built using GPT-4 and custom training data.',
+            technologies: ['Python', 'OpenAI API', 'TensorFlow', 'FastAPI', 'PostgreSQL'],
+            features: [
+                'Multi-language support (EN, TH, JP)',
+                'Context-aware conversations',
+                'Integration with business systems',
+                'Real-time learning capabilities',
+                'Advanced sentiment analysis'
+            ],
+            images: ['images/portfolio/ai-chatbot-1.jpg', 'images/portfolio/ai-chatbot-2.jpg'],
+            liveUrl: 'https://demo.example.com',
+            githubUrl: 'https://github.com/example/ai-chatbot',
+            completedDate: '2024-01-15',
+            client: 'Tech Startup Inc.'
+        },
+        'voice-commercial': {
+            title: 'Commercial Voice Campaign',
+            category: 'Voice Acting',
+            description: 'Multi-language commercial voice campaign for international brand, featuring consistent brand voice across different markets.',
+            technologies: ['Pro Tools', 'Audio Processing', 'Voice Modulation'],
+            features: [
+                'Professional studio recording',
+                '15 different commercial spots',
+                'Multi-language delivery',
+                'Brand voice consistency',
+                'Rapid turnaround delivery'
+            ],
+            images: ['images/portfolio/voice-commercial-1.jpg', 'images/portfolio/voice-commercial-2.jpg'],
+            audioSamples: ['audio/commercial-sample-1.mp3', 'audio/commercial-sample-2.mp3'],
+            completedDate: '2023-12-10',
+            client: 'Global Brand Corp.'
+        },
+        'ecommerce-platform': {
+            title: 'E-commerce Platform',
+            category: 'Web Development',
+            description: 'Full-stack e-commerce solution with AI-powered recommendations, advanced analytics, and multi-vendor support.',
+            technologies: ['React', 'Node.js', 'MongoDB', 'Stripe', 'AWS', 'Docker'],
+            features: [
+                'AI product recommendations',
+                'Multi-vendor marketplace',
+                'Advanced analytics dashboard',
+                'Mobile-responsive design',
+                'Integrated payment processing',
+                'Inventory management system'
+            ],
+            images: ['images/portfolio/ecommerce-1.jpg', 'images/portfolio/ecommerce-2.jpg'],
+            liveUrl: 'https://ecommerce-demo.example.com',
+            githubUrl: 'https://github.com/example/ecommerce-platform',
+            completedDate: '2023-11-20',
+            client: 'Retail Solutions Ltd.'
+        },
+        'seo-strategy': {
+            title: 'SEO Strategy & Implementation',
+            category: 'Digital Strategy',
+            description: 'Comprehensive SEO strategy that improved organic traffic by 300% and achieved top 3 rankings for target keywords.',
+            technologies: ['Google Analytics', 'Search Console', 'SEMrush', 'Content Optimization'],
+            features: [
+                'Keyword research & analysis',
+                'Technical SEO optimization',
+                'Content strategy development',
+                'Link building campaigns',
+                'Performance monitoring',
+                'Competitor analysis'
+            ],
+            images: ['images/portfolio/seo-strategy-1.jpg', 'images/portfolio/seo-strategy-2.jpg'],
+            results: {
+                'Organic Traffic Increase': '300%',
+                'Keyword Rankings (Top 3)': '25+',
+                'Page Speed Improvement': '40%',
+                'Conversion Rate Increase': '85%'
             },
-            { 
-                width: maxSize + 'px', 
-                height: maxSize + 'px', 
-                opacity: 0 
-            }
-        ], {
-            duration: 800,
-            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-        });
-        
-        animation.onfinish = () => {
-            if (ripple.parentNode) {
-                ripple.parentNode.removeChild(ripple);
-            }
-        };
-    }
-
-    createMagnetEffect(element, strength = 0.3) {
-        let isActive = false;
-        
-        const handleMouseMove = (e) => {
-            if (!isActive) return;
-            
-            const rect = element.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            const deltaX = e.clientX - centerX;
-            const deltaY = e.clientY - centerY;
-            
-            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            const maxDistance = 200;
-            
-            if (distance < maxDistance) {
-                const force = (maxDistance - distance) / maxDistance * strength;
-                const angle = Math.atan2(deltaY, deltaX);
-                
-                const moveX = Math.cos(angle) * force * 20;
-                const moveY = Math.sin(angle) * force * 20;
-                
-                element.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 + force * 0.1})`;
-            }
-        };
-        
-        element.addEventListener('mouseenter', () => {
-            isActive = true;
-            document.addEventListener('mousemove', handleMouseMove);
-        });
-        
-        element.addEventListener('mouseleave', () => {
-            isActive = false;
-            element.style.transform = 'translate(0, 0) scale(1)';
-            document.removeEventListener('mousemove', handleMouseMove);
-        });
-    }
-}
-
-// Performance monitor for animations
-class AnimationPerformanceMonitor {
-    constructor() {
-        this.metrics = {
-            fps: 60,
-            frameTime: 16.67,
-            memory: 0,
-            particles: 0,
-            droppedFrames: 0
-        };
-        
-        this.history = [];
-        this.observers = [];
-        this.thresholds = {
-            lowFPS: 30,
-            highFrameTime: 33,
-            memoryWarning: 50 * 1024 * 1024 // 50MB
-        };
-    }
-
-    startMonitoring() {
-        this.startTime = performance.now();
-        this.frameCount = 0;
-        this.lastFrameTime = this.startTime;
-        
-        this.monitorLoop();
-    }
-
-    monitorLoop() {
-        const now = performance.now();
-        this.frameTime = now - this.lastFrameTime;
-        this.lastFrameTime = now;
-        
-        this.frameCount++;
-        
-        // Update FPS every second
-        if (now - this.startTime >= 1000) {
-            this.metrics.fps = Math.round((this.frameCount / (now - this.startTime)) * 1000);
-            this.metrics.frameTime = this.frameTime;
-            
-            // Get memory usage if available
-            if (performance.memory) {
-                this.metrics.memory = performance.memory.usedJSHeapSize;
-            }
-            
-            // Check performance thresholds
-            this.checkThresholds();
-            
-            // Reset counters
-            this.frameCount = 0;
-            this.startTime = now;
-        }
-        
-        requestAnimationFrame(() => this.monitorLoop());
-    }
-
-    checkThresholds() {
-        const warnings = [];
-        
-        if (this.metrics.fps < this.thresholds.lowFPS) {
-            warnings.push({ type: 'low-fps', value: this.metrics.fps });
-        }
-        
-        if (this.metrics.frameTime > this.thresholds.highFrameTime) {
-            warnings.push({ type: 'high-frame-time', value: this.metrics.frameTime });
-        }
-        
-        if (this.metrics.memory > this.thresholds.memoryWarning) {
-            warnings.push({ type: 'memory-warning', value: this.metrics.memory });
-        }
-        
-        if (warnings.length > 0) {
-            this.notifyObservers(warnings);
-        }
-    }
-
-    addObserver(callback) {
-        this.observers.push(callback);
-    }
-
-    notifyObservers(warnings) {
-        this.observers.forEach(callback => callback(warnings, this.metrics));
-    }
-
-    getMetrics() {
-        return { ...this.metrics };
-    }
-}
-
-// Initialize the animation system when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    // Create global animation instance
-    window.ThanaAnimations = new ThanaAnimations();
-    
-    // Create performance monitor
-    window.AnimationMonitor = new AnimationPerformanceMonitor();
-    
-    // Create special effects system
-    window.SpecialEffects = new SpecialEffectsSystem(document.body);
-    
-    // Add performance monitoring
-    window.AnimationMonitor.addObserver((warnings, metrics) => {
-        console.warn('🚨 Performance warnings:', warnings);
-        
-        // Auto-optimize if performance is poor
-        if (warnings.some(w => w.type === 'low-fps')) {
-            window.ThanaAnimations.setPerformanceMode('low');
-        }
-    });
-    
-    // Start monitoring
-    window.AnimationMonitor.startMonitoring();
-    
-    // Setup global event listeners for special effects
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('btn-primary') || 
-            e.target.classList.contains('cta-button')) {
-                        window.SpecialEffects.createRippleEffect(e.clientX, e.clientY);
-        }
-        
-        // Easter egg - double click for fireworks
-        if (e.detail === 2) {
-            window.SpecialEffects.createFireworks(e.clientX, e.clientY);
-        }
-    });
-    
-    // Setup voice demo enhancements
-    document.querySelectorAll('.voice-demo-card').forEach(card => {
-        window.SpecialEffects.createMagnetEffect(card, 0.2);
-    });
-    
-    // Setup text reveals for headings
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.classList.contains('text-revealed')) {
-                window.SpecialEffects.createTextReveal(entry.target, {
-                    duration: 0.8,
-                    stagger: 30
-                });
-                entry.target.classList.add('text-revealed');
-            }
-        });
-    }, { threshold: 0.5 });
-    
-    document.querySelectorAll('h1, h2, h3').forEach(heading => {
-        observer.observe(heading);
-    });
-    
-    console.log('🚀 Advanced animation system fully loaded and ready!');
-});
-
-// Intersection Observer polyfill fallback
-if (!window.IntersectionObserver) {
-    console.warn('IntersectionObserver not supported, loading fallback');
-    
-    // Simple fallback for older browsers
-    window.IntersectionObserver = class {
-        constructor(callback, options = {}) {
-            this.callback = callback;
-            this.options = options;
-            this.elements = new Set();
-            this.startWatching();
-        }
-        
-        observe(element) {
-            this.elements.add(element);
-        }
-        
-        unobserve(element) {
-            this.elements.delete(element);
-        }
-        
-        disconnect() {
-            this.elements.clear();
-            if (this.interval) {
-                clearInterval(this.interval);
-            }
-        }
-        
-        startWatching() {
-            this.interval = setInterval(() => {
-                this.elements.forEach(element => {
-                    const rect = element.getBoundingClientRect();
-                    const isIntersecting = rect.top < window.innerHeight && rect.bottom > 0;
-                    
-                    this.callback([{
-                        target: element,
-                        isIntersecting,
-                        intersectionRatio: isIntersecting ? 0.5 : 0
-                    }]);
-                });
-            }, 100);
+            completedDate: '2023-10-05',
+            client: 'Digital Marketing Agency'
         }
     };
+    
+    return portfolioData[portfolioId] || null;
 }
 
-// Utility functions for external use
-window.AnimationUtils = {
-    ...AnimationUtils,
+function updatePortfolioModal(data) {
+    const modal = document.getElementById('portfolioModal');
+    if (!modal) return;
     
-    // Quick animation methods
-    fadeIn: (element, duration = 300) => {
-        element.style.opacity = '0';
-        element.style.transition = `opacity ${duration}ms ease-in-out`;
-        requestAnimationFrame(() => {
-            element.style.opacity = '1';
-        });
-    },
+    // Update modal content
+    const titleEl = modal.querySelector('.modal-title');
+    const categoryEl = modal.querySelector('.portfolio-category');
+    const descriptionEl = modal.querySelector('.portfolio-description');
+    const technologiesEl = modal.querySelector('.portfolio-technologies');
+    const featuresEl = modal.querySelector('.portfolio-features');
+    const imagesEl = modal.querySelector('.portfolio-images');
+    const linksEl = modal.querySelector('.portfolio-links');
     
-    fadeOut: (element, duration = 300) => {
-        element.style.transition = `opacity ${duration}ms ease-in-out`;
-        element.style.opacity = '0';
-        
-        setTimeout(() => {
-            element.style.display = 'none';
-        }, duration);
-    },
+    if (titleEl) titleEl.textContent = data.title;
+    if (categoryEl) categoryEl.textContent = data.category;
+    if (descriptionEl) descriptionEl.textContent = data.description;
     
-    slideUp: (element, duration = 300) => {
-        const height = element.scrollHeight;
-        element.style.transition = `height ${duration}ms ease-in-out`;
-        element.style.height = height + 'px';
-        
-        requestAnimationFrame(() => {
-            element.style.height = '0';
-            element.style.paddingTop = '0';
-            element.style.paddingBottom = '0';
-            element.style.marginTop = '0';
-            element.style.marginBottom = '0';
-        });
-        
-        setTimeout(() => {
-            element.style.display = 'none';
-        }, duration);
-    },
-    
-    slideDown: (element, duration = 300) => {
-        element.style.removeProperty('display');
-        let display = window.getComputedStyle(element).display;
-        if (display === 'none') display = 'block';
-        element.style.display = display;
-        
-        const height = element.scrollHeight;
-        element.style.overflow = 'hidden';
-        element.style.height = '0';
-        element.style.paddingTop = '0';
-        element.style.paddingBottom = '0';
-        element.style.marginTop = '0';
-        element.style.marginBottom = '0';
-        
-        element.offsetHeight; // Trigger reflow
-        
-        element.style.boxSizing = 'border-box';
-        element.style.transition = `height ${duration}ms ease-in-out`;
-        element.style.height = height + 'px';
-        element.style.removeProperty('padding-top');
-        element.style.removeProperty('padding-bottom');
-        element.style.removeProperty('margin-top');
-        element.style.removeProperty('margin-bottom');
-        
-        setTimeout(() => {
-            element.style.removeProperty('height');
-            element.style.removeProperty('overflow');
-            element.style.removeProperty('transition');
-        }, duration);
-    },
-    
-    // Scroll animations
-    scrollToElement: (element, duration = 800, offset = 0) => {
-        const targetPosition = element.offsetTop - offset;
-        const startPosition = window.pageYOffset;
-        const distance = targetPosition - startPosition;
-        const startTime = performance.now();
-        
-        const animateScroll = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeProgress = AnimationUtils.easeInOut(progress);
-            
-            window.scrollTo(0, startPosition + (distance * easeProgress));
-            
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll);
-            }
-        };
-        
-        requestAnimationFrame(animateScroll);
-    },
-    
-    // Element animations
-    shake: (element, intensity = 10, duration = 600) => {
-        const originalTransform = element.style.transform;
-        const animation = element.animate([
-            { transform: 'translateX(0)' },
-            { transform: `translateX(-${intensity}px)` },
-            { transform: `translateX(${intensity}px)` },
-            { transform: 'translateX(0)' }
-        ], {
-            duration: duration / 4,
-            iterations: 4,
-            easing: 'ease-in-out'
-        });
-        
-        animation.onfinish = () => {
-            element.style.transform = originalTransform;
-        };
-    },
-    
-    pulse: (element, scale = 1.1, duration = 300) => {
-        const originalTransform = element.style.transform;
-        const animation = element.animate([
-            { transform: 'scale(1)' },
-            { transform: `scale(${scale})` },
-            { transform: 'scale(1)' }
-        ], {
-            duration: duration,
-            easing: 'ease-in-out'
-        });
-        
-        animation.onfinish = () => {
-            element.style.transform = originalTransform;
-        };
-    },
-    
-    // Number animations
-    animateNumber: (element, start, end, duration = 1000, formatter = null) => {
-        const startTime = performance.now();
-        const range = end - start;
-        
-        const updateNumber = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeProgress = AnimationUtils.easeOut(progress);
-            const current = start + (range * easeProgress);
-            
-            const value = Math.floor(current);
-            element.textContent = formatter ? formatter(value) : value;
-            
-            if (progress < 1) {
-                requestAnimationFrame(updateNumber);
-            } else {
-                element.textContent = formatter ? formatter(end) : end;
-            }
-        };
-        
-        requestAnimationFrame(updateNumber);
+    // Update technologies
+    if (technologiesEl && data.technologies) {
+        technologiesEl.innerHTML = data.technologies
+            .map(tech => `<span class="badge bg-primary">${tech}</span>`)
+            .join(' ');
     }
-};
-
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        ThanaAnimations,
-        AnimationUtils,
-        AnimationPresets,
-        AdvancedParticleSystem,
-        SpecialEffectsSystem,
-        AnimationPerformanceMonitor
-    };
-}
-
-// Global animations configuration
-window.ANIMATION_CONFIG = {
-    // Performance settings
-    performance: {
-        targetFPS: 60,
-        maxParticles: 100,
-        reducedMotionRespect: true,
-        autoOptimize: true,
-        powerSaveMode: false,
-        dataSaveMode: false
-    },
     
-    // Visual settings
-    visual: {
-        particleOpacity: 0.8,
-        connectionOpacity: 0.5,
-        trailLength: 5,
-        glowIntensity: 1.0,
-        colorSaturation: 1.0
-    },
-    
-    // Animation timings
-    timings: {
-        heroEntrance: 800,
-        sectionReveal: 600,
-        cardHover: 300,
-        buttonPress: 150,
-        typewriter: 100,
-        counter: 2000
-    },
-    
-    // Celestial settings
-    celestial: {
-        moonOrbitDuration: 60000, // 60 seconds
-        starTwinkleRate: 3000,
-        shootingStarFrequency: 15000,
-        particleFloatSpeed: 8000,
-        auroraShiftSpeed: 15000
-    },
-    
-    // Interaction settings
-    interaction: {
-        mouseInfluence: 120,
-        scrollParallax: 0.5,
-        audioReactive: true,
-        clickEffects: true,
-        hoverEffects: true
+    // Update features
+    if (featuresEl && data.features) {
+        featuresEl.innerHTML = data.features
+            .map(feature => `<li><i class="fas fa-check text-success"></i> ${feature}</li>`)
+            .join('');
     }
-};
-
-// Debug utilities (only in development)
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    window.ANIMATION_DEBUG = {
-        showFPS: () => {
-            const fpsDisplay = document.createElement('div');
-            fpsDisplay.id = 'fps-display';
-            fpsDisplay.style.cssText = `
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 10px;
-                border-radius: 5px;
-                font-family: monospace;
-                font-size: 12px;
-                z-index: 10000;
-                pointer-events: none;
+    
+    // Update images
+    if (imagesEl && data.images) {
+        imagesEl.innerHTML = data.images
+            .map((img, index) => `
+                <div class="col-md-6">
+                    <img src="${img}" alt="${data.title} Screenshot ${index + 1}" 
+                         class="img-fluid rounded" loading="lazy">
+                </div>
+            `)
+            .join('');
+    }
+    
+    // Update links
+    if (linksEl) {
+        let linksHTML = '';
+        
+        if (data.liveUrl) {
+            linksHTML += `
+                <a href="${data.liveUrl}" class="btn btn-primary" target="_blank" rel="noopener">
+                    <i class="fas fa-external-link-alt"></i> View Live Demo
+                </a>
             `;
-            document.body.appendChild(fpsDisplay);
-            
-            setInterval(() => {
-                if (window.AnimationMonitor) {
-                    const metrics = window.AnimationMonitor.getMetrics();
-                    fpsDisplay.innerHTML = `
-                        FPS: ${metrics.fps}<br>
-                        Frame Time: ${metrics.frameTime.toFixed(2)}ms<br>
-                        Particles: ${metrics.particles}<br>
-                        Memory: ${(metrics.memory / 1024 / 1024).toFixed(2)}MB
-                    `;
-                }
-            }, 1000);
-        },
-        
-        showParticles: () => {
-            if (window.ThanaAnimations && window.ThanaAnimations.ctx) {
-                const canvas = window.ThanaAnimations.particleCanvas;
-                canvas.style.border = '1px solid red';
-                canvas.style.opacity = '1';
-                canvas.style.zIndex = '9999';
-            }
-        },
-        
-        logPerformance: () => {
-            if (window.AnimationMonitor) {
-                console.table(window.AnimationMonitor.getMetrics());
-                console.log('Animation Performance Stats:', window.ThanaAnimations.getPerformanceStats());
-            }
-        },
-        
-        testAnimations: () => {
-            console.log('🧪 Testing animations...');
-            
-            // Test particle explosion
-            if (window.ThanaAnimations) {
-                window.ThanaAnimations.triggerCustomEffect('particleExplosion', {
-                    x: window.innerWidth / 2,
-                    y: window.innerHeight / 2,
-                    intensity: 30
-                });
-            }
-            
-            // Test fireworks
-            if (window.SpecialEffects) {
-                setTimeout(() => {
-                    window.SpecialEffects.createFireworks(
-                        Math.random() * window.innerWidth,
-                        Math.random() * window.innerHeight / 2
-                    );
-                }, 1000);
-            }
-            
-            console.log('✅ Animation tests completed');
         }
-    };
+        
+        if (data.githubUrl) {
+            linksHTML += `
+                <a href="${data.githubUrl}" class="btn btn-outline-primary" target="_blank" rel="noopener">
+                    <i class="fab fa-github"></i> View Code
+                </a>
+            `;
+        }
+        
+        linksEl.innerHTML = linksHTML;
+    }
     
-    // Auto-show FPS in debug mode
-    if (localStorage.getItem('showAnimationDebug') === 'true') {
+    // Update results section if available
+    const resultsEl = modal.querySelector('.portfolio-results');
+    if (resultsEl && data.results) {
+        let resultsHTML = '<h6>Key Results:</h6><div class="row">';
+        
+        Object.entries(data.results).forEach(([key, value]) => {
+            resultsHTML += `
+                <div class="col-sm-6 col-md-3 mb-3">
+                    <div class="text-center">
+                        <div class="h4 text-primary">${value}</div>
+                        <div class="small">${key}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        resultsHTML += '</div>';
+        resultsEl.innerHTML = resultsHTML;
+    }
+    
+    // Add audio samples if available (for voice projects)
+    if (data.audioSamples) {
+        const audioContainer = modal.querySelector('.portfolio-audio');
+        if (audioContainer) {
+            let audioHTML = '<h6>Audio Samples:</h6>';
+            
+            data.audioSamples.forEach((audioUrl, index) => {
+                audioHTML += `
+                    <div class="mb-3">
+                        <label class="form-label">Sample ${index + 1}:</label>
+                        <audio controls class="w-100">
+                            <source src="${audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                `;
+            });
+            
+            audioContainer.innerHTML = audioHTML;
+        }
+    }
+}
+
+// Service worker registration for PWA functionality
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('✅ Service Worker registered successfully:', registration.scope);
+            })
+            .catch(error => {
+                console.log('❌ Service Worker registration failed:', error);
+            });
+    });
+}
+
+// Preloader management
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        // Ensure animations have time to initialize
         setTimeout(() => {
-            window.ANIMATION_DEBUG.showFPS();
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
         }, 1000);
     }
+});
+
+// Enhanced error handling and fallbacks
+window.addEventListener('error', (event) => {
+    console.error('Global error caught:', event.error);
     
-    console.log('🐛 Animation debug utilities available:', Object.keys(window.ANIMATION_DEBUG));
-}
-
-// Service worker integration for performance
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'PERFORMANCE_WARNING') {
-            console.warn('🔋 Service worker reports low performance, enabling power save mode');
-            if (window.ThanaAnimations) {
-                window.ThanaAnimations.enablePowerSaveMode();
-            }
-        }
-    });
-}
-
-// Battery API integration
-if (navigator.getBattery) {
-    navigator.getBattery().then(battery => {
-        const checkBattery = () => {
-            if (battery.level < 0.2 && !battery.charging) {
-                console.log('🔋 Low battery detected, optimizing animations');
-                if (window.ThanaAnimations) {
-                    window.ThanaAnimations.enablePowerSaveMode();
+    // If animations fail, ensure basic functionality still works
+    if (!thanatsittAnimations || !thanatsittAnimations.isInitialized) {
+        console.log('🔄 Attempting animation system recovery...');
+        
+        setTimeout(() => {
+            try {
+                if (!thanatsittAnimations) {
+                    thanatsittAnimations = new ThanatsittAnimations();
                 }
+            } catch (recoveryError) {
+                console.error('❌ Animation system recovery failed:', recoveryError);
+                
+                // Initialize minimal fallback animations
+                document.querySelectorAll('[data-aos]').forEach(element => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'none';
+                });
             }
-        };
-        
-        battery.addEventListener('levelchange', checkBattery);
-        battery.addEventListener('chargingchange', checkBattery);
-        checkBattery(); // Initial check
-    });
+        }, 2000);
+    }
+});
+
+// Unhandled promise rejection handling
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    
+    // Prevent the default behavior (logging to console)
+    event.preventDefault();
+    
+    // Show user-friendly error message if it's critical
+    if (thanatsittAnimations && event.reason?.message?.includes('animation')) {
+        thanatsittAnimations.showNotification(
+            'Some animations may not work properly, but the site is still functional.',
+            'warning'
+        );
+    }
+});
+
+// Export for potential external usage
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { ThanatsittAnimations, ParticleSystem };
 }
 
-// Network-aware animations
-if (navigator.connection) {
-    const connection = navigator.connection;
-    
-    const adaptToConnection = () => {
-        const effectiveType = connection.effectiveType;
-        
-        if (effectiveType === '2g' || connection.saveData) {
-            console.log('📶 Slow connection detected, reducing animations');
-            if (window.ThanaAnimations) {
-                window.ThanaAnimations.enableDataSaveMode();
-            }
-        }
+// Debug helpers (only in development)
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    window.debugAnimations = {
+        getStats: () => thanatsittAnimations?.getPerformanceStats(),
+        setPerformanceMode: (mode) => thanatsittAnimations?.setPerformanceMode(mode),
+        pauseAnimations: () => thanatsittAnimations?.pauseAnimations(),
+        resumeAnimations: () => thanatsittAnimations?.resumeAnimations(),
+        enablePowerSave: () => thanatsittAnimations?.enablePowerSaveMode(),
+        disablePowerSave: () => thanatsittAnimations?.disablePowerSaveMode(),
+        destroy: () => thanatsittAnimations?.destroy()
     };
     
-    connection.addEventListener('change', adaptToConnection);
-    adaptToConnection(); // Initial check
+    console.log('🚀 Debug helpers available via window.debugAnimations');
 }
 
-// Memory pressure handling (Chrome)
-if (performance.measureUserAgentSpecificMemory) {
-    setInterval(async () => {
-        try {
-            const memoryInfo = await performance.measureUserAgentSpecificMemory();
-            const totalMemory = memoryInfo.bytes;
+// Final initialization check
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (!thanatsittAnimations || !thanatsittAnimations.isInitialized) {
+            console.warn('⚠️ Animation system not properly initialized, using fallback');
             
-            // If memory usage is high, reduce particles
-            if (totalMemory > 100 * 1024 * 1024) { // 100MB threshold
-                console.log('🧠 High memory usage detected, optimizing');
-                if (window.ThanaAnimations && window.ThanaAnimations.particles.length > 20) {
-                    window.ThanaAnimations.particles = window.ThanaAnimations.particles.slice(0, 10);
-                }
-            }
-        } catch (error) {
-            // Memory API not available or failed
+            // Apply basic reveal animations
+            document.querySelectorAll('.scroll-reveal, [data-aos]').forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                    element.style.transition = 'all 0.6s ease';
+                }, index * 100);
+            });
         }
-    }, 30000); // Check every 30 seconds
-}
+    }, 3000);
+});
 
-console.log(`
-🎬 Thanatsitt Advanced Animation System v2.0
-✨ Features loaded:
-   - Advanced particle system with physics
-   - Celestial effects (moon, stars, aurora)
-   - Audio-reactive animations  
-   - Performance monitoring & auto-optimization
-   - Special effects system
-   - Accessibility support
-   - Mobile optimization
-   - Debug utilities (dev mode)
-   
-🚀 Ready to animate!
-`);
-
-// Animation system is now fully loaded and ready
-window.dispatchEvent(new CustomEvent('animationSystemReady', {
-    detail: {
-        version: '2.0',
-        features: [
-            'particles', 'celestial', 'audio-reactive', 
-            'performance-monitoring', 'special-effects',
-            'accessibility', 'mobile-optimized'
-        ]
-    }
-}));
-
-
+console.log('🎬 Thanatsitt Animations v2.1 - Complete System Loaded');
 
