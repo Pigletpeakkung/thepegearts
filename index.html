@@ -3,50 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pegearts - AI Creative Designer & Voice Actor</title>
-    <meta name="description" content="Thanatsitt Santisamranwilai - Multilingual AI content developer, voice actor, and creative technologist specializing in GPT scriptwriting, SEO strategy, and e-commerce solutions.">
-    <meta name="keywords" content="AI developer, voice acting, GPT scriptwriting, SEO strategy, e-commerce, multilingual content, creative technology">
+    
+    <!-- Primary Meta Tags -->
+    <title>Thanatsitt Santisamranwilai | AI Creative Designer & Professional Voice Artist</title>
+    <meta name="title" content="Thanatsitt Santisamranwilai | AI Creative Designer & Professional Voice Artist">
+    <meta name="description" content="Multilingual AI content developer and creative technologist with 7+ years experience in GPT scriptwriting, voice acting, SEO strategy, and e-commerce solutions. Based in Thailand, serving global clients.">
+    <meta name="keywords" content="Thanatsitt, Santisamranwilai, AI content developer, prompt engineer, voice acting, creative technology, multilingual content, Thai voice artist, GPT scriptwriting, SEO strategy, React developer, e-commerce content, Pegearts">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
     <meta name="author" content="Thanatsitt Santisamranwilai">
     
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Pegearts - AI Creative Designer & Voice Actor">
-    <meta property="og:description" content="Multilingual AI content developer and creative technologist with 7+ years experience">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pegearts.com">
-    <meta property="og:image" content="https://pegearts.com/images/og-image.jpg">
+    <!-- Theme Color (Dynamic) -->
+    <meta name="theme-color" content="#F8FAFC">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Pegearts - AI Creative Designer">
-    <meta name="twitter:description" content="Multilingual AI content developer and creative technologist">
-    <meta name="twitter:image" content="https://pegearts.com/images/twitter-image.jpg">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://thanatsitt.pegearts.com">
+    <meta property="og:title" content="Thanatsitt Santisamranwilai | AI Creative Designer & Professional Voice Artist">
+    <meta property="og:description" content="Multilingual AI content developer and creative technologist with 7+ years experience in GPT scriptwriting, voice acting, SEO strategy, and e-commerce solutions.">
+    <meta property="og:image" content="https://thanatsitt.pegearts.com/images/og-image.jpg">
+    <meta property="og:site_name" content="Thanatsitt - Pegearts">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="th_TH">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://thanatsitt.pegearts.com">
+    <meta property="twitter:title" content="Thanatsitt Santisamranwilai | AI Creative Designer & Professional Voice Artist">
+    <meta property="twitter:description" content="Multilingual AI content developer and creative technologist with 7+ years experience in GPT scriptwriting, voice acting, SEO strategy, and e-commerce solutions.">
+    <meta property="twitter:image" content="https://thanatsitt.pegearts.com/images/twitter-image.jpg">
+    <meta name="twitter:creator" content="@thanatsitt">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://thanatsitt.pegearts.com">
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Hreflang for multilingual support -->
+    <link rel="alternate" hreflang="en" href="https://thanatsitt.pegearts.com">
+    <link rel="alternate" hreflang="th" href="https://thanatsitt.pegearts.com/th">
+    <link rel="alternate" hreflang="x-default" href="https://thanatsitt.pegearts.com">
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="css/theme.css" as="style">
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
     
-    <!-- AOS Animation Library -->
+    <!-- Critical CSS -->
+    <style>
+        /* Critical above-the-fold styles */
+        :root {
+            --primary-color: #A78BFA;
+            --secondary-color: #F9A8D4;
+            --accent-color: #6EE7B7;
+            --background-primary: #F8FAFC;
+            --background-secondary: #FFFFFF;
+            --text-primary: #2D3748;
+            --text-secondary: #718096;
+            --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --theme-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #C4B5FD;
+            --background-primary: #0F172A;
+            --background-secondary: #1E293B;
+            --text-primary: #F8FAFC;
+            --text-secondary: #CBD5E0;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background-primary);
+            color: var(--text-primary);
+            transition: var(--theme-transition);
+            overflow-x: hidden;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(167, 139, 250, 0.3);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <!-- External Stylesheets -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
-    <!-- Custom CSS -->
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#a78bfa">
+    <link rel="stylesheet" href="css/animations.css">
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -54,54 +136,1900 @@
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Thanatsitt Santisamranwilai",
-        "alternateName": "Pegearts",
-        "description": "AI Creative Designer & Voice Actor",
-        "url": "https://pegearts.com",
-        "sameAs": [
-            "https://github.com/thanattsitt",
-            "https://linkedin.com/in/thanattsitt",
-            "https://linktr.ee/ThanttEzekiel"
+        "alternateName": ["Thanatsitt", "Pegearts", "Ezekielarts", "Zeintharts"],
+        "description": "Multilingual content developer and AI specialist with 7+ years of experience combining creative writing, voice acting, SEO strategy, and automation",
+        "url": "https://thanatsitt.pegearts.com",
+        "email": "thanattsitt.info@yahoo.co.uk",
+        "image": "https://thanatsitt.pegearts.com/images/profile-photo.jpg",
+        "nationality": "Thai",
+        "birthPlace": {
+            "@type": "Place",
+            "name": "Thailand",
+            "addressCountry": "TH"
+        },
+        "homeLocation": {
+            "@type": "Place",
+            "name": "Kamphaeng Phet, Thailand",
+            "addressCountry": "TH"
+        },
+        "jobTitle": [
+            "AI Content Developer",
+            "Professional Voice Artist",
+            "Prompt Engineer",
+            "Creative Technologist",
+            "Multilingual Content Creator"
         ],
-        "jobTitle": "AI Content Developer & Creative Technologist",
-        "knowsLanguage": ["English", "Thai", "Japanese"],
+        "knowsLanguage": [
+            {
+                "@type": "Language",
+                "name": "Thai",
+                "fluency": "Native"
+            },
+            {
+                "@type": "Language",
+                "name": "English",
+                "fluency": "Fluent"
+            },
+            {
+                "@type": "Language",
+                "name": "Japanese",
+                "fluency": "Conversational"
+            }
+        ],
         "hasOccupation": {
             "@type": "Occupation",
-            "name": "AI Developer and Voice Actor"
+            "name": "AI Content Developer & Voice Artist",
+            "occupationLocation": {
+                "@type": "Country",
+                "name": "Thailand"
+            },
+            "skills": [
+                "AI Content Development",
+                "Professional Voice Acting",
+                "Prompt Engineering",
+                "SEO Strategy",
+                "Creative Writing",
+                "Multilingual Content",
+                "GPT Scriptwriting",
+                "React Development",
+                "E-commerce Content",
+                "Podcast Production",
+                "Video Content Creation"
+            ],
+            "experienceRequirements": "7+ years"
+        },
+        "alumniOf": [
+            {
+                "@type": "EducationalOrganization",
+                "name": "London College of Fashion, University of the Arts London",
+                "location": "London, UK"
+            },
+            {
+                "@type": "EducationalOrganization",
+                "name": "Bunka Fashion College",
+                "location": "Tokyo, Japan"
+            },
+            {
+                "@type": "EducationalOrganization",
+                "name": "Bangkok University",
+                "location": "Bangkok, Thailand"
+            }
+        ],
+        "sameAs": [
+            "https://github.com/thanatsitt",
+            "https://linkedin.com/in/thanatsitt",
+            "https://voice123.com/thanatsitt",
+            "https://linktr.ee/thanatsitt"
+        ],
+        "worksFor": {
+            "@type": "Organization",
+            "name": "Pegearts",
+            "url": "https://pegearts.com"
         }
     }
     </script>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
+
 <body>
-    <!-- Skip to main content -->
-    <a href="#main" class="skip-nav">Skip to main content</a>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner" aria-label="Loading"></div>
+    </div>
 
-    <!-- Notification Container -->
-    <div id="notification-container" class="notification-container"></div>
+    <!-- Skip to main content (Accessibility) -->
+    <a href="#main" class="sr-only sr-only-focusable btn btn-primary position-absolute" 
+       style="top: 10px; left: 10px; z-index: 10000;">
+        Skip to main content
+    </a>
 
-    <!-- Preloader -->
-    <div id="preloader" class="preloader">
-        <div class="preloader-content">
-            <div class="loader">
-                <div class="loader-dots">
-                    <div class="dot dot-1"></div>
-                    <div class="dot dot-2"></div>
-                    <div class="dot dot-3"></div>
-                    <div class="dot dot-4"></div>
-                    <div class="dot dot-5"></div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <!-- Brand with emphasis on Thanatsitt name -->
+            <a class="navbar-brand" href="#home" aria-label="Thanatsitt Santisamranwilai Home">
+                <i class="fas fa-microphone-alt me-2" aria-hidden="true"></i>
+                <span class="brand-name">Thanatsitt</span>
+                <span class="brand-subtitle">Santisamranwilai</span>
+            </a>
+
+            <!-- Mobile Toggle Button -->
+            <div class="d-flex align-items-center order-lg-3">
+                <!-- Theme Toggle Button (Will be created by JS if not exists) -->
+                <!-- Mobile Navbar Toggle -->
+                <button class="navbar-toggler ms-2" type="button" 
+                        data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" 
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home" aria-current="page">
+                            <i class="fas fa-home me-1" aria-hidden="true"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">
+                            <i class="fas fa-user me-1" aria-hidden="true"></i>
+                            About Thanatsitt
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">
+                            <i class="fas fa-cogs me-1" aria-hidden="true"></i>
+                            AI Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#portfolio">
+                            <i class="fas fa-folder-open me-1" aria-hidden="true"></i>
+                            Portfolio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#voice-demo">
+                            <i class="fas fa-play-circle me-1" aria-hidden="true"></i>
+                            Voice Demo
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">
+                            <i class="fas fa-envelope me-1" aria-hidden="true"></i>
+                            Contact
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main" role="main">
+        <!-- Hero Section -->
+        <section id="home" class="hero d-flex align-items-center position-relative" aria-labelledby="hero-title">
+            <!-- Background Elements -->
+            <div class="hero-bg-elements">
+                <!-- Particles Canvas -->
+                <canvas id="particlesCanvas" class="particle-canvas position-absolute w-100 h-100" 
+                        aria-hidden="true"></canvas>
+                
+                <!-- Floating Elements -->
+                <div class="floating-elements position-absolute w-100 h-100" aria-hidden="true">
+                    <div class="moon"></div>
+                    <div class="moon-glow"></div>
                 </div>
-                <div class="loader-progress-bar">
-                    <div class="loader-progress-fill"></div>
+                
+                <!-- Geometric shapes background -->
+                <div class="geometric-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
                 </div>
             </div>
-            <div class="loader-text">Loading Amazing Experience...</div>
-            <div class="loader-percentage">0%</div>
+
+            <div class="container position-relative z-2">
+                <div class="row align-items-center min-vh-100">
+                    <div class="col-lg-6 hero-content" data-aos="fade-up" data-aos-delay="100">
+                        <div class="hero-text">
+                            <!-- Emphasize Thanatsitt's full name -->
+                            <h1 id="hero-title" class="display-3 fw-bold mb-4 hero-title">
+                                <span class="name-highlight">Thanatsitt</span>
+                                <span class="d-block">Santisamranwilai</span>
+                            </h1>
+                            
+                            <p class="hero-subtitle lead mb-4 fs-4">
+                                AI Creative Designer & Professional Voice Artist
+                            </p>
+                            
+                            <p class="hero-description mb-4">
+                                Multilingual content developer with 7+ years experience in AI training, 
+                                voice acting, and creative technology. Specializing in GPT scriptwriting, 
+                                natural flow conversations, and cross-cultural content creation.
+                            </p>
+                            
+                            <div class="hero-stats mb-4" data-aos="fade-up" data-aos-delay="300">
+                                <div class="row g-4">
+                                    <div class="col-4 text-center">
+                                        <div class="stat-item glass-card p-3">
+                                            <div class="stat-number h4 fw-bold text-primary mb-1" 
+                                                 data-counter="7">0</div>
+                                            <div class="stat-label small text-muted">Years Experience</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <div class="stat-item glass-card p-3">
+                                            <div class="stat-number h4 fw-bold text-primary mb-1" 
+                                                 data-counter="50">0</div>
+                                            <div class="stat-label small text-muted">AI Projects</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 text-center">
+                                        <div class="stat-item glass-card p-3">
+                                            <div class="stat-number h4 fw-bold text-primary mb-1" 
+                                                 data-counter="3">0</div>
+                                            <div class="stat-label small text-muted">Languages</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="hero-actions" data-aos="fade-up" data-aos-delay="400">
+                                <a href="#voice-demo" class="cta-button btn btn-lg me-3 mb-2" 
+                                   role="button" aria-label="Listen to Thanatsitt's voice demos">
+                                    <i class="fas fa-play me-2" aria-hidden="true"></i>
+                                    Hear My Voice
+                                </a>
+                                <a href="#contact" class="btn btn-outline-primary btn-lg mb-2" 
+                                   role="button">
+                                    <i class="fas fa-envelope me-2" aria-hidden="true"></i>
+                                    Work With Me
+                                </a>
+                            </div>
+                            
+                            <!-- Social Links -->
+                            <div class="social-links mt-4" data-aos="fade-up" data-aos-delay="500">
+                                <a href="https://linkedin.com/in/thanatsitt" 
+                                   target="_blank" rel="noopener noreferrer"
+                                   aria-label="Connect with Thanatsitt on LinkedIn">
+                                    <i class="fab fa-linkedin" aria-hidden="true"></i>
+                                </a>
+                                <a href="https://github.com/thanatsitt" 
+                                   target="_blank" rel="noopener noreferrer"
+                                   aria-label="View Thanatsitt's GitHub">
+                                    <i class="fab fa-github" aria-hidden="true"></i>
+                                </a>
+                                <a href="https://voice123.com/thanatsitt" 
+                                   target="_blank" rel="noopener noreferrer"
+                                   aria-label="Thanatsitt's Voice123 profile">
+                                    <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+                                </a>
+                                <a href="https://linktr.ee/thanatsitt" 
+                                   target="_blank" rel="noopener noreferrer"
+                                   aria-label="All Thanatsitt's links">
+                                    <i class="fas fa-link" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 hero-visual" data-aos="fade-left" data-aos-delay="200">
+                        <div class="hero-image-container position-relative">
+                            <!-- Waveform Visualization -->
+                            <div class="waveform-container glass-card p-4 mb-4">
+                                <div class="waveform-header d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-microphone text-primary me-2" aria-hidden="true"></i>
+                                        Thanatsitt's Voice Preview
+                                    </h6>
+                                    <div class="recording-indicator">
+                                        <span class="recording-dot"></span>
+                                        <span class="ms-2 small text-muted">Ready</span>
+                                    </div>
+                                </div>
+                                <canvas id="waveformCanvas" class="waveform-canvas w-100" 
+                                        height="100" aria-label="Thanatsitt's voice waveform visualization"></canvas>
+                                <div class="waveform-controls mt-3 text-center">
+                                    <button class="play-btn btn btn-sm me-2" id="playWaveform" 
+                                            aria-label="Play Thanatsitt's voice sample">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm" id="recordDemo" 
+                                            aria-label="Record voice message">
+                                        <i class="fas fa-microphone" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Professional Photo -->
+                            <div class="hero-photo glass-card p-2" data-aos="zoom-in" data-aos-delay="500">
+                                <div class="photo-container">
+                                    <img src="assets/images/thanatsitt-profile.jpg" 
+                                         alt="Thanatsitt Santisamranwilai - Professional Photo"
+                                         class="profile-image" loading="lazy">
+                                    <div class="photo-overlay">
+                                        <div class="photo-caption">
+                                            <h5>Thanatsitt Santisamranwilai</h5>
+                                            <p>AI Creative Designer</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scroll Indicator -->
+                <div class="scroll-indicator position-absolute bottom-0 start-50 translate-middle-x mb-4" 
+                     data-aos="fade-up" data-aos-delay="600">
+                    <a href="#about" class="scroll-link text-decoration-none" 
+                       aria-label="Learn more about Thanatsitt">
+                        <div class="scroll-mouse">
+                            <div class="scroll-wheel"></div>
+                        </div>
+                        <span class="scroll-text small mt-2 d-block">Learn More About Me</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section py-5" aria-labelledby="about-title">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-8 text-center" data-aos="fade-up">
+                        <h2 id="about-title" class="section-title display-4 fw-bold mb-4">
+                            About Thanatsitt Santisamranwilai
+                        </h2>
+                        <p class="section-subtitle lead">
+                            A passionate innovator bridging the gap between artificial intelligence and human creativity.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-6" data-aos="fade-right">
+                        <div class="about-content glass-card p-4 h-100">
+                            <h3 class="h4 fw-bold mb-3 text-primary">
+                                <i class="fas fa-user-circle me-2" aria-hidden="true"></i>
+                                Professional Journey
+                            </h3>
+                            
+                            <p class="mb-3">
+                                Hi, I'm <strong>Thanatsitt Santisamranwilai</strong> (you can call me Thanatsitt!). 
+                                As an AI Creative Designer and Professional Voice Artist based in Thailand, 
+                                I specialize in creating authentic, culturally-aware content that bridges human 
+                                creativity with artificial intelligence.
+                            </p>
+                            
+                            <p class="mb-4">
+                                With over 7 years of experience, I've worked with leading AI companies like 
+                                OpenAI, Outlier, and OneForma, contributing to the development of more natural, 
+                                engaging AI systems through my expertise in multilingual content creation, 
+                                voice acting, and natural flow conversations.
+                            </p>
+                            
+                            <div class="skills-section mb-4">
+                                <h5 class="fw-semibold mb-3">Core Expertise:</h5>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <span class="skill-badge badge bg-primary-soft p-2">
+                                            <i class="fas fa-robot me-1" aria-hidden="true"></i>
+                                            AI Training
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="skill-badge badge bg-primary-soft p-2">
+                                            <i class="fas fa-microphone-alt me-1" aria-hidden="true"></i>
+                                            Voice Acting
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="skill-badge badge bg-primary-soft p-2">
+                                            <i class="fas fa-language me-1" aria-hidden="true"></i>
+                                            Multilingual Content
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="skill-badge badge bg-primary-soft p-2">
+                                            <i class="fas fa-pen-fancy me-1" aria-hidden="true"></i>
+                                            Creative Writing
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="skill-badge badge bg-primary-soft p-2">
+                                            <i class="fas fa-search me-1" aria-hidden="true"></i>
+                                            SEO Strategy
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="skill-badge badge bg-primary-soft p-2">
+                                            <i class="fas fa-code me-1" aria-hidden="true"></i>
+                                            Development
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Education Background -->
+                            <div class="education-section">
+                                <h5 class="fw-semibold mb-3">Educational Background:</h5>
+                                <ul class="education-list list-unstyled">
+                                    <li class="mb-2">
+                                        <strong>London College of Fashion, UAL</strong> - BA (Hons) Fashion & Design Communication
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Bunka Fashion College, Tokyo</strong> - Design Studies
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Bangkok University</strong> - Foundation Studies
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6" data-aos="fade-left">
+                        <div class="about-features">
+                            <div class="feature-item glass-card p-4 mb-4">
+                                <div class="feature-icon text-primary fs-1 mb-3">
+                                    <i class="fas fa-brain" aria-hidden="true"></i>
+                                </div>
+                                <h4 class="fw-bold mb-2">AI Training Expertise</h4>
+                                <p class="text-muted mb-0">
+                                    Specialized in creating natural dialogue patterns, GPT scriptwriting, 
+                                    and conducting authentic conversation sessions for AI model training.
+                                </p>
+                            </div>
+                            
+                            <div class="feature-item glass-card p-4 mb-4">
+                                <div class="feature-icon text-primary fs-1 mb-3">
+                                    <i class="fas fa-globe-asia" aria-hidden="true"></i>
+                                </div>
+                                <h4 class="fw-bold mb-2">Multilingual Proficiency</h4>
+                                <p class="text-muted mb-0">
+                                    Native Thai speaker with fluent English and conversational Japanese. 
+                                    Expert in cultural adaptation and localization.
+                                </p>
+                            </div>
+                            
+                            <div class="feature-item glass-card p-4">
+                                <div class="feature-icon text-primary fs-1 mb-3">
+                                    <i class="fas fa-handshake" aria-hidden="true"></i>
+                                </div>
+                                <h4 class="fw-bold mb-2">Global Collaboration</h4>
+                                <p class="text-muted mb-0">
+                                    Trusted partner for international AI companies, delivering 
+                                    high-quality content across different cultures and contexts.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Company Partnerships -->
+                <div class="partnerships-section mt-5" data-aos="fade-up">
+                    <h3 class="text-center mb-4">Trusted by Leading AI Companies</h3>
+                    <div class="company-logos d-flex justify-content-center align-items-center flex-wrap gap-4">
+                        <div class="company-item">
+                            <img src="https://via.placeholder.com/120x40/A78BFA/ffffff?text=OpenAI" 
+                                 alt="OpenAI - Thanatsitt's AI partner" class="company-logo" loading="lazy">
+                        </div>
+                        <div class="company-item">
+                            <img src="https://via.placeholder.com/120x40/F9A8D4/ffffff?text=Outlier" 
+                                 alt="Outlier - AI training platform" class="company-logo" loading="lazy">
+                        </div>
+                        <div class="company-item">
+                            <img src="https://via.placeholder.com/120x40/6EE7B7/ffffff?text=OneForma" 
+                                 alt="OneForma - Crowdsourcing platform" class="company-logo" loading="lazy">
+                        </div>
+                        <div class="company-item">
+                            <img src="https://via.placeholder.com/120x40/FCD34D/ffffff?text=Barbel" 
+                                 alt="Barbel - Fintech partner" class="company-logo" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="services-section py-5" aria-labelledby="services-title">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-8 text-center" data-aos="fade-up">
+                        <h2 id="services-title" class="section-title display-4 fw-bold mb-4">
+                            Thanatsitt's AI & Creative Services
+                        </h2>
+                        <p class="section-subtitle lead">
+                            Specialized expertise in AI training, voice work, and multilingual content creation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- AI Content Development -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="service-card glass-card p-4 h-100 featured">
+                            <div class="service-icon text-primary fs-1 mb-3">
+                                <i class="fas fa-robot" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">AI Training & Development</h3>
+                            <p class="text-muted mb-4">
+                                Specialized in GPT scriptwriting, natural flow conversations, 
+                                and creating high-quality training datasets for AI models.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    GPT Model Training
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Natural Conversation Design
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Data Annotation & QA
+                                </li>
+                            </ul>
+                            <div class="service-stats mb-3">
+                                <span class="badge bg-primary-soft">1000+ Training Hours</span>
+                                <span class="badge bg-secondary-soft">50+ Projects</span>
+                            </div>
+                            <a href="#contact" class="cta-button btn w-100" role="button">
+                                Get AI Consultation
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Professional Voice Services -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="service-card glass-card p-4 h-100">
+                            <div class="service-icon text-primary fs-1 mb-3">
+                                <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">Professional Voice Acting</h3>
+                            <p class="text-muted mb-4">
+                                High-quality voice recording services for commercials, 
+                                documentaries, e-learning, and AI voice model training.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Commercial Voice Over
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Documentary Narration
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    AI Voice Training
+                                </li>
+                            </ul>
+                            <div class="service-stats mb-3">
+                                <span class="badge bg-primary-soft">Thai/English/Japanese</span>
+                            </div>
+                            <a href="#voice-demo" class="cta-button btn w-100" role="button">
+                                Hear Voice Samples
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Multilingual Content -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="service-card glass-card p-4 h-100">
+                            <div class="service-icon text-primary fs-1 mb-3">
+                                <i class="fas fa-language" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">Multilingual Content Creation</h3>
+                            <p class="text-muted mb-4">
+                                Expert translation, localization, and cultural adaptation 
+                                services for global markets and AI applications.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Translation Services
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Cultural Localization
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Content Adaptation
+                                </li>
+                            </ul>
+                            <div class="service-stats mb-3">
+                                <span class="badge bg-primary-soft">99% Accuracy</span>
+                            </div>
+                            <a href="#contact" class="cta-button btn w-100" role="button">
+                                Request Translation
+                            </a>
+                        </div>
+                    </div>
+
+                                        <!-- Creative Strategy -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="service-card glass-card p-4 h-100">
+                            <div class="service-icon text-primary fs-1 mb-3">
+                                <i class="fas fa-lightbulb" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">Creative Strategy & SEO</h3>
+                            <p class="text-muted mb-4">
+                                Strategic content planning, SEO optimization, and creative 
+                                direction for digital marketing and brand development.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    SEO Content Strategy
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Brand storytelling
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Digital Marketing
+                                </li>
+                            </ul>
+                            <div class="service-stats mb-3">
+                                <span class="badge bg-primary-soft">200+ Campaigns</span>
+                            </div>
+                            <a href="#contact" class="cta-button btn w-100" role="button">
+                                Plan Strategy
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- E-commerce Solutions -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                        <div class="service-card glass-card p-4 h-100">
+                            <div class="service-icon text-primary fs-1 mb-3">
+                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">E-commerce Development</h3>
+                            <p class="text-muted mb-4">
+                                Comprehensive e-commerce solutions including product descriptions, 
+                                React development, and automated content systems.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Product Descriptions
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    React Development
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Content Automation
+                                </li>
+                            </ul>
+                            <div class="service-stats mb-3">
+                                <span class="badge bg-primary-soft">30+ Stores Built</span>
+                            </div>
+                            <a href="#portfolio" class="cta-button btn w-100" role="button">
+                                View Projects
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Consulting & Training -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                        <div class="service-card glass-card p-4 h-100">
+                            <div class="service-icon text-primary fs-1 mb-3">
+                                <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">AI Consulting & Training</h3>
+                            <p class="text-muted mb-4">
+                                One-on-one consulting sessions and team training on AI 
+                                implementation, prompt engineering, and creative workflows.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Prompt Engineering
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    AI Integration
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                    Team Training
+                                </li>
+                            </ul>
+                            <div class="service-stats mb-3">
+                                <span class="badge bg-primary-soft">100% Success Rate</span>
+                            </div>
+                            <a href="#contact" class="cta-button btn w-100" role="button">
+                                Book Consultation
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Process -->
+                <div class="process-section mt-5" data-aos="fade-up">
+                    <h3 class="text-center mb-5">How Thanatsitt Works With You</h3>
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6 text-center">
+                            <div class="process-step">
+                                <div class="step-number bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <span class="fw-bold">1</span>
+                                </div>
+                                <h5 class="fw-bold">Consultation</h5>
+                                <p class="text-muted">Understanding your needs and project requirements</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 text-center">
+                            <div class="process-step">
+                                <div class="step-number bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <span class="fw-bold">2</span>
+                                </div>
+                                <h5 class="fw-bold">Strategy</h5>
+                                <p class="text-muted">Developing a customized approach for your project</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 text-center">
+                            <div class="process-step">
+                                <div class="step-number bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <span class="fw-bold">3</span>
+                                </div>
+                                <h5 class="fw-bold">Creation</h5>
+                                <p class="text-muted">Delivering high-quality content and solutions</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 text-center">
+                            <div class="process-step">
+                                <div class="step-number bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <span class="fw-bold">4</span>
+                                </div>
+                                <h5 class="fw-bold">Support</h5>
+                                <p class="text-muted">Ongoing support and optimization</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="portfolio-section py-5" aria-labelledby="portfolio-title">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-8 text-center" data-aos="fade-up">
+                        <h2 id="portfolio-title" class="section-title display-4 fw-bold mb-4">
+                            Thanatsitt's Creative Portfolio
+                        </h2>
+                        <p class="section-subtitle lead">
+                            Showcasing successful AI projects, voice work, and creative solutions.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Portfolio Filter -->
+                <div class="portfolio-filter text-center mb-5" data-aos="fade-up">
+                    <button class="filter-btn btn active" data-filter="all">All Projects</button>
+                    <button class="filter-btn btn" data-filter="ai">AI Training</button>
+                    <button class="filter-btn btn" data-filter="voice">Voice Work</button>
+                    <button class="filter-btn btn" data-filter="development">Development</button>
+                    <button class="filter-btn btn" data-filter="content">Content</button>
+                </div>
+
+                <div class="row g-4" id="portfolioGrid">
+                    <!-- AI Training Project -->
+                    <div class="col-lg-4 col-md-6 portfolio-item" data-category="ai" data-aos="fade-up">
+                        <div class="portfolio-card glass-card h-100 overflow-hidden">
+                            <div class="portfolio-image position-relative">
+                                <img src="https://via.placeholder.com/400x250/A78BFA/ffffff?text=AI+Training" 
+                                     alt="Thanatsitt's AI Training Project" class="w-100" loading="lazy">
+                                <div class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <div class="portfolio-actions">
+                                        <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#portfolioModal1">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                        <a href="https://github.com/thanatsitt/ai-training-project" 
+                                           target="_blank" rel="noopener" class="btn btn-outline-light btn-sm">
+                                            <i class="fab fa-github" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-content p-4">
+                                <div class="portfolio-category mb-2">
+                                    <span class="badge bg-primary-soft">AI Training</span>
+                                    <span class="badge bg-secondary-soft">GPT Models</span>
+                                </div>
+                                <h4 class="portfolio-title h5 fw-bold mb-2">OpenAI Training Dataset</h4>
+                                <p class="portfolio-description text-muted mb-3">
+                                    Comprehensive training dataset for natural conversation AI models 
+                                    with cultural context and multilingual support.
+                                </p>
+                                <div class="portfolio-stats">
+                                    <small class="text-muted">
+                                        <i class="fas fa-chart-line me-1" aria-hidden="true"></i>
+                                        95% Accuracy Rate
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Voice Work Project -->
+                    <div class="col-lg-4 col-md-6 portfolio-item" data-category="voice" data-aos="fade-up" data-aos-delay="100">
+                        <div class="portfolio-card glass-card h-100 overflow-hidden">
+                            <div class="portfolio-image position-relative">
+                                <img src="https://via.placeholder.com/400x250/F9A8D4/ffffff?text=Voice+Work" 
+                                     alt="Thanatsitt's Voice Acting Project" class="w-100" loading="lazy">
+                                <div class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <div class="portfolio-actions">
+                                        <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#portfolioModal2">
+                                            <i class="fas fa-play" aria-hidden="true"></i>
+                                        </button>
+                                        <a href="#voice-demo" class="btn btn-outline-light btn-sm">
+                                            <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-content p-4">
+                                <div class="portfolio-category mb-2">
+                                    <span class="badge bg-primary-soft">Voice Acting</span>
+                                    <span class="badge bg-secondary-soft">Commercial</span>
+                                </div>
+                                <h4 class="portfolio-title h5 fw-bold mb-2">Eco-Friendly Commercial Series</h4>
+                                <p class="portfolio-description text-muted mb-3">
+                                    Professional voice over work for environmental awareness campaign 
+                                    in Thai and English languages.
+                                </p>
+                                <div class="portfolio-stats">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1" aria-hidden="true"></i>
+                                        10+ Episodes
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Development Project -->
+                    <div class="col-lg-4 col-md-6 portfolio-item" data-category="development" data-aos="fade-up" data-aos-delay="200">
+                        <div class="portfolio-card glass-card h-100 overflow-hidden">
+                            <div class="portfolio-image position-relative">
+                                <img src="https://via.placeholder.com/400x250/6EE7B7/ffffff?text=E-commerce+Site" 
+                                     alt="Thanatsitt's E-commerce Development" class="w-100" loading="lazy">
+                                <div class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <div class="portfolio-actions">
+                                        <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#portfolioModal3">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                        <a href="https://pegearts.com" 
+                                           target="_blank" rel="noopener" class="btn btn-outline-light btn-sm">
+                                            <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-content p-4">
+                                <div class="portfolio-category mb-2">
+                                    <span class="badge bg-primary-soft">React</span>
+                                    <span class="badge bg-secondary-soft">E-commerce</span>
+                                </div>
+                                <h4 class="portfolio-title h5 fw-bold mb-2">Pegearts E-commerce Platform</h4>
+                                <p class="portfolio-description text-muted mb-3">
+                                    Full-stack e-commerce solution with AI-powered product descriptions 
+                                    and multilingual support.
+                                </p>
+                                <div class="portfolio-stats">
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1" aria-hidden="true"></i>
+                                        1000+ Users
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Creation Project -->
+                    <div class="col-lg-4 col-md-6 portfolio-item" data-category="content" data-aos="fade-up" data-aos-delay="300">
+                        <div class="portfolio-card glass-card h-100 overflow-hidden">
+                            <div class="portfolio-image position-relative">
+                                <img src="https://via.placeholder.com/400x250/FCD34D/ffffff?text=Content+Strategy" 
+                                     alt="Thanatsitt's Content Strategy Project" class="w-100" loading="lazy">
+                                <div class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <div class="portfolio-actions">
+                                        <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#portfolioModal4">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                        <a href="#" class="btn btn-outline-light btn-sm">
+                                            <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-content p-4">
+                                <div class="portfolio-category mb-2">
+                                    <span class="badge bg-primary-soft">SEO</span>
+                                    <span class="badge bg-secondary-soft">Content Strategy</span>
+                                </div>
+                                <h4 class="portfolio-title h5 fw-bold mb-2">Global SEO Campaign</h4>
+                                <p class="portfolio-description text-muted mb-3">
+                                    Multilingual SEO content strategy resulting in 300% traffic 
+                                    increase for international fintech client.
+                                </p>
+                                <div class="portfolio-stats">
+                                    <small class="text-muted">
+                                        <i class="fas fa-rocket me-1" aria-hidden="true"></i>
+                                        300% Growth
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Translation Project -->
+                    <div class="col-lg-4 col-md-6 portfolio-item" data-category="content" data-aos="fade-up" data-aos-delay="400">
+                        <div class="portfolio-card glass-card h-100 overflow-hidden">
+                            <div class="portfolio-image position-relative">
+                                <img src="https://via.placeholder.com/400x250/EC4899/ffffff?text=Translation" 
+                                     alt="Thanatsitt's Translation Project" class="w-100" loading="lazy">
+                                <div class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <div class="portfolio-actions">
+                                        <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#portfolioModal5">
+                                            <i class="fas fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-content p-4">
+                                <div class="portfolio-category mb-2">
+                                    <span class="badge bg-primary-soft">Translation</span>
+                                    <span class="badge bg-secondary-soft">Localization</span>
+                                </div>
+                                <h4 class="portfolio-title h5 fw-bold mb-2">Tech Documentation Localization</h4>
+                                <p class="portfolio-description text-muted mb-3">
+                                    Complete localization of technical documentation for major 
+                                    software platform into Thai and Japanese markets.
+                                </p>
+                                <div class="portfolio-stats">
+                                    <small class="text-muted">
+                                        <i class="fas fa-file-alt me-1" aria-hidden="true"></i>
+                                        500+ Pages
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Voice Training -->
+                    <div class="col-lg-4 col-md-6 portfolio-item" data-category="ai voice" data-aos="fade-up" data-aos-delay="500">
+                        <div class="portfolio-card glass-card h-100 overflow-hidden">
+                            <div class="portfolio-image position-relative">
+                                <img src="https://via.placeholder.com/400x250/8B5CF6/ffffff?text=AI+Voice" 
+                                     alt="Thanatsitt's AI Voice Training Project" class="w-100" loading="lazy">
+                                <div class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <div class="portfolio-actions">
+                                        <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#portfolioModal6">
+                                            <i class="fas fa-play" aria-hidden="true"></i>
+                                        </button>
+                                        <a href="#voice-demo" class="btn btn-outline-light btn-sm">
+                                            <i class="fas fa-microphone" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-content p-4">
+                                <div class="portfolio-category mb-2">
+                                    <span class="badge bg-primary-soft">AI Voice</span>
+                                    <span class="badge bg-secondary-soft">Training</span>
+                                </div>
+                                <h4 class="portfolio-title h5 fw-bold mb-2">Multilingual AI Voice Model</h4>
+                                <p class="portfolio-description text-muted mb-3">
+                                    Neural voice training dataset for next-generation AI assistants 
+                                    supporting Thai, English, and Japanese.
+                                </p>
+                                <div class="portfolio-stats">
+                                    <small class="text-muted">
+                                        <i class="fas fa-globe me-1" aria-hidden="true"></i>
+                                        3 Languages
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View More Button -->
+                <div class="text-center mt-5" data-aos="fade-up">
+                    <a href="#contact" class="cta-button btn btn-lg">
+                        <i class="fas fa-plus-circle me-2" aria-hidden="true"></i>
+                        Start Your Project
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voice Demo Section -->
+        <section id="voice-demo" class="voice-demo-section py-5" aria-labelledby="voice-demo-title">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-8 text-center" data-aos="fade-up">
+                        <h2 id="voice-demo-title" class="section-title display-4 fw-bold mb-4">
+                            Thanatsitt's Voice Demonstrations
+                        </h2>
+                        <p class="section-subtitle lead">
+                            Experience the range and quality of professional multilingual voice work.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Thai Commercial Demo -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                        <div class="voice-demo-card glass-card p-4 h-100">
+                            <div class="demo-header mb-3">
+                                <h4 class="h5 fw-bold mb-2">
+                                    <i class="fas fa-microphone text-primary me-2" aria-hidden="true"></i>
+                                    Thai Commercial
+                                </h4>
+                                <p class="text-muted small mb-0">Professional advertising voice over</p>
+                            </div>
+                            
+                            <div class="audio-player mb-3" data-audio="assets/audio/thanatsitt-thai-commercial.mp3">
+                                <div class="audio-controls d-flex align-items-center">
+                                    <button class="play-pause-btn btn btn-primary me-3" aria-label="Play Thai commercial demo">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="progress-container flex-grow-1">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                        <div class="time-display small text-muted mt-1">
+                                            <span class="current-time">0:00</span> / 
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="audio-waveform mt-2" aria-hidden="true">
+                                    <canvas class="waveform-viz w-100" height="40"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-specs">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">30s</div>
+                                            <div class="spec-label small text-muted">Duration</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">Thai</div>
+                                            <div class="spec-label small text-muted">Language</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">48kHz</div>
+                                            <div class="spec-label small text-muted">Quality</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-description mt-3">
+                                <p class="small text-muted">
+                                    Warm, engaging tone perfect for retail and lifestyle brands. 
+                                    This sample showcases natural Thai pronunciation with emotional depth.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- English Narration Demo -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="voice-demo-card glass-card p-4 h-100">
+                            <div class="demo-header mb-3">
+                                <h4 class="h5 fw-bold mb-2">
+                                    <i class="fas fa-microphone text-primary me-2" aria-hidden="true"></i>
+                                    English Narration
+                                </h4>
+                                <p class="text-muted small mb-0">Documentary style voice over</p>
+                            </div>
+                            
+                            <div class="audio-player mb-3" data-audio="assets/audio/thanatsitt-english-narration.mp3">
+                                <div class="audio-controls d-flex align-items-center">
+                                    <button class="play-pause-btn btn btn-primary me-3" aria-label="Play English narration demo">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="progress-container flex-grow-1">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                        <div class="time-display small text-muted mt-1">
+                                            <span class="current-time">0:00</span> / 
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="audio-waveform mt-2" aria-hidden="true">
+                                    <canvas class="waveform-viz w-100" height="40"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-specs">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">45s</div>
+                                            <div class="spec-label small text-muted">Duration</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">EN</div>
+                                            <div class="spec-label small text-muted">Language</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">48kHz</div>
+                                            <div class="spec-label small text-muted">Quality</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-description mt-3">
+                                <p class="small text-muted">
+                                    Professional, authoritative voice ideal for corporate presentations 
+                                    and educational content with clear articulation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Japanese Conversation Demo -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="voice-demo-card glass-card p-4 h-100">
+                            <div class="demo-header mb-3">
+                                <h4 class="h5 fw-bold mb-2">
+                                    <i class="fas fa-microphone text-primary me-2" aria-hidden="true"></i>
+                                    Japanese E-learning
+                                </h4>
+                                <p class="text-muted small mb-0">Educational content voice over</p>
+                            </div>
+                            
+                            <div class="audio-player mb-3" data-audio="assets/audio/thanatsitt-japanese-elearning.mp3">
+                                <div class="audio-controls d-flex align-items-center">
+                                    <button class="play-pause-btn btn btn-primary me-3" aria-label="Play Japanese e-learning demo">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="progress-container flex-grow-1">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                        <div class="time-display small text-muted mt-1">
+                                            <span class="current-time">0:00</span> / 
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="audio-waveform mt-2" aria-hidden="true">
+                                    <canvas class="waveform-viz w-100" height="40"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-specs">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">35s</div>
+                                            <div class="spec-label small text-muted">Duration</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">JP</div>
+                                            <div class="spec-label small text-muted">Language</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">48kHz</div>
+                                            <div class="spec-label small text-muted">Quality</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-description mt-3">
+                                <p class="small text-muted">
+                                    Clear, educational tone with proper Japanese pronunciation, 
+                                    perfect for language learning and instructional content.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Character Voice Demo -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="voice-demo-card glass-card p-4 h-100">
+                            <div class="demo-header mb-3">
+                                <h4 class="h5 fw-bold mb-2">
+                                    <i class="fas fa-microphone text-primary me-2" aria-hidden="true"></i>
+                                    Character Voice
+                                </h4>
+                                <p class="text-muted small mb-0">Animation & gaming voice work</p>
+                            </div>
+                            
+                            <div class="audio-player mb-3" data-audio="assets/audio/thanatsitt-character-voice.mp3">
+                                <div class="audio-controls d-flex align-items-center">
+                                    <button class="play-pause-btn btn btn-primary me-3" aria-label="Play character voice demo">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="progress-container flex-grow-1">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                        <div class="time-display small text-muted mt-1">
+                                            <span class="current-time">0:00</span> / 
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="audio-waveform mt-2" aria-hidden="true">
+                                    <canvas class="waveform-viz w-100" height="40"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-specs">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">25s</div>
+                                            <div class="spec-label small text-muted">Duration</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">Multi</div>
+                                            <div class="spec-label small text-muted">Language</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">48kHz</div>
+                                            <div class="spec-label small text-muted">Quality</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-description mt-3">
+                                <p class="small text-muted">
+                                    Versatile character voices demonstrating range and emotion, 
+                                    suitable for animated content and interactive media.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Training Demo -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="voice-demo-card glass-card p-4 h-100">
+                            <div class="demo-header mb-3">
+                                <h4 class="h5 fw-bold mb-2">
+                                    <i class="fas fa-robot text-primary me-2" aria-hidden="true"></i>
+                                    AI Training Sample
+                                </h4>
+                                <p class="text-muted small mb-0">Natural conversation for AI models</p>
+                            </div>
+                            
+                            <div class="audio-player mb-3" data-audio="assets/audio/thanatsitt-ai-training.mp3">
+                                <div class="audio-controls d-flex align-items-center">
+                                    <button class="play-pause-btn btn btn-primary me-3" aria-label="Play AI training demo">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="progress-container flex-grow-1">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                                                            <div class="time-display small text-muted mt-1">
+                                            <span class="current-time">0:00</span> / 
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="audio-waveform mt-2" aria-hidden="true">
+                                    <canvas class="waveform-viz w-100" height="40"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-specs">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">40s</div>
+                                            <div class="spec-label small text-muted">Duration</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">AI</div>
+                                            <div class="spec-label small text-muted">Training</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">48kHz</div>
+                                            <div class="spec-label small text-muted">Quality</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-description mt-3">
+                                <p class="small text-muted">
+                                    Natural, conversational speech patterns designed specifically 
+                                    for training AI models to understand human communication nuances.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Podcast Demo -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                        <div class="voice-demo-card glass-card p-4 h-100">
+                            <div class="demo-header mb-3">
+                                <h4 class="h5 fw-bold mb-2">
+                                    <i class="fas fa-podcast text-primary me-2" aria-hidden="true"></i>
+                                    Podcast Hosting
+                                </h4>
+                                <p class="text-muted small mb-0">Engaging podcast presentation</p>
+                            </div>
+                            
+                            <div class="audio-player mb-3" data-audio="assets/audio/thanatsitt-podcast.mp3">
+                                <div class="audio-controls d-flex align-items-center">
+                                    <button class="play-pause-btn btn btn-primary me-3" aria-label="Play podcast demo">
+                                        <i class="fas fa-play" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="progress-container flex-grow-1">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" style="width: 0%"></div>
+                                        </div>
+                                        <div class="time-display small text-muted mt-1">
+                                            <span class="current-time">0:00</span> / 
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="audio-waveform mt-2" aria-hidden="true">
+                                    <canvas class="waveform-viz w-100" height="40"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-specs">
+                                <div class="row g-2 text-center">
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">60s</div>
+                                            <div class="spec-label small text-muted">Duration</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">EN</div>
+                                            <div class="spec-label small text-muted">Language</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="spec-item">
+                                            <div class="spec-value fw-bold text-primary">48kHz</div>
+                                            <div class="spec-label small text-muted">Quality</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="demo-description mt-3">
+                                <p class="small text-muted">
+                                    Conversational, engaging podcast style with natural pacing 
+                                    and authentic personality that connects with listeners.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Specifications -->
+                <div class="voice-specs-section mt-5" data-aos="fade-up">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="specs-card glass-card p-4">
+                                <h3 class="text-center mb-4">
+                                    <i class="fas fa-cog text-primary me-2" aria-hidden="true"></i>
+                                    Technical Specifications
+                                </h3>
+                                <div class="row g-4 text-center">
+                                    <div class="col-md-3 col-6">
+                                        <div class="spec-detail">
+                                            <div class="spec-icon text-primary mb-2">
+                                                <i class="fas fa-microphone-alt fs-3" aria-hidden="true"></i>
+                                            </div>
+                                            <h5 class="fw-bold">Studio Quality</h5>
+                                            <p class="text-muted small">Professional home studio with treated acoustics</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="spec-detail">
+                                            <div class="spec-icon text-primary mb-2">
+                                                <i class="fas fa-volume-up fs-3" aria-hidden="true"></i>
+                                            </div>
+                                            <h5 class="fw-bold">48kHz/24-bit</h5>
+                                            <p class="text-muted small">Broadcast quality audio recording</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="spec-detail">
+                                            <div class="spec-icon text-primary mb-2">
+                                                <i class="fas fa-clock fs-3" aria-hidden="true"></i>
+                                            </div>
+                                            <h5 class="fw-bold">24-48h</h5>
+                                            <p class="text-muted small">Typical turnaround time for most projects</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <div class="spec-detail">
+                                            <div class="spec-icon text-primary mb-2">
+                                                <i class="fas fa-edit fs-3" aria-hidden="true"></i>
+                                            </div>
+                                            <h5 class="fw-bold">Free Revisions</h5>
+                                            <p class="text-muted small">Up to 3 free revisions included</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="text-center mt-5" data-aos="fade-up">
+                    <h3 class="mb-3">Ready to Work with Thanatsitt?</h3>
+                    <p class="text-muted mb-4">Get a custom voice demo for your project within 24 hours.</p>
+                    <a href="#contact" class="cta-button btn btn-lg me-3">
+                        <i class="fas fa-microphone me-2" aria-hidden="true"></i>
+                        Request Custom Demo
+                    </a>
+                    <a href="mailto:thanattsitt.info@yahoo.co.uk" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-envelope me-2" aria-hidden="true"></i>
+                        Direct Contact
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section py-5" aria-labelledby="contact-title">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-8 text-center" data-aos="fade-up">
+                        <h2 id="contact-title" class="section-title display-4 fw-bold mb-4">
+                            Connect with Thanatsitt
+                        </h2>
+                        <p class="section-subtitle lead">
+                            Ready to bring your AI and voice projects to life? Let's discuss your needs.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Contact Information -->
+                    <div class="col-lg-6" data-aos="fade-right">
+                        <div class="contact-info glass-card p-4 h-100">
+                            <h3 class="h4 fw-bold mb-4">
+                                <i class="fas fa-address-card text-primary me-2" aria-hidden="true"></i>
+                                Get in Touch
+                            </h3>
+                            
+                            <div class="contact-method mb-4">
+                                <div class="contact-icon text-primary me-3">
+                                    <i class="fas fa-envelope fs-4" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h5 class="fw-bold mb-1">Email</h5>
+                                    <p class="text-muted mb-1">thanattsitt.info@yahoo.co.uk</p>
+                                    <small class="text-muted">Response within 24 hours</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-method mb-4">
+                                <div class="contact-icon text-primary me-3">
+                                    <i class="fas fa-map-marker-alt fs-4" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h5 class="fw-bold mb-1">Location</h5>
+                                    <p class="text-muted mb-1">Kamphaeng Phet, Thailand</p>
+                                    <small class="text-muted">Available for global remote work</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-method mb-4">
+                                <div class="contact-icon text-primary me-3">
+                                    <i class="fas fa-clock fs-4" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h5 class="fw-bold mb-1">Availability</h5>
+                                    <p class="text-muted mb-1">Monday - Friday: 9 AM - 6 PM (ICT)</p>
+                                    <small class="text-muted">Flexible hours for international clients</small>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-method mb-4">
+                                <div class="contact-icon text-primary me-3">
+                                    <i class="fas fa-language fs-4" aria-hidden="true"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h5 class="fw-bold mb-1">Languages</h5>
+                                    <p class="text-muted mb-1">Thai (Native), English (Fluent), Japanese (Conversational)</p>
+                                    <small class="text-muted">Multilingual project support</small>
+                                </div>
+                            </div>
+
+                            <!-- Social Links -->
+                            <div class="social-contact mt-4">
+                                <h5 class="fw-bold mb-3">Connect on Social Platforms</h5>
+                                <div class="social-links-contact">
+                                    <a href="https://linkedin.com/in/thanatsitt" target="_blank" rel="noopener noreferrer"
+                                       class="social-link me-3" aria-label="Connect with Thanatsitt on LinkedIn">
+                                        <i class="fab fa-linkedin fs-4" aria-hidden="true"></i>
+                                        <span class="ms-2">LinkedIn</span>
+                                    </a>
+                                    <a href="https://github.com/thanatsitt" target="_blank" rel="noopener noreferrer"
+                                       class="social-link me-3" aria-label="View Thanatsitt's GitHub projects">
+                                        <i class="fab fa-github fs-4" aria-hidden="true"></i>
+                                        <span class="ms-2">GitHub</span>
+                                    </a>
+                                    <a href="https://voice123.com/thanatsitt" target="_blank" rel="noopener noreferrer"
+                                       class="social-link me-3" aria-label="Thanatsitt's Voice123 portfolio">
+                                        <i class="fas fa-microphone-alt fs-4" aria-hidden="true"></i>
+                                        <span class="ms-2">Voice123</span>
+                                    </a>
+                                    <a href="https://linktr.ee/thanatsitt" target="_blank" rel="noopener noreferrer"
+                                       class="social-link" aria-label="All of Thanatsitt's professional links">
+                                        <i class="fas fa-link fs-4" aria-hidden="true"></i>
+                                        <span class="ms-2">Linktree</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="col-lg-6" data-aos="fade-left">
+                        <div class="contact-form-container glass-card p-4 h-100">
+                            <h3 class="h4 fw-bold mb-4">
+                                <i class="fas fa-paper-plane text-primary me-2" aria-hidden="true"></i>
+                                Send a Message
+                            </h3>
+                            
+                            <form class="contact-form" id="contactForm" novalidate>
+                                <div class="mb-3">
+                                    <label for="contactName" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="contactName" name="name" 
+                                           required aria-describedby="nameHelp">
+                                    <div class="invalid-feedback">Please provide your name.</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="contactEmail" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="contactEmail" name="email" 
+                                           required aria-describedby="emailHelp">
+                                    <div class="invalid-feedback">Please provide a valid email address.</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="contactSubject" class="form-label">Project Type</label>
+                                    <select class="form-select" id="contactSubject" name="subject">
+                                        <option value="">Select project type...</option>
+                                        <option value="ai-training">AI Training & Development</option>
+                                        <option value="voice-acting">Voice Acting Services</option>
+                                        <option value="translation">Translation & Localization</option>
+                                        <option value="content-creation">Content Creation</option>
+                                        <option value="consulting">AI Consulting</option>
+                                        <option value="development">Web Development</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="contactBudget" class="form-label">Project Budget (Optional)</label>
+                                    <select class="form-select" id="contactBudget" name="budget">
+                                        <option value="">Select budget range...</option>
+                                        <option value="under-500">Under $500</option>
+                                        <option value="500-1000">$500 - $1,000</option>
+                                        <option value="1000-2500">$1,000 - $2,500</option>
+                                        <option value="2500-5000">$2,500 - $5,000</option>
+                                        <option value="over-5000">$5,000+</option>
+                                        <option value="discuss">Let's discuss</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="contactMessage" class="form-label">Project Details *</label>
+                                    <textarea class="form-control" id="contactMessage" name="message" rows="5" 
+                                              required placeholder="Please describe your project, timeline, and any specific requirements..."></textarea>
+                                    <div class="invalid-feedback">Please describe your project.</div>
+                                    <small class="form-text text-muted">The more details you provide, the better I can help you.</small>
+                                </div>
+                                
+                                <!-- Honeypot field for spam protection -->
+                                <input type="text" name="honeypot" style="display: none;" tabindex="-1">
+                                
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="contactConsent" name="consent" required>
+                                    <label class="form-check-label" for="contactConsent">
+                                        I agree to be contacted regarding this project and understand my information will be handled according to the privacy policy. *
+                                    </label>
+                                    <div class="invalid-feedback">Please agree to be contacted.</div>
+                                </div>
+                                
+                                <div class="form-submit">
+                                    <button type="submit" class="cta-button btn btn-lg w-100" id="submitBtn">
+                                        <i class="fas fa-paper-plane me-2" aria-hidden="true"></i>
+                                        <span class="btn-text">Send Message</span>
+                                        <span class="btn-loading d-none">
+                                            <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+                                            Sending...
+                                        </span>
+                                    </button>
+                                </div>
+                                
+                                <!-- Form Status Messages -->
+                                <div class="form-status mt-3">
+                                    <div class="alert alert-success d-none" id="successMessage" role="alert">
+                                        <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+                                        Thank you! Your message has been sent successfully. Thanatsitt will respond within 24 hours.
+                                    </div>
+                                    <div class="alert alert-danger d-none" id="errorMessage" role="alert">
+                                        <i class="fas fa-exclamation-circle me-2" aria-hidden="true"></i>
+                                        Sorry, there was an error sending your message. Please try again or email directly.
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Contact Cards -->
+                <div class="quick-contact-section mt-5" data-aos="fade-up">
+                    <h3 class="text-center mb-4">Quick Contact Options</h3>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="mailto:thanattsitt.info@yahoo.co.uk?subject=Voice%20Demo%20Request" 
+                               class="quick-contact-card text-decoration-none">
+                                <div class="card glass-card p-3 text-center h-100">
+                                    <i class="fas fa-microphone-alt text-primary fs-2 mb-2" aria-hidden="true"></i>
+                                    <h5 class="fw-bold">Voice Demo Request</h5>
+                                    <p class="text-muted small mb-0">Get a custom voice sample within 24 hours</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="mailto:thanattsitt.info@yahoo.co.uk?subject=AI%20Consultation%20Inquiry" 
+                               class="quick-contact-card text-decoration-none">
+                                <div class="card glass-card p-3 text-center h-100">
+                                    <i class="fas fa-robot text-primary fs-2 mb-2" aria-hidden="true"></i>
+                                    <h5 class="fw-bold">AI Consultation</h5>
+                                    <p class="text-muted small mb-0">Discuss your AI training and development needs</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="mailto:thanattsitt.info@yahoo.co.uk?subject=Partnership%20Opportunity" 
+                               class="quick-contact-card text-decoration-none">
+                                <div class="card glass-card p-3 text-center h-100">
+                                    <i class="fas fa-handshake text-primary fs-2 mb-2" aria-hidden="true"></i>
+                                    <h5 class="fw-bold">Partnership</h5>
+                                    <p class="text-muted small mb-0">Explore collaboration opportunities</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4" role="contentinfo">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="footer-brand">
+                        <h5 class="fw-bold mb-1">
+                            <i class="fas fa-microphone-alt text-primary me-2" aria-hidden="true"></i>
+                            Thanatsitt Santisamranwilai
+                        </h5>
+                        <p class="text-muted small mb-0">AI Creative Designer & Professional Voice Artist</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+                    <div class="footer-links">
+                        <a href="#about" class="text-muted text-decoration-none me-3">About</a>
+                        <a href="#services" class="text-muted text-decoration-none me-3">Services</a>
+                        <a href="#portfolio" class="text-muted text-decoration-none me-3">Portfolio</a>
+                        <a href="#contact" class="text-muted text-decoration-none">Contact</a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <p class="text-muted small mb-0">
+                        © 2024 Thanatsitt Santisamranwilai. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-lg-6 text-lg-end mt-2 mt-lg-0">
+                    <div class="footer-social">
+                        <a href="https://linkedin.com/in/thanatsitt" target="_blank" rel="noopener noreferrer"
+                           class="text-muted me-3" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://github.com/thanatsitt" target="_blank" rel="noopener noreferrer"
+                           class="text-muted me-3" aria-label="GitHub">
+                            <i class="fab fa-github" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://voice123.com/thanatsitt" target="_blank" rel="noopener noreferrer"
+                           class="text-muted me-3" aria-label="Voice123">
+                            <i class="fas fa-microphone-alt" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://linktr.ee/thanatsitt" target="_blank" rel="noopener noreferrer"
+                           class="text-muted" aria-label="Linktree">
+                            <i class="fas fa-link" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="preloader-galaxy">
-            <div class="preloader-star"></div>
-            <div class="preloader-star"></div>
-            <div class="preloader-star"></div>
-            <div class="preloader-star"></div>
-            <div class="preloader-star"></div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="btn btn-primary btn-back-to-top position-fixed" 
+            style="bottom: 20px; right: 20px; display: none; z-index: 1000;"
+            aria-label="Back to top">
+        <i class="fas fa-chevron-up" aria-hidden="true"></i>
+    </button>
+
+    <!-- Portfolio Modals (Sample - You would create one for each portfolio item) -->
+    <div class="modal fade" id="portfolioModal1" tabindex="-1" aria-labelledby="portfolioModal1Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="portfolioModal1Label">OpenAI Training Dataset</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="https://via.placeholder.com/600x400/A78BFA/ffffff?text=AI+Training+Project" 
+                         alt="AI Training Project Details" class="w-100 mb-3">
+                    <p>Comprehensive training dataset developed for OpenAI's natural conversation models...</p>
+                    <h6>Technologies Used:</h6>
+                    <ul>
+                        <li>GPT Training Protocols</li>
+                        <li>Natural Language Processing</li>
+                        <li>Multilingual Dataset Creation</li>
+                        <li>Quality Assurance Systems</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="#contact" class="btn btn-primary">Discuss Similar Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/theme.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/portfolio.js"></script>
+    <script src="js/voice-demo.js"></script>
+    <script src="js/contact-form.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Initialize -->
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Hide loading overlay when page is fully loaded
+        window.addEventListener('load', function() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }
+        });
+
+        // Initialize counter animation for hero stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('[data-counter]');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-counter'));
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = Math.floor(current);
+                }, 30);
+            });
+        }
+
+        // Start counter animation when hero section is in view
+        const heroSection = document.getElementById('home');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        observer.observe(heroSection);
+    </script>
+
+    <!-- Schema.org Structured Data for Enhanced SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Thanatsitt Santisamranwilai - AI Creative Designer & Professional Voice Artist",
+        "url": "https://thanatsitt.pegearts.com",
+        "description": "Professional AI content developer and voice artist specializing in multilingual content creation, AI training, and creative technology solutions.",
+        "author": {
+            "@type": "Person",
+            "name": "Thanatsitt Santisamranwilai"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://thanatsitt.pegearts.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+</body>
+</html>
         </div>
     </div>
 
