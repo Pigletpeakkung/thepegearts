@@ -23,9 +23,6 @@
   
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" />
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,15 +35,12 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   
-  <!-- AOS Animation Library -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  
   <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme.css" />
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#a78bfa" />
+  <meta name="theme-color" content="#6366f1" />
   
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -78,30 +72,819 @@
   <!-- Notification Container -->
   <div id="notification-container" class="notification-container"></div>
 
-  <!-- Preloader with Enhanced Animations -->
+  <!-- Preloader -->
   <div id="preloader" class="preloader">
     <div class="preloader-content">
       <div class="loader">
         <div class="loader-dots">
-          <div class="dot dot-1 bounce"></div>
-          <div class="dot dot-2 bounce delay-1"></div>
-          <div class="dot dot-3 bounce delay-2"></div>
-          <div class="dot dot-4 bounce delay-3"></div>
-          <div class="dot dot-5 bounce delay-4"></div>
+          <div class="dot bounce"></div>
+          <div class="dot bounce delay-1"></div>
+          <div class="dot bounce delay-2"></div>
+          <div class="dot bounce delay-3"></div>
+          <div class="dot bounce delay-4"></div>
         </div>
         <div class="loader-progress-bar">
-          <div class="loader-progress-fill animated"></div>
+          <div class="loader-progress-fill"></div>
         </div>
       </div>
-      <div class="loader-text fade-in-up">Loading Amazing Experience...</div>
-      <div class="loader-percentage fade-in" role="alert">0%</div>
+      <div class="loader-text">Loading Amazing Experience...</div>
+      <div class="loader-percentage">0%</div>
     </div>
-    <div class="preloader-galaxy">
-      <div class="star star-small" style="top: 20%; left: 15%;"></div>
-      <div class="star star-medium" style="top: 30%; left: 80%;"></div>
-      <div class="star star-large" style="top: 70%; left: 25%;"></div>
-      <div class="star star-small star-blue" style="top: 60%; left: 70%;"></div>
-      <div class="star star-medium star-yellow" style="top: 10%; left: 50%;"></div>
+  </div>
+
+  <!-- Cosmic Background -->
+  <div class="cosmic-background"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#home">
+        <span class="name-highlight">Thanatsitt</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#voice-demo">Voice Demo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#services">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#portfolio">Portfolio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main">
+    <!-- Hero Section -->
+    <section class="hero-section section" id="home">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">
+              <span class="name-highlight">Thanatsitt</span><br>
+              <span id="typed-text" class="typed-text"></span>
+            </h1>
+            <p class="hero-description">
+              Multilingual AI content developer and creative technologist with 7+ years experience 
+              in GPT scriptwriting, SEO strategy, and e-commerce solutions.
+            </p>
+            <div class="hero-actions">
+              <a href="#voice-demo" class="btn btn-primary btn-lg">
+                <i class="fas fa-play"></i>
+                <span>Listen to Voice Demo</span>
+              </a>
+              <a href="#portfolio" class="btn btn-outline btn-lg">
+                <i class="fas fa-briefcase"></i>
+                <span>View Portfolio</span>
+              </a>
+            </div>
+            <div class="hero-social">
+              <a href="https://github.com/thanattsitt" class="social-link" target="_blank" rel="noopener">
+                <i class="fab fa-github"></i>
+              </a>
+              <a href="https://linkedin.com/in/thanattsitt-s" class="social-link" target="_blank" rel="noopener">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a href="https://linktr.ee/ThanttEzekiel" class="social-link" target="_blank" rel="noopener">
+                <i class="fas fa-link"></i>
+              </a>
+              <a href="mailto:thanattsitt.info@yahoo.co.uk" class="social-link">
+                <i class="fas fa-envelope"></i>
+              </a>
+            </div>
+          </div>
+          <div class="hero-image">
+            <div class="profile-container">
+              <div class="profile-image">
+                <div class="img-placeholder">
+                  <i class="fas fa-user fa-5x"></i>
+                </div>
+              </div>
+              <div class="profile-glow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-header text-center scroll-reveal">
+          <h2 class="section-title text-gradient">About Me</h2>
+          <p class="section-subtitle">Creative technologist bridging AI innovation with human creativity</p>
+        </div>
+        
+        <div class="row align-items-center">
+          <div class="col-lg-6 scroll-reveal">
+            <div class="about-content">
+              <h3 class="mb-4 name-highlight">Passionate about Innovation</h3>
+              <p class="lead">
+                With over 7 years of experience in the digital realm, I specialize in creating 
+                compelling AI-driven solutions that seamlessly blend technology with creativity.
+              </p>
+              <p>
+                My expertise spans across AI development, voice acting, web development, and 
+                digital strategy. I'm fluent in English, Thai, and Japanese, enabling me to 
+                create multilingual content that resonates with diverse audiences worldwide.
+              </p>
+              
+              <!-- Skills Progress Bars -->
+              <div class="skills-section mt-5">
+                <h4 class="mb-3">Technical Expertise</h4>
+                <div class="skill-item scroll-reveal">
+                  <div class="skill-header">
+                    <span>AI & Machine Learning</span>
+                    <span class="skill-percentage">95%</span>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 95%"></div>
+                  </div>
+                </div>
+                <div class="skill-item scroll-reveal">
+                  <div class="skill-header">
+                    <span>Voice Acting</span>
+                    <span class="skill-percentage">92%</span>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 92%"></div>
+                  </div>
+                </div>
+                <div class="skill-item scroll-reveal">
+                  <div class="skill-header">
+                    <span>Full-Stack Development</span>
+                    <span class="skill-percentage">88%</span>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 88%"></div>
+                  </div>
+                </div>
+                <div class="skill-item scroll-reveal">
+                  <div class="skill-header">
+                    <span>Digital Strategy & SEO</span>
+                    <span class="skill-percentage">90%</span>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 90%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-6 scroll-reveal">
+            <div class="stats-grid">
+              <div class="stat-item glass-card">
+                <div class="stat-icon">
+                  <i class="fas fa-code"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-number counter" data-target="150">0</div>
+                  <div class="stat-label">Projects Completed</div>
+                </div>
+              </div>
+              <div class="stat-item glass-card">
+                <div class="stat-icon">
+                  <i class="fas fa-microphone"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-number counter" data-target="500">0</div>
+                  <div class="stat-label">Voice Recordings</div>
+                </div>
+              </div>
+              <div class="stat-item glass-card">
+                <div class="stat-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-number counter" data-target="100">0</div>
+                  <div class="stat-label">Happy Clients</div>
+                </div>
+              </div>
+              <div class="stat-item glass-card">
+                <div class="stat-icon">
+                  <i class="fas fa-globe"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-number counter" data-target="3">0</div>
+                  <div class="stat-label">Languages Spoken</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Voice Demo Section -->
+    <section class="section" id="voice-demo">
+      <div class="container">
+        <div class="section-header text-center scroll-reveal">
+          <h2 class="section-title text-gradient">Voice Demo Showcase</h2>
+          <p class="section-subtitle">Experience my versatile voice acting capabilities across multiple languages and styles</p>
+        </div>
+        
+        <div class="demos-grid">
+          <!-- Demo Card 1 -->
+          <div class="voice-demo-card glass-card">
+            <div class="demo-header">
+              <div class="demo-avatar">
+                <div class="img-placeholder">
+                  <i class="fas fa-bullhorn fa-2x"></i>
+                </div>
+              </div>
+              <div class="demo-info">
+                <h3 class="demo-title">Commercial Narration</h3>
+                <p class="demo-language">English • Professional</p>
+                <p class="demo-duration">2:30 min</p>
+              </div>
+            </div>
+            <div class="demo-waveform">
+              <div class="voice-waveform">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+              </div>
+            </div>
+            <div class="demo-controls">
+              <button class="play-pause-btn" data-audio="commercial">
+                <i class="fas fa-play"></i>
+              </button>
+              <div class="demo-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                </div>
+                <div class="time-display">
+                  <span class="current-time">0:00</span>
+                  <span class="total-time">2:30</span>
+                </div>
+              </div>
+            </div>
+            <audio data-demo="commercial">
+              <source src="audio/commercial-demo.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+
+          <!-- Demo Card 2 -->
+          <div class="voice-demo-card glass-card">
+            <div class="demo-header">
+              <div class="demo-avatar">
+                <div class="img-placeholder">
+                  <i class="fas fa-theater-masks fa-2x"></i>
+                </div>
+              </div>
+              <div class="demo-info">
+                <h3 class="demo-title">Character Voices</h3>
+                <p class="demo-language">Multi-Character • Animation</p>
+                <p class="demo-duration">3:15 min</p>
+              </div>
+            </div>
+            <div class="demo-waveform">
+              <div class="voice-waveform">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+              </div>
+            </div>
+            <div class="demo-controls">
+              <button class="play-pause-btn" data-audio="character">
+                <i class="fas fa-play"></i>
+              </button>
+              <div class="demo-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                </div>
+                <div class="time-display">
+                  <span class="current-time">0:00</span>
+                  <span class="total-time">3:15</span>
+                </div>
+              </div>
+            </div>
+            <audio data-demo="character">
+              <source src="audio/character-demo.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+
+          <!-- Demo Card 3 -->
+          <div class="voice-demo-card glass-card">
+            <div class="demo-header">
+              <div class="demo-avatar">
+                <div class="img-placeholder">
+                  <i class="fas fa-globe fa-2x"></i>
+                </div>
+              </div>
+              <div class="demo-info">
+                <h3 class="demo-title">Multilingual Showcase</h3>
+                <p class="demo-language">EN • TH • JP</p>
+                <p class="demo-duration">4:00 min</p>
+              </div>
+            </div>
+            <div class="demo-waveform">
+              <div class="voice-waveform">
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+                <div class="waveform-bar"></div>
+              </div>
+            </div>
+            <div class="demo-controls">
+              <button class="play-pause-btn" data-audio="multilingual">
+                <i class="fas fa-play"></i>
+              </button>
+              <div class="demo-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                </div>
+                <div class="time-display">
+                  <span class="current-time">0:00</span>
+                  <span class="total-time">4:00</span>
+                </div>
+              </div>
+            </div>
+            <audio data-demo="multilingual">
+              <source src="audio/multilingual-demo.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="text-center mt-5 scroll-reveal">
+          <p class="lead mb-4">Ready to bring your project to life with professional voice work?</p>
+          <a href="#contact" class="btn btn-primary btn-lg">
+            <i class="fas fa-microphone-alt"></i>
+            <span>Start Your Voice Project</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section" id="services">
+      <div class="container">
+        <div class="section-header text-center scroll-reveal">
+          <h2 class="section-title text-gradient">Services & Expertise</h2>
+          <p class="section-subtitle">Comprehensive solutions blending AI innovation with creative excellence</p>
+        </div>
+        
+        <div class="services-grid">
+          <!-- Service Card 1 -->
+          <div class="service-card glass-card">
+            <div class="service-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+            <h3 class="service-title">AI Development</h3>
+            <p class="service-description">
+              Custom AI solutions, GPT scriptwriting, and machine learning implementations 
+              tailored to your business needs.
+            </p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> Custom GPT Models</li>
+              <li><i class="fas fa-check"></i> AI Content Generation</li>
+              <li><i class="fas fa-check"></i> Automation Solutions</li>
+            </ul>
+            <div class="service-cta">
+              <a href="#contact" class="btn btn-outline hover-lift">
+                <span>Learn More</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Service Card 2 -->
+          <div class="service-card glass-card">
+            <div class="service-icon">
+              <i class="fas fa-microphone-alt"></i>
+            </div>
+            <h3 class="service-title">Professional Voice Acting</h3>
+            <p class="service-description">
+              Multilingual voice-over services for commercials, narration, character voices, 
+              and e-learning content in English, Thai, and Japanese.
+            </p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> Commercial Voice-Over</li>
+              <li><i class="fas fa-check"></i> Character Voices</li>
+              <li><i class="fas fa-check"></i> E-Learning Narration</li>
+            </ul>
+            <div class="service-cta">
+              <a href="#voice-demo" class="btn btn-outline hover-lift">
+                <span>Listen to Demos</span>
+                <i class="fas fa-play"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Service Card 3 -->
+          <div class="service-card glass-card">
+            <div class="service-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h3 class="service-title">Full-Stack Development</h3>
+            <p class="service-description">
+              Modern web applications, responsive designs, and scalable solutions using 
+              cutting-edge technologies and best practices.
+            </p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> Responsive Web Design</li>
+              <li><i class="fas fa-check"></i> Progressive Web Apps</li>
+              <li><i class="fas fa-check"></i> API Development</li>
+            </ul>
+            <div class="service-cta">
+              <a href="#portfolio" class="btn btn-outline hover-lift">
+                <span>View Projects</span>
+                <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Service Card 4 -->
+          <div class="service-card glass-card">
+            <div class="service-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="service-title">Digital Strategy & SEO</h3>
+            <p class="service-description">
+              Comprehensive digital marketing strategies, SEO optimization, and content 
+              strategies that drive results and growth.
+            </p>
+            <ul class="service-features">
+              <li><i class="fas fa-check"></i> SEO Optimization</li>
+              <li><i class="fas fa-check"></i> Content Strategy</li>
+              <li><i class="fas fa-check"></i> Analytics & Insights</li>
+            </ul>
+            <div class="service-cta">
+              <a href="#contact" class="btn btn-outline hover-lift">
+                <span>Get Strategy</span>
+                <i class="fas fa-rocket"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="section" id="portfolio">
+      <div class="container">
+        <div class="section-header text-center scroll-reveal">
+          <h2 class="section-title text-gradient">Featured Portfolio</h2>
+          <p class="section-subtitle">Showcasing innovative projects that blend creativity with cutting-edge technology</p>
+        </div>
+        
+        <!-- Portfolio Filter -->
+        <div class="portfolio-filter text-center mb-5 scroll-reveal">
+          <button class="filter-btn active" data-filter="all">All Projects</button>
+          <button class="filter-btn" data-filter="ai-ml">AI & ML</button>
+          <button class="filter-btn" data-filter="voice">Voice Work</button>
+          <button class="filter-btn" data-filter="web">Web Development</button>
+          <button class="filter-btn" data-filter="strategy">Digital Strategy</button>
+        </div>
+        
+        <div class="portfolio-grid">
+          <!-- Portfolio Item 1 -->
+          <div class="portfolio-item" data-category="ai-ml">
+            <div class="portfolio-card glass-card">
+              <div class="portfolio-image">
+                <div class="img-placeholder">
+                  <i class="fas fa-robot fa-3x"></i>
+                </div>
+                <div class="portfolio-overlay">
+                  <div class="portfolio-actions">
+                    <button class="btn btn-sm btn-primary">
+                      <i class="fas fa-eye"></i>
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="portfolio-content">
+                <div class="portfolio-category">AI & Machine Learning</div>
+                <h3 class="portfolio-title">Intelligent Customer Service Bot</h3>
+                <p class="portfolio-description">
+                  Advanced AI chatbot with natural language processing capabilities, 
+                  reducing customer response time by 80%.
+                </p>
+                <div class="portfolio-tech">
+                  <span class="tech-tag">Python</span>
+                  <span class="tech-tag">OpenAI GPT</span>
+                  <span class="tech-tag">NLP</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portfolio Item 2 -->
+          <div class="portfolio-item" data-category="voice">
+            <div class="portfolio-card glass-card">
+              <div class="portfolio-image">
+                <div class="img-placeholder">
+                  <i class="fas fa-theater-masks fa-3x"></i>
+                </div>
+                <div class="portfolio-overlay">
+                  <div class="portfolio-actions">
+                    <button class="btn btn-sm btn-primary">
+                      <i class="fas fa-eye"></i>
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="portfolio-content">
+                <div class="portfolio-category">Voice Acting</div>
+                <h3 class="portfolio-title">Anime Character Dubbing</h3>
+                <p class="portfolio-description">
+                  Multi-character voice acting for popular anime series, 
+                  bringing diverse personalities to life across 3 languages.
+                </p>
+                <div class="portfolio-tech">
+                  <span class="tech-tag">Character Voice</span>
+                  <span class="tech-tag">Multilingual</span>
+                  <span class="tech-tag">Animation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portfolio Item 3 -->
+          <div class="portfolio-item" data-category="web">
+            <div class="portfolio-card glass-card">
+              <div class="portfolio-image">
+                <div class="img-placeholder">
+                  <i class="fas fa-shopping-cart fa-3x"></i>
+                </div>
+                <div class="portfolio-overlay">
+                  <div class="portfolio-actions">
+                    <button class="btn btn-sm btn-primary">
+                      <i class="fas fa-eye"></i>
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="portfolio-content">
+                <div class="portfolio-category">Web Development</div>
+                <h3 class="portfolio-title">AI-Powered E-commerce Platform</h3>
+                <p class="portfolio-description">
+                  Full-stack e-commerce solution with AI-driven product recommendations 
+                  and intelligent inventory management.
+                </p>
+                <div class="portfolio-tech">
+                  <span class="tech-tag">React</span>
+                  <span class="tech-tag">Node.js</span>
+                  <span class="tech-tag">AI Integration</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portfolio Item 4 -->
+          <div class="portfolio-item" data-category="strategy">
+            <div class="portfolio-card glass-card">
+              <div class="portfolio-image">
+                <div class="img-placeholder">
+                  <i class="fas fa-chart-line fa-3x"></i>
+                </div>
+                <div class="portfolio-overlay">
+                  <div class="portfolio-actions">
+                    <button class="btn btn-sm btn-primary">
+                      <i class="fas fa-eye"></i>
+                      View Case Study
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="portfolio-content">
+                <div class="portfolio-category">Digital Strategy</div>
+                <h3 class="portfolio-title">Global SEO Campaign</h3>
+                <p class="portfolio-description">
+                  Comprehensive SEO strategy that increased organic traffic by 300% 
+                  and improved search rankings across multiple markets.
+                </p>
+                <div class="portfolio-tech">
+                  <span class="tech-tag">SEO Strategy</span>
+                  <span class="tech-tag">Content Marketing</span>
+                  <span class="tech-tag">Analytics</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="section-header text-center scroll-reveal">
+          <h2 class="section-title text-gradient">Let's Create Something Amazing</h2>
+          <p class="section-subtitle">Ready to bring your vision to life? Let's discuss your next project</p>
+        </div>
+        
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="contact-form-container glass-card scroll-reveal">
+              <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                </div>
+
+                <div class="form-group">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                </div>
+
+                <div class="form-group">
+                  <select class="form-select" id="service" name="service" required>
+                    <option value="">Choose a service...</option>
+                    <option value="ai-development">AI Development</option>
+                    <option value="voice-acting">Voice Acting</option>
+                    <option value="web-development">Web Development</option>
+                    <option value="digital-strategy">Digital Strategy</option>
+                    <option value="consultation">General Consultation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <textarea class="form-control" id="message" name="message" placeholder="Tell me about your project..." rows="5" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn">
+                    <span class="btn-text">
+                      <i class="fas fa-paper-plane"></i>
+                      Send Message
+                    </span>
+                    <span class="btn-loading" style="display: none;">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      Sending...
+                    </span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Contact Options -->
+        <div class="quick-contact-section mt-5 scroll-reveal">
+          <h3 class="text-center mb-4 text-gradient">Or reach out directly</h3>
+          <div class="quick-contact-grid">
+            <a href="mailto:thanattsitt.info@yahoo.co.uk" class="quick-contact-item glass-card hover-lift">
+              <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-info">
+                <h4>Email Me</h4>
+                <p>thanattsitt.info@yahoo.co.uk</p>
+              </div>
+            </a>
+
+            <a href="https://linkedin.com/in/thanattsitt-s" class="quick-contact-item glass-card hover-lift" target="_blank" rel="noopener">
+              <div class="contact-icon">
+                <i class="fab fa-linkedin-in"></i>
+              </div>
+              <div class="contact-info">
+                <h4>LinkedIn</h4>
+                <p>Professional Network</p>
+              </div>
+            </a>
+
+            <a href="https://linktr.ee/ThanttEzekiel" class="quick-contact-item glass-card hover-lift" target="_blank" rel="noopener">
+              <div class="contact-icon">
+                <i class="fas fa-link"></i>
+              </div>
+              <div class="contact-info">
+                <h4>All Links</h4>
+                <p>Social & Portfolio Links</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand scroll-reveal">
+          <h3 class="name-highlight">Thanatsitt</h3>
+          <p>Creative technologist bridging AI innovation with human creativity</p>
+          <div class="social-links">
+            <a href="https://github.com/thanattsitt" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/thanattsitt-s" target="_blank" rel="noopener">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://linktr.ee/ThanttEzekiel" target="_blank" rel="noopener">
+              <i class="fas fa-link"></i>
+            </a>
+            <a href="mailto:thanattsitt.info@yahoo.co.uk">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p>&copy; 2024 Thanatsitt Santisamranwilai (Pegearts). All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  
+  <!-- Custom JavaScript -->
+  <script src="js/main.js"></script>
+
+  <!-- Inline JavaScript for immediate functionality -->
+  <script>
+    // Immediate functionality while external scripts load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Simple preloader
+      const preloader = document.getElementById('preloader');
+      const progressBar = document.querySelector('.loader-progress-fill');
+      const percentage = document.querySelector('.loader-percentage');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        percentage.textContent = Math.round(progress) + '%';
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+              preloader.style.display = 'none';
+            }, 500);
+          }, 500);
+        }
+      }, 100);
+
+      // Initialize Typed.js
+      if (typeof Typed !== 'undefined') {
+        new Typed('#typed-text', {
+          strings: [
+            "AI Creative Designer",
+            "Voice Actor Extraordinaire", 
+            "Full-Stack Developer",
+            "Digital Innovation Expert",
+            "Multilingual Content Creator"
+          ],
+          typeSpeed: 60,
+          backSpeed: 30,
+          backDelay: 2000,
+          loop: true
+        });
+      }
+    });
+  </script>
+</body>
+</html>
     </div>
   </div>
 
